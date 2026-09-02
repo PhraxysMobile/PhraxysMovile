@@ -209,16 +209,34 @@ function renderBalance(){
 function cuadre(){let hoy=new Date().toDateString(); let vHoy=db.ventas.filter(v=>new Date(v.fecha).toDateString()==hoy); let tot=vHoy.reduce((a,v)=>a+v.total,0); document.getElementById('cuadreRes').innerHTML=`Hoy ${hoy}: ${vHoy.length} ventas - $${fmt(tot)}<br>${vHoy.map(v=>`${new Date(v.fecha).toLocaleTimeString()} $${fmt(v.total)} ${v.metodo}`).join('<br>')}`;}
 // SCANNER
 async function toggleScan(origen){
-  curCam=origen; let readerId=origen==='ventas'?'reader':'readerInv'; let flashId=origen==='ventas'?'flashVentas':'flashInv';
+  curCam=origen; 
+  let readerId=origen==='ventas'?'reader':'readerInv'; 
+  let flashId=origen==='ventas'?'flashVentas':'flashInv';
   let el=document.getElementById(readerId);
-  if(camOn){stopScan(); return;}
+  if(camOn){
+    await stopScan();
+    return;
+  }
   el.classList.remove('hidden');
-  document.getElementById(flashId).classList.remove('hidden'); camOn=true;
+  document.getElementById(flashId).classList.remove('hidden'); 
+  camOn=true;
   html5Qr=new Html5Qrcode(readerId);
   try{
-  let formats=[Html5QrcodeSupportedFormats.EAN_13,Html5QrcodeSupportedFormats.EAN_8,Html5QrcodeSupportedFormats.CODE_128,Html5QrcodeSupportedFormats.CODE_39,Html5QrcodeSupportedFormats.UPC_A,Html5QrcodeSupportedFormats.UPC_E];
-  await html5Qr.start({facingMode:"environment"},{fps:15,qrbox:{width:300,height:150},formatsToSupport:formats},(decoded)=>{if(origen==='ventas'){addCart(decoded);}else{document.getElementById('inv_codigo').value=decoded; calcMargenInv();} stopScan();});
+    let formats=[Html5QrcodeSupportedFormats.EAN_13,Html5QrcodeSupportedFormats.EAN_8,Html5QrcodeSupportedFormats.CODE_128,Html5QrcodeSupportedFormats.CODE_39,Html5QrcodeSupportedFormats.UPC_A,Html5QrcodeSupportedFormats.UPC_E];
+    await html5Qr.start({facingMode:"environment"},{fps:15,qrbox:{width:300,height:150},formatsToSupport:formats},(decoded)=>{
+      if(origen==='ventas'){addCart(decoded);}
+      else{document.getElementById('inv_codigo').value=decoded; calcMargenInv();}
+      stopScan();
+    });
   }catch(e){alert('No se pudo abrir cámara: '+e); stopScan();}
+}
+async function stopScan(){
+  try{if(html5Qr){await html5Qr.stop(); await html5Qr.clear();}}catch(e){}
+  html5Qr=null; camOn=false;
+  document.getElementById('reader').classList.add('hidden');
+  document.getElementById('readerInv').classList.add('hidden');
+  document.getElementById('flashVentas').classList.add('hidden');
+  document.getElementById('flashInv').classList.add('hidden');
 }
 let torch=false;
 async function toggleFlash(){try{torch=!torch; await html5Qr.applyVideoConstraints({advanced:[{torch}]});}catch(e){alert('Flash no soportado en este celular');}}
