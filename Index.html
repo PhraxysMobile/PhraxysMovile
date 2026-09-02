@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Phraxys POS</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#16a34a">
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<style>
+:root{--green:#16a34a;--bg:#0f1210;--card:#1b211e;--line:#2a342d}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:#fff;font-family:system-ui;font-size:17px;padding-bottom:90px}
+.nav{position:sticky;top:0;z-index:20;background:var(--bg);display:flex;gap:8px;padding:10px;overflow:auto;border-bottom:1px solid var(--line)}
+.nav button{border:none;background:#232e28;color:#fff;padding:10px 18px;border-radius:22px;font-weight:bold;white-space:nowrap}
+.nav button.active{background:var(--green)}
+.card{background:var(--card);margin:10px;border-radius:18px;padding:14px;border:1px solid var(--line)}
+input,select{width:100%;background:#111612;border:1px solid var(--line);color:#fff;padding:14px;border-radius:12px;margin:6px 0;font-size:16px}
+.row{display:flex;gap:8px}.row>*{flex:1}
+.btn{background:var(--green);border:none;color:#fff;padding:15px;width:100%;border-radius:14px;font-weight:800;font-size:18px;margin-top:8px}
+.btn-sm{padding:10px;border-radius:10px;font-size:15px;width:auto}
+.hidden{display:none!important}
+.searchWrap{display:flex;gap:8px;align-items:center}
+.scanBtn{background:#2a3d31;border:1px solid var(--line);color:#fff;padding:14px 16px;border-radius:12px;font-size:20px}
+.itemCart{display:flex;justify-content:space-between;padding:12px;border-bottom:1px solid var(--line);gap:10px}
+.badge{background:#2a3d31;padding:3px 8px;border-radius:10px;font-size:12px;color:#a7f3d0}
+.fab{position:fixed;right:16px;bottom:20px;z-index:30;background:var(--green);color:#fff;border:none;padding:16px 22px;border-radius:30px;font-weight:800;box-shadow:0 8px 20px rgba(0,0,0,.4)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:50;display:flex;align-items:center;justify-content:center;padding:12px}
+.modalBox{background:#1b211e;border-radius:20px;padding:16px;width:100%;max-width:480px;border:1px solid var(--line);max-height:90vh;overflow:auto}
+.totalBox{font-size:28px;font-weight:900;text-align:right;margin:10px 0}
+.green{color:#22c55e} .small{font-size:12px;color:#9ca3af}
+#reader, #readerInv{width:100%;border-radius:12px;overflow:hidden;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="nav">
+<button onclick="go('ventas')" id="b-ventas" class="active">VENTAS</button>
+<button onclick="go('inventario')" id="b-inventario">INVENTARIO</button>
+<button onclick="go('fiados')" id="b-fiados">FIADOS</button>
+<button onclick="go('balance')" id="b-balance">BALANCE</button>
+</div>
+
+<section id="ventas">
+<div class="card">
+<div class="searchWrap">
+<input id="search" placeholder="Escribe nombre o código..." oninput="buscar(this.value)">
+<button class="scanBtn" onclick="toggleScan('ventas')">📷</button>
+</div>
+<div id="reader" class="hidden"></div>
+<button id="flashVentas" class="hidden btn-sm" onclick="toggleFlash()">🔦 Flash</button>
+<div id="sugerencias"></div>
+</div>
+<div class="card">
+<div class="totalBox">Total: $<span id="total">0</span></div>
+<div id="carrito"></div>
+<button class="btn" onclick="abrirCobro()">💰 COBRAR</button>
+</div>
+</section>
+
+<section id="inventario" class="hidden">
+<div class="card"><input id="searchInv" placeholder="Buscar producto..." oninput="renderInv()"><div id="listaInv"></div></div>
+<button class="fab" onclick="openInvModal()">+ Agregar</button>
+</section>
+
+<section id="fiados" class="hidden">
+<div class="card"><input id="searchFiado" placeholder="Buscar persona por nombre o código..." oninput="renderFiados()"><div id="listaFiados"></div></div>
+<button class="fab" onclick="openFiadoModal()">+ Persona</button>
+</section>
+
+<section id="balance" class="hidden">
+<div class="card">
+<h3>Ajustes Tienda</h3>
+<input id="conf_nombre" placeholder="Nombre tienda">
+<input id="conf_tel" placeholder="Teléfono tienda">
+<button class="btn" onclick="saveConf()">Guardar Ajustes</button>
+</div>
+<div class="card"><h3>Balance Mes</h3><div id="balMes"></div><h4>Top 3 más vendidos</h4><div id="top3"></div><button class="btn" style="background:#334155" onclick="cuadre()">📊 Cuadre Caja Hoy</button><div id="cuadreRes"></div></div>
+</section>
+
+<div id="modalCobro" class="modal hidden"><div class="modalBox">
+<h2>Cobrar - Método</h2>
+<div class="row"><button class="btn" onclick="setMetodo('EFECTIVO')">Efectivo</button><button class="btn" style="background:#0ea5e9" onclick="setMetodo('TRANSFERENCIA')">Transferencia</button></div>
+<button class="btn" style="background:#f59e0b" onclick="setMetodo('CREDITO')">Fiado / Crédito</button>
+<div id="boxCliente" class="hidden"><input id="clienteBusca" placeholder="Nombre o código del cliente fiado" oninput="buscarCliente(this.value)"><div id="clienteRes"></div></div>
+<input id="nombreEfectivo" class="hidden" placeholder="Nombre cliente (opcional)">
+<div id="facturaPrev" class="small" style="white-space:pre-wrap;margin-top:10px;background:#111612;padding:10px;border-radius:10px"></div>
+<div class="row"><button class="btn" onclick="finalizarVenta()">Confirmar</button><button class="btn" style="background:#333" onclick="closeCobro()">Cancelar</button></div>
+<div class="row"><button class="btn" style="background:#333" onclick="imprimir()">🖨️ Imprimir</button><button class="btn" style="background:#25D366" onclick="whatsapp()">📲 WhatsApp</button></div>
+</div></div>
+
+<div id="modalInv" class="modal hidden"><div class="modalBox">
+<h2 id="invTitulo">Agregar Producto</h2>
+<div class="searchWrap"><input id="inv_codigo" placeholder="Código de barras"><button class="scanBtn" onclick="toggleScan('inventario')">📷</button></div>
+<div id="readerInv" class="hidden"></div><button id="flashInv" class="hidden btn-sm" onclick="toggleFlash()">🔦 Flash</button>
+<input id="inv_nombre" placeholder="Nombre producto">
+<div class="row"><input id="inv_compra" placeholder="Precio compra (te queda)"><input id="inv_venta" placeholder="Precio público"></div>
+<input id="inv_stock" placeholder="Existencias">
+<div id="inv_margen" class="green" style="font-size:20px;font-weight:bold;margin:8px 0"></div>
+<div class="row"><button class="btn" onclick="saveInv()">Agregar a Inventario</button><button class="btn" style="background:#333" onclick="closeInvModal()">X Salir</button></div>
+</div></div>
+
+<div id="modalFiado" class="modal hidden"><div class="modalBox">
+<h2>Persona Fiado</h2>
+<input id="f_nombre" placeholder="Nombre"><input id="f_tel" placeholder="Teléfono"><input id="f_codigo" placeholder="Código">
+<button class="btn" onclick="saveFiado()">Guardar</button><button class="btn" style="background:#333" onclick="closeFiadoModal()">Cancelar</button>
+</div></div>
+
+<div id="modalAbono" class="modal hidden"><div class="modalBox">
+<h2 id="abonoTitulo"></h2><div id="abonoInfo"></div><input id="abonoMonto" placeholder="Monto abono"><button class="btn" onclick="doAbono()">Abonar</button><button class="btn" style="background:#333" onclick="closeAbono()">Cerrar</button>
+</div></div>
+
+<script>
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+let db=JSON.parse(localStorage.getItem('phraxys_v200')||'{"productos":[],"clientes":[],"ventas":[],"conf":{"tienda":"Phraxys","tel":""}}');
+let cart=[]; let metodo='EFECTIVO'; let clienteSel=null; let editProdCode=null; let html5Qr=null; let camOn=false; let curCam='ventas';
+
+function save(){localStorage.setItem('phraxys_v200',JSON.stringify(db));}
+function fmt(n){return (Number(n)||0).toLocaleString('es-CO');}
+function toNum(v){return Number(String(v).replace(/[^0-9]/g,''))||0;}
+function go(id){document.querySelectorAll('section').forEach(s=>s.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));document.getElementById('b-'+id).classList.add('active');if(id==='inventario')renderInv();if(id==='fiados')renderFiados();if(id==='balance')renderBalance();stopScan();}
+
+function buscar(q){
+ q=q.toLowerCase().trim(); if(!q){document.getElementById('sugerencias').innerHTML='';return;}
+ let res=db.productos.filter(p=>p.nombre.toLowerCase().includes(q)||String(p.codigo).includes(q)).slice(0,8);
+ document.getElementById('sugerencias').innerHTML=res.map(p=>`<div class="itemCart" onclick="addCart('${p.codigo}')"><div><b>${p.nombre}</b><br><span class="small">${p.codigo} | Stock ${p.stock}</span></div><div>$${fmt(p.venta)}</div></div>`).join('');
+}
+function addCart(cod){
+ let p=db.productos.find(x=>String(x.codigo)==String(cod)); if(!p) return;
+ let ex=cart.find(c=>c.codigo==cod); if(ex){if(ex.cant<p.stock) ex.cant++;}else cart.push({codigo:p.codigo,nombre:p.nombre,venta:p.venta,compra:p.compra,cant:1,stock:p.stock});
+ document.getElementById('search').value=''; document.getElementById('sugerencias').innerHTML=''; renderCart();
+}
+function renderCart(){
+ let div=document.getElementById('carrito'); if(cart.length==0){div.innerHTML='<span class="small">Carrito vacío</span>'; document.getElementById('total').innerText='0';return;}
+ let t=0; div.innerHTML=cart.map((c,i)=>{
+  t+=c.venta*c.cant; return `<div class="itemCart"><div><b>${c.nombre}</b><br><input style="width:110px" value="${fmt(c.venta)}" oninput="editPrice(${i},this.value)"><br><span class="badge">Exist: ${c.stock}</span></div><div><div class="row"><button class="btn-sm" onclick="chgCant(${i},-1)">-</button><span style="padding:8px">${c.cant}</span><button class="btn-sm" onclick="chgCant(${i},1)">+</button></div><button class="btn-sm" style="background:#7f1d1d;margin-top:6px" onclick="delCart(${i})">X</button></div></div>`;
+ }).join(''); document.getElementById('total').innerText=fmt(t);
+}
+function chgCant(i,d){cart[i].cant+=d; if(cart[i].cant<=0) cart.splice(i,1); renderCart();}
+function delCart(i){cart.splice(i,1); renderCart();}
+function editPrice(i,v){cart[i].venta=toNum(v); renderCart();}
+
+function abrirCobro(){if(cart.length==0)return alert('Carrito vacío'); metodo='EFECTIVO'; clienteSel=null; document.getElementById('modalCobro').classList.remove('hidden'); genFacturaPrev();}
+function closeCobro(){document.getElementById('modalCobro').classList.add('hidden');}
+function setMetodo(m){metodo=m; document.getElementById('boxCliente').classList.toggle('hidden', m!=='CREDITO'); document.getElementById('nombreEfectivo').classList.toggle('hidden', m!=='EFECTIVO'); genFacturaPrev();}
+function genFacturaPrev(){
+ let total=cart.reduce((a,c)=>a+c.venta*c.cant,0);
+ let txt=`${db.conf.tienda||'Phraxys'} - ${db.conf.tel||''}\nFACTURA\nMétodo: ${metodo}\n${cart.map(c=>`${c.nombre} x${c.cant} $${fmt(c.venta*c.cant)}`).join('\n')}\nTOTAL $${fmt(total)}`;
+ document.getElementById('facturaPrev').innerText=txt;
+}
+function buscarCliente(q){ q=q.toLowerCase(); let res=db.clientes.filter(c=>c.nombre.toLowerCase().includes(q)||String(c.codigo).includes(q)).slice(0,5); document.getElementById('clienteRes').innerHTML=res.map(c=>`<div class="itemCart" onclick="selCliente('${c.codigo}')"><div>${c.nombre} - ${c.codigo}<br><span class="small">Debe $${fmt(c.deuda)}</span></div></div>`).join('');}
+function selCliente(cod){clienteSel=db.clientes.find(c=>String(c.codigo)==String(cod)); document.getElementById('clienteBusca').value=clienteSel.nombre; document.getElementById('clienteRes').innerHTML=`<span class="green">Seleccionado: ${clienteSel.nombre}</span>`; genFacturaPrev();}
+function finalizarVenta(){
+ if(metodo==='CREDITO' && !clienteSel) return alert('Selecciona cliente fiado');
+ let total=cart.reduce((a,c)=>a+c.venta*c.cant,0);
+ cart.forEach(c=>{let p=db.productos.find(x=>x.codigo==c.codigo); if(p){p.stock-=c.cant; p.vendidos=(p.vendidos||0)+c.cant;}});
+ db.ventas.push({fecha:new Date().toISOString(),items:[...cart],total,metodo,cliente:clienteSel?clienteSel.codigo:null,clienteNom:clienteSel?clienteSel.nombre:document.getElementById('nombreEfectivo').value||''});
+ if(clienteSel){clienteSel.deuda=(clienteSel.deuda||0)+total; clienteSel.historial=clienteSel.historial||[]; clienteSel.historial.push({fecha:new Date().toLocaleString(),tipo:'DEUDA',monto:total});}
+ save(); cart=[]; renderCart(); closeCobro(); alert('Venta guardada'); renderBalance();
+}
+function imprimir(){window.print();}
+function whatsapp(){let txt=document.getElementById('facturaPrev').innerText; window.open('https://wa.me/?text='+encodeURIComponent(txt),'_blank');}
+
+// INVENTARIO
+function openInvModal(cod=null){
+ editProdCode=cod; document.getElementById('modalInv').classList.remove('hidden');
+ if(cod){let p=db.productos.find(x=>String(x.codigo)==String(cod)); document.getElementById('invTitulo').innerText='Editar'; document.getElementById('inv_codigo').value=p.codigo; document.getElementById('inv_nombre').value=p.nombre; document.getElementById('inv_compra').value=p.compra; document.getElementById('inv_venta').value=p.venta; document.getElementById('inv_stock').value=p.stock;}
+ else{document.getElementById('invTitulo').innerText='Agregar Producto'; document.getElementById('inv_codigo').value=''; document.getElementById('inv_nombre').value=''; document.getElementById('inv_compra').value=''; document.getElementById('inv_venta').value=''; document.getElementById('inv_stock').value='';}
+ calcMargenInv();
+}
+function closeInvModal(){document.getElementById('modalInv').classList.add('hidden'); stopScan();}
+function calcMargenInv(){let co=toNum(document.getElementById('inv_compra').value); let ve=toNum(document.getElementById('inv_venta').value); let g=ve-co; let pct=co?Math.round(g/co*100):0; document.getElementById('inv_margen').innerText=g?`Ganancia $${fmt(g)} (${pct}%)`:'';}
+['inv_compra','inv_venta'].forEach(id=>document.getElementById(id).addEventListener('input',e=>{let r=e.target.value.replace(/\D/g,''); e.target.value=r?Number(r).toLocaleString('es-CO'):''; calcMargenInv();}));
+function saveInv(){
+ let cod=document.getElementById('inv_codigo').value.trim(); let nom=document.getElementById('inv_nombre').value.trim(); let co=toNum(document.getElementById('inv_compra').value); let ve=toNum(document.getElementById('inv_venta').value); let st=toNum(document.getElementById('inv_stock').value);
+ if(!cod||!nom||!ve) return alert('Falta código, nombre y precio público');
+ if(editProdCode){let p=db.productos.find(x=>String(x.codigo)==String(editProdCode)); p.codigo=cod; p.nombre=nom; p.compra=co; p.venta=ve; p.stock=st;}
+ else{if(db.productos.find(x=>String(x.codigo)==String(cod)))return alert('Código ya existe'); db.productos.push({codigo:cod,nombre:nom,compra:co,venta:ve,stock:st,vendidos:0});}
+ save(); closeInvModal(); renderInv();
+}
+function renderInv(){
+ let q=(document.getElementById('searchInv').value||'').toLowerCase(); let list=db.productos.filter(p=>!q||p.nombre.toLowerCase().includes(q)||String(p.codigo).includes(q));
+ document.getElementById('listaInv').innerHTML=list.map(p=>`<div class="itemCart"><div><b>${p.nombre}</b><br><span class="small">${p.codigo}</span><br>Publico $${fmt(p.venta)} | Stock ${p.stock}</div><div><button class="btn-sm" onclick="openInvModal('${p.codigo}')">✏️</button><button class="btn-sm" style="background:#7f1d1d" onclick="delProd('${p.codigo}')">🗑️</button></div></div>`).join('')||'<span class="small">Sin productos</span>';
+}
+function delProd(cod){if(!confirm('Borrar '+cod+'?'))return; db.productos=db.productos.filter(p=>String(p.codigo)!=String(cod)); save(); renderInv();}
+
+// FIADOS
+function openFiadoModal(){document.getElementById('modalFiado').classList.remove('hidden');}
+function closeFiadoModal(){document.getElementById('modalFiado').classList.add('hidden');}
+function saveFiado(){
+ let n=document.getElementById('f_nombre').value.trim(); let t=document.getElementById('f_tel').value.trim(); let c=document.getElementById('f_codigo').value.trim(); if(!n||!c)return alert('Nombre y código'); db.clientes.push({codigo:c,nombre:n,tel:t,deuda:0,historial:[]}); save(); closeFiadoModal(); renderFiados();
+}
+function renderFiados(){
+ let q=(document.getElementById('searchFiado').value||'').toLowerCase(); let list=db.clientes.filter(c=>!q||c.nombre.toLowerCase().includes(q)||String(c.codigo).includes(q));
+ document.getElementById('listaFiados').innerHTML=list.map(c=>`<div class="itemCart"><div><b>${c.nombre}</b><br>${c.codigo} ${c.tel||''}<br><span class="green">Debe $${fmt(c.deuda)}</span></div><div><button class="btn-sm" onclick="openAbono('${c.codigo}')">Abonar / Ver</button></div></div>`).join('')||'<span class="small">Sin fiados</span>';
+}
+let abonoCli=null;
+function openAbono(cod){abonoCli=db.clientes.find(c=>String(c.codigo)==String(cod)); document.getElementById('abonoTitulo').innerText=abonoCli.nombre; document.getElementById('abonoInfo').innerHTML=`Debe $${fmt(abonoCli.deuda)}<br>${(abonoCli.historial||[]).slice(-5).map(h=>`${h.fecha} ${h.tipo} $${fmt(h.monto)}`).join('<br>')}`; document.getElementById('modalAbono').classList.remove('hidden');}
+function closeAbono(){document.getElementById('modalAbono').classList.add('hidden');}
+function doAbono(){let m=toNum(document.getElementById('abonoMonto').value); if(!m)return; abonoCli.deuda-=m; abonoCli.historial.push({fecha:new Date().toLocaleString(),tipo:'ABONO',monto:m}); save(); closeAbono(); renderFiados();}
+
+// BALANCE Y CONF
+function saveConf(){db.conf.tienda=document.getElementById('conf_nombre').value; db.conf.tel=document.getElementById('conf_tel').value; save(); alert('Guardado');}
+function renderBalance(){
+ document.getElementById('conf_nombre').value=db.conf.tienda||''; document.getElementById('conf_tel').value=db.conf.tel||'';
+ let mes=new Date().getMonth(); let ventasMes=db.ventas.filter(v=>new Date(v.fecha).getMonth()==mes); let totalMes=ventasMes.reduce((a,v)=>a+v.total,0);
+ document.getElementById('balMes').innerHTML=`Ventas mes: ${ventasMes.length} - Total $${fmt(totalMes)}`;
+ let top=[...db.productos].sort((a,b)=>(b.vendidos||0)-(a.vendidos||0)).slice(0,3);
+ document.getElementById('top3').innerHTML=top.map(p=>`${p.nombre} - ${p.vendidos||0} vendidos`).join('<br>')||'Sin ventas';
+}
+function cuadre(){let hoy=new Date().toDateString(); let vHoy=db.ventas.filter(v=>new Date(v.fecha).toDateString()==hoy); let tot=vHoy.reduce((a,v)=>a+v.total,0); document.getElementById('cuadreRes').innerHTML=`Hoy ${hoy}: ${vHoy.length} ventas - $${fmt(tot)}<br>${vHoy.map(v=>`${new Date(v.fecha).toLocaleTimeString()} $${fmt(v.total)} ${v.metodo}`).join('<br>')}`;}
+
+// SCANNER
+async function toggleScan(origen){
+ curCam=origen; let readerId=origen==='ventas'?'reader':'readerInv'; let flashId=origen==='ventas'?'flashVentas':'flashInv';
+ let el=document.getElementById(readerId);
+ if(camOn){stopScan(); return;}
+ el.classList.remove('hidden'); document.getElementById(flashId).classList.remove('hidden'); camOn=true;
+ html5Qr=new Html5Qrcode(readerId);
+ try{await html5Qr.start({facingMode:"environment"},{fps:10,qrbox:250},(decoded)=>{if(origen==='ventas'){addCart(decoded);}else{document.getElementById('inv_codigo').value=decoded; calcMargenInv();} stopScan();});}catch(e){alert('No se pudo abrir cámara: '+e); stopScan();}
+}
+function stopScan(){ if(html5Qr){html5Qr.stop().then(()=>{html5Qr.clear();}).catch(()=>{}); html5Qr=null;} camOn=false; document.getElementById('reader').classList.add('hidden'); document.getElementById('readerInv').classList.add('hidden'); document.getElementById('flashVentas').classList.add('hidden'); document.getElementById('flashInv').classList.add('hidden');}
+let torch=false;
+async function toggleFlash(){try{torch=!torch; await html5Qr.applyVideoConstraints({advanced:[{torch}]});}catch(e){alert('Flash no soportado en este celular');}}
+
+renderInv(); renderFiados(); renderBalance();
+</script>
+</body>
+  </html>
