@@ -80,36 +80,38 @@ input,select{width:100%;background:#111612;border:1px solid var(--line);color:#f
 <h2>Cobrar - Método</h2>
 <div class="row"><button class="btn" onclick="setMetodo('EFECTIVO')">Efectivo</button><button class="btn" style="background:#0ea5e9" onclick="setMetodo('TRANSFERENCIA')">Transferencia</button></div>
 <button class="btn" style="background:#f59e0b" onclick="setMetodo('CREDITO')">Fiado / Crédito</button>
-<div id="boxCliente" class="hidden"><input id="clienteBusca" placeholder="Nombre o código del cliente fiado" oninput="buscarCliente(this.value)"><div id="clienteRes"></div></div>
-<input id="nombreEfectivo" class="hidden" placeholder="Nombre cliente (opcional)">
-<div id="facturaPrev" class="small" style="white-space:pre-wrap;margin-top:10px;background:#111612;padding:10px;border-radius:10px"></div>
-<div class="row"><button class="btn" onclick="finalizarVenta()">Confirmar</button><button class="btn" style="background:#333" onclick="closeCobro()">Cancelar</button></div>
-<div class="row"><button class="btn" style="background:#333" onclick="imprimir()">🖨️ Imprimir</button><button class="btn" style="background:#25D366" onclick="whatsapp()">📲 WhatsApp</button></div>
+
+<div id="datosPago" class="hidden" style="margin-top:12px;background:#111612;padding:12px;border-radius:12px;border:1px solid #2a342d">
+<p id="metodoSelTxt" class="green" style="font-weight:bold;margin:0 0 8px 0"></p>
+
+<div id="boxEfectivo" class="hidden">
+<input id="nombreEfectivo" placeholder="Nombre cliente (opcional)">
+<input id="pagaCon" type="text" inputmode="numeric" placeholder="¿Con cuánto paga? Ej: 50000" oninput="onPagaInput(this); calcVueltas()">
+<div id="vueltasTxt" class="green" style="font-size:22px;font-weight:900;margin:8px 0">Vueltas: $0</div>
+</div>
+
+<div id="boxTransfer" class="hidden">
+<input id="nombreTransfer" placeholder="Nombre cliente (opcional)">
+<p class="small">Pago por transferencia / Nequi / Daviplata</p>
+</div>
+
+<div id="boxCliente" class="hidden">
+<input id="clienteBusca" placeholder="Buscar cliente fiado por nombre o código" oninput="buscarCliente(this.value)"><div id="clienteRes"></div>
+</div>
+
+<div id="facturaPrev" class="small" style="white-space:pre-wrap;margin-top:10px;background:#0f1210;padding:10px;border-radius:10px"></div>
+
+<div class="row"><button class="btn" onclick="finalizarVenta()">Confirmar Venta</button><button class="btn" style="background:#333" onclick="closeCobro()">Cancelar</button></div>
+</div>
+
 </div></div>
 
-<div id="modalInv" class="modal hidden"><div class="modalBox">
-<h2 id="invTitulo">Agregar Producto</h2>
-<div class="searchWrap"><input id="inv_codigo" placeholder="Código de barras"><button class="scanBtn" onclick="toggleScan('inventario')">📷</button></div>
-<div id="readerInv" class="hidden"></div><button id="flashInv" class="hidden btn-sm" onclick="toggleFlash()">🔦 Flash</button>
-<input id="inv_nombre" placeholder="Nombre producto">
-<div class="row"><input id="inv_compra" placeholder="Precio compra (te queda)"><input id="inv_venta" placeholder="Precio público"></div>
-<input id="inv_stock" placeholder="Existencias">
-<div id="inv_margen" class="green" style="font-size:20px;font-weight:bold;margin:8px 0"></div>
-<div class="row"><button class="btn" onclick="saveInv()">Agregar a Inventario</button><button class="btn" style="background:#333" onclick="closeInvModal()">X Salir</button></div>
-</div></div>
-
-<div id="modalFiado" class="modal hidden"><div class="modalBox">
-<h2>Persona Fiado</h2>
-<input id="f_nombre" placeholder="Nombre"><input id="f_tel" placeholder="Teléfono"><input id="f_codigo" placeholder="Código">
-<button class="btn" onclick="saveFiado()">Guardar</button><button class="btn" style="background:#333" onclick="closeFiadoModal()">Cancelar</button>
-</div></div>
-
-<div id="modalAbono" class="modal hidden"><div class="modalBox">
-<h2 id="abonoTitulo"></h2><div id="abonoInfo"></div><input id="abonoMonto" placeholder="Monto abono"><button class="btn" onclick="doAbono()">Abonar</button><button class="btn" style="background:#333" onclick="closeAbono()">Cerrar</button>
-</div></div>
-
-<script>
-if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+<div id="modalFactura" class="modal hidden"><div class="modalBox">
+<h2>✅ Venta Guardada</h2>
+<pre id="facturaFinalTxt" style="white-space:pre-wrap;background:#111612;padding:10px;border-radius:10px;font-size:13px;max-height:200px;overflow:auto"></pre>
+<div class="row" style="margin-top:12px"><button class="btn" style="background:#25D366" onclick="whatsappFinal()">📲 WhatsApp</button><button class="btn" style="background:#334155" onclick="imprimirFinal()">🖨️ Imprimir</button></div>
+<button class="btn" style="background:#222" onclick="cerrarFacturaFinal()">Sin factura / Cerrar</button>
+</div></div>gator.serviceWorker.register('sw.js');
 let db=JSON.parse(localStorage.getItem('phraxys_v200')||'{"productos":[],"clientes":[],"ventas":[],"conf":{"tienda":"Phraxys","tel":""}}');
 let cart=[]; let metodo='EFECTIVO'; let clienteSel=null; let editProdCode=null; let html5Qr=null; let camOn=false; let curCam='ventas';
 
@@ -138,26 +140,95 @@ function chgCant(i,d){cart[i].cant+=d; if(cart[i].cant<=0) cart.splice(i,1); ren
 function delCart(i){cart.splice(i,1); renderCart();}
 function editPrice(i,v){cart[i].venta=toNum(v); renderCart();}
 
-function abrirCobro(){if(cart.length==0)return alert('Carrito vacío'); metodo='EFECTIVO'; clienteSel=null; document.getElementById('modalCobro').classList.remove('hidden'); genFacturaPrev();}
+let ultimaFacturaTxt='';
+let ultimaVentaObj=null;
+
+function abrirCobro(){
+ if(cart.length==0)return alert('Carrito vacío'); 
+ metodo=''; clienteSel=null;
+ document.getElementById('modalCobro').classList.remove('hidden');
+ document.getElementById('datosPago').classList.add('hidden');
+ document.getElementById('boxEfectivo').classList.add('hidden');
+ document.getElementById('boxTransfer').classList.add('hidden');
+ document.getElementById('boxCliente').classList.add('hidden');
+ document.getElementById('facturaPrev').innerText='';
+ document.getElementById('pagaCon').value='';
+ document.getElementById('nombreEfectivo').value='';
+ document.getElementById('nombreTransfer').value='';
+ document.getElementById('clienteBusca').value='';
+ document.getElementById('clienteRes').innerHTML='';
+ document.getElementById('vueltasTxt').innerText='Vueltas: $0';
+}
+
 function closeCobro(){document.getElementById('modalCobro').classList.add('hidden');}
-function setMetodo(m){metodo=m; document.getElementById('boxCliente').classList.toggle('hidden', m!=='CREDITO'); document.getElementById('nombreEfectivo').classList.toggle('hidden', m!=='EFECTIVO'); genFacturaPrev();}
+
+function setMetodo(m){
+ metodo=m;
+ document.getElementById('datosPago').classList.remove('hidden');
+ document.getElementById('metodoSelTxt').innerText='Método: '+m;
+ document.getElementById('boxEfectivo').classList.add('hidden');
+ document.getElementById('boxTransfer').classList.add('hidden');
+ document.getElementById('boxCliente').classList.add('hidden');
+ if(m==='EFECTIVO'){document.getElementById('boxEfectivo').classList.remove('hidden');}
+ else if(m==='TRANSFERENCIA'){document.getElementById('boxTransfer').classList.remove('hidden');}
+ else if(m==='CREDITO'){document.getElementById('boxCliente').classList.remove('hidden');}
+ genFacturaPrev();
+}
+
+function onPagaInput(el){
+ let r=el.value.replace(/\D/g,''); 
+ el.value=r?Number(r).toLocaleString('es-CO'):'';
+}
+
+function calcVueltas(){
+ let total=cart.reduce((a,c)=>a+c.venta*c.cant,0);
+ let paga=toNum(document.getElementById('pagaCon').value);
+ let dif=paga-total;
+ let txtEl=document.getElementById('vueltasTxt');
+ if(paga===0){txtEl.innerText='Vueltas: $0'; return;}
+ if(dif>=0){txtEl.innerText=`Vueltas: $${fmt(dif)}`; txtEl.style.color='#22c55e';}
+ else {txtEl.innerText=`Falta: $${fmt(Math.abs(dif))}`; txtEl.style.color='#f87171';}
+ genFacturaPrev();
+}
+
 function genFacturaPrev(){
+ if(!metodo) return;
  let total=cart.reduce((a,c)=>a+c.venta*c.cant,0);
- let txt=`${db.conf.tienda||'Phraxys'} - ${db.conf.tel||''}\nFACTURA\nMétodo: ${metodo}\n${cart.map(c=>`${c.nombre} x${c.cant} $${fmt(c.venta*c.cant)}`).join('\n')}\nTOTAL $${fmt(total)}`;
+ let paga=toNum(document.getElementById('pagaCon').value);
+ let nom='';
+ if(metodo==='EFECTIVO') nom=document.getElementById('nombreEfectivo').value;
+ else if(metodo==='TRANSFERENCIA') nom=document.getElementById('nombreTransfer').value;
+ else if(metodo==='CREDITO' && clienteSel) nom=clienteSel.nombre;
+ let vueltas = metodo==='EFECTIVO' && paga>0 ? paga-total : 0;
+ let txt=`${db.conf.tienda||'Phraxys'} - ${db.conf.tel||''}\nFACTURA\nCliente: ${nom||'General'}\nMétodo: ${metodo}\n----------------\n${cart.map(c=>`${c.nombre} x${c.cant} $${fmt(c.venta*c.cant)}`).join('\n')}\n----------------\nTOTAL $${fmt(total)}`;
+ if(metodo==='EFECTIVO' && paga>0){txt+=`\nPaga con $${fmt(paga)}\nVueltas $${fmt(vueltas>0?vueltas:0)}`;}
  document.getElementById('facturaPrev').innerText=txt;
+ ultimaFacturaTxt=txt;
 }
-function buscarCliente(q){ q=q.toLowerCase(); let res=db.clientes.filter(c=>c.nombre.toLowerCase().includes(q)||String(c.codigo).includes(q)).slice(0,5); document.getElementById('clienteRes').innerHTML=res.map(c=>`<div class="itemCart" onclick="selCliente('${c.codigo}')"><div>${c.nombre} - ${c.codigo}<br><span class="small">Debe $${fmt(c.deuda)}</span></div></div>`).join('');}
-function selCliente(cod){clienteSel=db.clientes.find(c=>String(c.codigo)==String(cod)); document.getElementById('clienteBusca').value=clienteSel.nombre; document.getElementById('clienteRes').innerHTML=`<span class="green">Seleccionado: ${clienteSel.nombre}</span>`; genFacturaPrev();}
-function finalizarVenta(){
- if(metodo==='CREDITO' && !clienteSel) return alert('Selecciona cliente fiado');
- let total=cart.reduce((a,c)=>a+c.venta*c.cant,0);
- cart.forEach(c=>{let p=db.productos.find(x=>x.codigo==c.codigo); if(p){p.stock-=c.cant; p.vendidos=(p.vendidos||0)+c.cant;}});
- db.ventas.push({fecha:new Date().toISOString(),items:[...cart],total,metodo,cliente:clienteSel?clienteSel.codigo:null,clienteNom:clienteSel?clienteSel.nombre:document.getElementById('nombreEfectivo').value||''});
- if(clienteSel){clienteSel.deuda=(clienteSel.deuda||0)+total; clienteSel.historial=clienteSel.historial||[]; clienteSel.historial.push({fecha:new Date().toLocaleString(),tipo:'DEUDA',monto:total});}
- save(); cart=[]; renderCart(); closeCobro(); alert('Venta guardada'); renderBalance();
+
+function buscarCliente(q){ 
+ q=q.toLowerCase(); 
+ let res=db.clientes.filter(c=>c.nombre.toLowerCase().includes(q)||String(c.codigo).includes(q)).slice(0,5); 
+ document.getElementById('clienteRes').innerHTML&& clienteSel.tel) tel=clienteSel.tel;
+ else { tel=prompt('Número WhatsApp del cliente (ej: 573001112233):')||''; }
+ if(!tel) { window.open('https://wa.me/?text='+encodeURIComponent(ultimaFacturaTxt),'_blank'); }
+ else {
+   let clean=tel.replace(/\D/g,'');
+   window.open('https://wa.me/'+clean+'?text='+encodeURIComponent(ultimaFacturaTxt),'_blank');
+ }
+ cerrarFacturaFinal();
 }
-function imprimir(){window.print();}
-function whatsapp(){let txt=document.getElementById('facturaPrev').innerText; window.open('https://wa.me/?text='+encodeURIComponent(txt),'_blank');}
+
+function imprimirFinal(){
+ let w=window.open('','','width=350,height=600');
+ w.document.write('<pre style="font-family:monospace;font-size:13px">'+ultimaFacturaTxt+'</pre>');
+ w.document.close();
+ w.print();
+ cerrarFacturaFinal();
+}
+
+function imprimir(){ imprimirFinal(); }
+function whatsapp(){ whatsappFinal(); }
 
 // INVENTARIO
 function openInvModal(cod=null){
@@ -173,75 +244,4 @@ function saveInv(){
  let cod=document.getElementById('inv_codigo').value.trim(); let nom=document.getElementById('inv_nombre').value.trim(); let co=toNum(document.getElementById('inv_compra').value); let ve=toNum(document.getElementById('inv_venta').value); let st=toNum(document.getElementById('inv_stock').value);
  if(!cod||!nom||!ve) return alert('Falta código, nombre y precio público');
  if(editProdCode){let p=db.productos.find(x=>String(x.codigo)==String(editProdCode)); p.codigo=cod; p.nombre=nom; p.compra=co; p.venta=ve; p.stock=st;}
- else{if(db.productos.find(x=>String(x.codigo)==String(cod)))return alert('Código ya existe'); db.productos.push({codigo:cod,nombre:nom,compra:co,venta:ve,stock:st,vendidos:0});}
- save(); closeInvModal(); renderInv();
-}
-function renderInv(){
- let q=(document.getElementById('searchInv').value||'').toLowerCase(); let list=db.productos.filter(p=>!q||p.nombre.toLowerCase().includes(q)||String(p.codigo).includes(q));
- document.getElementById('listaInv').innerHTML=list.map(p=>`<div class="itemCart"><div><b>${p.nombre}</b><br><span class="small">${p.codigo}</span><br>Publico $${fmt(p.venta)} | Stock ${p.stock}</div><div><button class="btn-sm" onclick="openInvModal('${p.codigo}')">✏️</button><button class="btn-sm" style="background:#7f1d1d" onclick="delProd('${p.codigo}')">🗑️</button></div></div>`).join('')||'<span class="small">Sin productos</span>';
-}
-function delProd(cod){if(!confirm('Borrar '+cod+'?'))return; db.productos=db.productos.filter(p=>String(p.codigo)!=String(cod)); save(); renderInv();}
-
-// FIADOS
-function openFiadoModal(){document.getElementById('modalFiado').classList.remove('hidden');}
-function closeFiadoModal(){document.getElementById('modalFiado').classList.add('hidden');}
-function saveFiado(){
- let n=document.getElementById('f_nombre').value.trim(); let t=document.getElementById('f_tel').value.trim(); let c=document.getElementById('f_codigo').value.trim(); if(!n||!c)return alert('Nombre y código'); db.clientes.push({codigo:c,nombre:n,tel:t,deuda:0,historial:[]}); save(); closeFiadoModal(); renderFiados();
-}
-function renderFiados(){
- let q=(document.getElementById('searchFiado').value||'').toLowerCase(); let list=db.clientes.filter(c=>!q||c.nombre.toLowerCase().includes(q)||String(c.codigo).includes(q));
- document.getElementById('listaFiados').innerHTML=list.map(c=>`<div class="itemCart"><div><b>${c.nombre}</b><br>${c.codigo} ${c.tel||''}<br><span class="green">Debe $${fmt(c.deuda)}</span></div><div><button class="btn-sm" onclick="openAbono('${c.codigo}')">Abonar / Ver</button></div></div>`).join('')||'<span class="small">Sin fiados</span>';
-}
-let abonoCli=null;
-function openAbono(cod){abonoCli=db.clientes.find(c=>String(c.codigo)==String(cod)); document.getElementById('abonoTitulo').innerText=abonoCli.nombre; document.getElementById('abonoInfo').innerHTML=`Debe $${fmt(abonoCli.deuda)}<br>${(abonoCli.historial||[]).slice(-5).map(h=>`${h.fecha} ${h.tipo} $${fmt(h.monto)}`).join('<br>')}`; document.getElementById('modalAbono').classList.remove('hidden');}
-function closeAbono(){document.getElementById('modalAbono').classList.add('hidden');}
-function doAbono(){let m=toNum(document.getElementById('abonoMonto').value); if(!m)return; abonoCli.deuda-=m; abonoCli.historial.push({fecha:new Date().toLocaleString(),tipo:'ABONO',monto:m}); save(); closeAbono(); renderFiados();}
-
-// BALANCE Y CONF
-function saveConf(){db.conf.tienda=document.getElementById('conf_nombre').value; db.conf.tel=document.getElementById('conf_tel').value; save(); alert('Guardado');}
-function renderBalance(){
- document.getElementById('conf_nombre').value=db.conf.tienda||''; document.getElementById('conf_tel').value=db.conf.tel||'';
- let mes=new Date().getMonth(); let ventasMes=db.ventas.filter(v=>new Date(v.fecha).getMonth()==mes); let totalMes=ventasMes.reduce((a,v)=>a+v.total,0);
- document.getElementById('balMes').innerHTML=`Ventas mes: ${ventasMes.length} - Total $${fmt(totalMes)}`;
- let top=[...db.productos].sort((a,b)=>(b.vendidos||0)-(a.vendidos||0)).slice(0,3);
- document.getElementById('top3').innerHTML=top.map(p=>`${p.nombre} - ${p.vendidos||0} vendidos`).join('<br>')||'Sin ventas';
-}
-function cuadre(){let hoy=new Date().toDateString(); let vHoy=db.ventas.filter(v=>new Date(v.fecha).toDateString()==hoy); let tot=vHoy.reduce((a,v)=>a+v.total,0); document.getElementById('cuadreRes').innerHTML=`Hoy ${hoy}: ${vHoy.length} ventas - $${fmt(tot)}<br>${vHoy.map(v=>`${new Date(v.fecha).toLocaleTimeString()} $${fmt(v.total)} ${v.metodo}`).join('<br>')}`;}
-// SCANNER
-async function toggleScan(origen){
-  curCam=origen; 
-  let readerId=origen==='ventas'?'reader':'readerInv'; 
-  let flashId=origen==='ventas'?'flashVentas':'flashInv';
-  let el=document.getElementById(readerId);
-  if(camOn){
-    await stopScan();
-    return;
-  }
-  el.classList.remove('hidden');
-  document.getElementById(flashId).classList.remove('hidden'); 
-  camOn=true;
-  html5Qr=new Html5Qrcode(readerId);
-  try{
-    let formats=[Html5QrcodeSupportedFormats.EAN_13,Html5QrcodeSupportedFormats.EAN_8,Html5QrcodeSupportedFormats.CODE_128,Html5QrcodeSupportedFormats.CODE_39,Html5QrcodeSupportedFormats.UPC_A,Html5QrcodeSupportedFormats.UPC_E];
-    await html5Qr.start({facingMode:"environment"},{fps:15,qrbox:{width:300,height:150},formatsToSupport:formats},(decoded)=>{
-      if(origen==='ventas'){addCart(decoded);}
-      else{document.getElementById('inv_codigo').value=decoded; calcMargenInv();}
-      stopScan();
-    });
-  }catch(e){alert('No se pudo abrir cámara: '+e); stopScan();}
-}
-async function stopScan(){
-  try{if(html5Qr){await html5Qr.stop(); await html5Qr.clear();}}catch(e){}
-  html5Qr=null; camOn=false;
-  document.getElementById('reader').classList.add('hidden');
-  document.getElementById('readerInv').classList.add('hidden');
-  document.getElementById('flashVentas').classList.add('hidden');
-  document.getElementById('flashInv').classList.add('hidden');
-}
-let torch=false;
-async function toggleFlash(){try{torch=!torch; await html5Qr.applyVideoConstraints({advanced:[{torch}]});}catch(e){alert('Flash no soportado en este celular');}}
-
-renderInv(); renderFiados(); renderBalance();
-</script>
-</body>
-  </html>
+ else{if(db.productos.find(x=>String(x.codigo)==String(cod)))return alert('Código ya existe'); db.productos.push({codigo:cod,nombre:nom,compra:co,venta:
