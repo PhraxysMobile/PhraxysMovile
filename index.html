@@ -127,23 +127,26 @@ async function toggleCam(tipo){
   const flashEl = document.getElementById(idFlash);
 
   if(camAbierta){
-    await html5QrCode.stop(); html5QrCode.clear();
+    try{ await html5QrCode.stop(); }catch(e){}
     readerEl.style.display='none'; flashEl.style.display='none'; camAbierta=false; return;
   }
   readerEl.style.display='block'; flashEl.style.display='block';
   html5QrCode = new Html5Qrcode(idReader);
   camAbierta=true;
+
   html5QrCode.start({facingMode:"environment"},
   {
-    fps:10,
-    // AQUI ESTA EL FIX: solo estos formatos
-    formatsToSupport: [ Html5QrcodeSupportedFormats.EAN_13, Html5QrcodeSupportedFormats.EAN_8, Html5QrcodeSupportedFormats.CODE_128, Html5QrcodeSupportedFormats.CODE_39, Html5QrcodeSupportedFormats.UPC_A ]
+    fps:15,
+    qrbox: {width: 250, height: 100}, // rectángulo alargado = barras
+    experimentalFeatures: { useBarCodeDetectorIfSupported: true },
+    // SOLO BARRAS, sin QR
+    formatsToSupport: [ 0, 1, 2, 3, 4, 5, 9 ] // EAN_13, EAN_8, CODE_128, CODE_39, CODE_93, CODABAR, UPC
   },
   (decoded)=>{
     if(tipo==='venta') buscarProducto(decoded, true);
     else document.getElementById('inv-codigo').value = decoded;
-    toggleCam(tipo); // se cierra al escanear
-  });
+    toggleCam(tipo);
+  }, ()=>{});
 }
 function toggleFlash(){
   html5QrCode.getRunningTrackCameraCapabilities().torchFeature().apply(true);
@@ -220,7 +223,39 @@ function guardarProducto(){
 }
 function renderInv(){ lista_inv.innerHTML = productos.map(p=>`<div class="card">${p.nombre} - ${fmt(p.publico)} - Stock:${p.stock} <button onclick="editar('${p.codigo}')">✏️</button></div>`).join(''); }
 function verMod(m){ document.querySelectorAll('.modulo').forEach(d=>d.classList.remove('activo')); document.getElementById('mod-'+m).classList.add('activo'); if(m=='inventario')renderInv(); if(m=='ajustes')renderBalance(); }
-function abrirModalInv(){ modal_inv.style.display='block' } function cerrarModalInv(){ modal_inv.style.display='none' }
+function abrirModalInv(){
+  document.getElementById('modal-inv').style.display='block';
+  // limpiar campos
+  ['inv-codigo','inv-nombre','inv-costo','inv-publico','inv-stock'].forEach(id=>document.getElementById(id).value='');
+}
+function cerrarModalInv(){ document.getElementById('modal-inv').style.display='none'; }
+
+function guardarProducto(){
+  const cod = document.getElementById('inv-codigo').value;
+  const nom = document.getElementById('inv-nombre').value;
+  if(!nom || !cod){ alert("Falta nombre o código"); return; }
+  
+  productos.push({
+    codigo: cod,
+    nombre: nom,
+    costo: Number(document.getElementById('inv-costo').value||0),
+    publico: Number(document.getElementById('inv-publico').value||0),
+    stock: Number(document.getElementById('inv-stock').value||0)
+  });
+  localStorage.setItem('pos_prod', JSON.stringify(productos));
+  cerrarModalInv();
+  renderInv();
+  alert("Producto agregado: " + nom);
+}
+  <div id="modal-fiado" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#fff; z-index:100; padding:20px">
+  <h3>Persona Fiado</h3>
+  <input id="fia-nombre" placeholder="Nombre">
+  <input id="fia-tel" placeholder="Teléfono">
+  <input id="fia-codigo" placeholder="Código corto (ej: 01)">
+  <input id="fia-deuda" type="number" placeholder="Deuda inicial" value="0">
+  <button class="btn-verde" onclick="guardarFiado()">Guardar Persona</button>
+  <button onclick="cerrarModalFiado()">Salir</button>
+</div>
 function abrirCobro(){ modal_cobro.style.display='block' } function cerrarCobro(){ modal_cobro.style.display='none' }
 function guardarCfg(){ localStorage.setItem('tienda_nombre',cfg_nombre.value); localStorage.setItem('tienda_tel',cfg_tel.value); alert('Guardado'); }
 function renderBalance(){
@@ -236,6 +271,42 @@ function cuadreCaja(){
   alert("Cuadre Hoy: "+fmt(hoy));
 }
 verMod('vender');
+  function abrirModalFiado(){
+  document.getElementById('modal-fiado').style.display='block';
+}
+function cerrarModalFiado(){
+  document.getElementById('modal-fiado').style.display='none';
+}
+function guardarFiado(){
+  const nom = document.getElementById('fia-nombre').value;
+  if(!nom){ alert("Falta nombre"); return; }
+  fiados.push({
+    nombre: nom,
+    telefono: document.getElementById('fia-tel').value,
+    codigo: document.getElementById('fia-codigo').value,
+    deuda: Number(document.getElementById('fia-deuda').value||0)
+  });
+  localStorage.setItem('pos_fiados', JSON.stringify(fiados));
+  cerrarModalFiado();
+  renderFiado();
+}
+function renderFiado(){
+  document.getElementById('lista-fiado').innerHTML = fiados.map(f=>
+    `<div class="card">${f.nombre} (${f.codigo}) - ${fmt(f.deuda)}<br><small>${f.telefono}</small><br>
+    <button onclick="abonar('${f.codigo}')">Abonar</button> <button onclick="verCuenta('${f.codigo}')">Cuenta completa</button></div>`
+  ).join('');
+}
+function abonar(cod){
+  let monto = Number(prompt("¿Cuánto abona?"));
+  let p = fiados.find(f=>f.codigo==cod);
+  if(p){ p.deuda -= monto; localStorage.setItem('pos_fiados', JSON.stringify(fiados)); renderFiado(); }
+}
+// conecta la búsqueda en cobro
+document.getElementById('cliente-cobro')?.addEventListener('input', e=>{
+  let t = e.target.value.toLowerCase();
+  let f = fiados.find(x=> x.nombre.toLowerCase().includes(t) || x.codigo==t);
+  document.getElementById('preview-cliente').innerText = f ? `Encontrado: ${f.nombre} debe ${fmt(f.deuda)}` : '';
+});
 </script>
 </body>
 </html>
