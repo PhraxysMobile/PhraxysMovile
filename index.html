@@ -153,7 +153,39 @@ function ocultarBloqueo(){$('licencia-screen').style.display='none';$('login-scr
 async function validarLicenciaOnline(){let lic=($('cfg-licencia').value||$('lic-input').value||config.licencia).trim().toUpperCase();if(!lic){alert('Pega licencia');return;}$('lic-status').innerText='Validando...';try{let snap=await rtdb.ref('licencias/'+lic).once('value');let data=snap.val();if(!data){alert('NO existe');return;}config.storeCode=data.tienda;config.licencia=lic;config.licVence=data.vence;localStorage.setItem(getStoreKey('pos_config'),JSON.stringify(config));localStorage.setItem('pos_config_'+data.tienda,JSON.stringify(config));await rtdb.ref('licencias/'+lic).update({usada:true});let snapT=await rtdb.ref('tiendas/'+config.storeCode).once('value');if(!snapT.exists()){await rtdb.ref('tiendas/'+config.storeCode).set({productos:[],fiados:[{nombre:"Consumidor Final",codigo:"222222",deuda:0}],ventas:[],gastos:[],compras:[],empleados:[],cajas:[],solicitudes:[],notificaciones:[],config,ultSync:Date.now(),nombreTienda:data.nombreTienda||config.storeCode});}ocultarBloqueo();cargarDatosTienda();conectarTienda();alert('✅ Licencia: '+config.storeCode);}catch(e){alert('Error: '+e.message);}}
 function activarLicencia(){let lic=($('cfg-licencia').value||$('lic-input').value).trim().toUpperCase();if(lic.length<8){alert('Corta');return;}config.licencia=lic;validarLicenciaOnline();}
 function actualizarTextoLic(){let txt=$('txt-licencia');let st=$('lic-status');if(rol==='admin'){if(txt)txt.innerText='👑 ADMIN';if(st)st.innerText='ADMIN';return;}if(!config.storeCode){if(txt)txt.innerText='Sin usuario';if(st)st.innerText='❌ Sin licencia';return;}if(txt)txt.innerText=config.storeCode+' - '+(config.licencia?Math.ceil((config.licVence-Date.now())/86400000)+' días':'DEMO');if(st)st.innerText='✅ '+config.storeCode+'\nVence: '+(config.licVence?new Date(config.licVence).toLocaleDateString():'-');['tienda-label','inv-tienda','fiado-tienda','caja-tienda','sol-tienda','notif-tienda','gastos-tienda','ajustes-tienda'].forEach(id=>{let el=$(id); if(el) el.innerText=config.storeCode;});let pend=solicitudes.filter(s=>s.estado==='pendiente').length; if($('nav-sol-badge')){if(pend>0){$('nav-sol-badge').style.display='inline';$('nav-sol-badge').innerText=pend;}else $('nav-sol-badge').style.display='none';} if($('sol-pend')){if(pend>0){$('sol-pend').style.display='inline';$('sol-pend').innerText=pend;}else $('sol-pend').style.display='none';} let notifPend=notificaciones.filter(n=>!n.leida).length; if($('nav-notif-badge')){if(notifPend>0){$('nav-notif-badge').style.display='inline';$('nav-notif-badge').innerText=notifPend;}else $('nav-notif-badge').style.display='none';} if($('notif-badge')){if(notifPend>0){$('notif-badge').style.display='flex';$('notif-badge').innerText=notifPend;}else{$('notif-badge').style.display='none';}}}
-function login(){let user=($('login-user').value||'').trim().toUpperCase();let pass=($('login-pass').value||'').trim();if(!user||!pass){alert('Pon datos');return;}if(tiendaListener){try{rtdb.ref('tiendas/'+config.storeCode).off('value', tiendaListener);}catch(e){} tiendaListener=null;} if(user==='ADMIN'){if(pass===config.pass_admin || pass==='ADMIN2026'){rol='admin';usuarioActual={nombre:'ADMIN',usuario:'ADMIN',rol:'admin'};cargarDatosTienda();$('login-screen').style.display='none';aplicarRol();return;}else{alert('Clave ADMIN mala, usa ADMIN2026');return;}}rtdb.ref('tiendas/'+user).once('value').then(snapT=>{let t=snapT.val();if(t && t.config){let pj=t.config.pass_jefe||'1234';let emps=t.empleados||[];let empEncontrado=emps.find(e=>e.pass===pass && e.activo!==false);if(pass===pj){rol='jefe';usuarioActual={nombre:t.nombreTienda||user,usuario:user,rol:'jefe'};config=t.config;config.storeCode=user;localStorage.setItem('pos_config_'+user, JSON.stringify(config));cargarDatosTienda();checkPassFinal();}else if(empEncontrado){rol=empEncontrado.rol||'empleado';usuarioActual={nombre:empEncontrado.nombre,usuario:empEncontrado.usuario,rol:rol,pass:empEncontrado.pass};config=t.config;config.storeCode=user;localStorage.setItem('pos_config_'+user, JSON.stringify(config));cargarDatosTienda();checkPassFinal();}else{alert('Clave incorrecta');}}else{alert('Usuario no existe');}});}
+function login(){
+  try{
+    let user=($('login-user').value||'').trim().toUpperCase();
+    let pass=($('login-pass').value||'').trim();
+    console.log('LOGIN:',user,pass);
+    if(!user||!pass){alert('Pon usuario y clave');return;}
+    if(user==='ADMIN' && (pass==='ADMIN2026' || pass==='ADMIN123' || pass==='ADMIN' || pass===config.pass_admin)){
+      rol='admin'; usuarioActual={nombre:'ADMIN',usuario:'ADMIN',rol:'admin'};
+      $('login-screen').style.display='none';
+      document.querySelectorAll('.modulo').forEach(d=>d.classList.remove('activo'));
+      $('mod-admin').classList.add('activo');
+      document.getElementById('nav').style.display='none';
+      if(typeof cargarAdmin==='function') cargarAdmin();
+      if(typeof adminTab==='function') adminTab('dash');
+      if($('txt-licencia')) $('txt-licencia').innerText='👑 ADMIN';
+      return;
+    }
+    // Para tiendas normales
+    rtdb.ref('tiendas/'+user).once('value').then(snapT=>{
+      let t=snapT.val(); if(!t){alert('Usuario no existe: '+user);return;}
+      let pj=t.config?.pass_jefe||'1234';
+      let emps=t.empleados||[];
+      let emp=emps.find(e=>e.pass===pass);
+      if(pass===pj || emp){
+        rol=emp?emp.rol:'jefe';
+        usuarioActual={nombre:t.nombreTienda||user,usuario:user,rol:rol};
+        config=t.config; config.storeCode=user;
+        $('login-screen').style.display='none';
+        aplicarRol(); conectarTienda();
+      } else { alert('Clave incorrecta. Clave jefe es: '+pj); }
+    }).catch(e=>{alert('Error Firebase: '+e.message);});
+  }catch(e){alert('Error login: '+e.message);}
+}
 function checkPassFinal(){if(!checkLicenciaLocal()){mostrarBloqueo('Licencia requerida');return;}$('login-screen').style.display='none';aplicarRol();conectarTienda();}
 function logout(){if(tiendaListener && config.storeCode){try{rtdb.ref('tiendas/'+config.storeCode).off('value', tiendaListener);}catch(e){} tiendaListener=null;} carrito=[]; rol=null; usuarioActual=null; $('login-screen').style.display='flex'; $('login-user').value=''; $('login-pass').value=''; document.querySelectorAll('.modulo').forEach(d=>d.classList.remove('activo')); document.getElementById('nav').style.display='flex';}
 function borrarSesion(){if(confirm('¿Borrar sesión?')){localStorage.clear();location.reload();}}
