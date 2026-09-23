@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PATIA POS - FINAL ADMIN V2 + BALANCE</title>
+<title>PATIA POS SUPER</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <style>
@@ -9,16 +9,16 @@
 input,select,textarea{width:100%;padding:14px;border-radius:12px;border:1px solid #334155;background:#1e293b;color:#fff;margin:6px 0}
 button{width:100%;padding:14px;border-radius:12px;border:0;font-weight:800;cursor:pointer}
 .modulo{display:none;padding:12px}.modulo.activo{display:block}
-.nav{display:flex;gap:6px;overflow:auto;padding:8px;background:#1e293b;position:sticky;top:0;z-index:20}
+.nav{display:flex;gap:6px;overflow:auto;padding:8px;background:#1e293b;position:sticky;top:0;z-index:10}
 .nav button{width:auto;white-space:nowrap;padding:10px 14px;background:#334155;color:#fff}
 .nav button.act{background:#facc15;color:#000}
 #login{padding:20px;max-width:400px;margin:40px auto}
 </style></head><body>
 <div id="login">
 <h2 style="text-align:center;color:#facc15">🏪 PATIA POS</h2>
-<input id="l-store" placeholder="Usuario Ej: PATIA2" style="text-transform:uppercase">
+<input id="l-store" placeholder="Usuario Ej: PATIA1" style="text-transform:uppercase">
 <input id="l-pass" type="password" placeholder="Clave">
-<input id="l-lic" placeholder="Licencia (solo si venció)">
+<input id="l-lic" placeholder="Licencia (solo primera vez)">
 <button onclick="login()" style="background:#facc15;color:#000">Entrar</button>
 <div id="login-msg" style="color:#ef4444;text-align:center;margin-top:10px"></div>
 </div>
@@ -28,80 +28,64 @@ button{width:100%;padding:14px;border-radius:12px;border:0;font-weight:800;curso
 <button id="b-prod" onclick="verMod('productos')">📦 Prod</button>
 <button id="b-fiados" onclick="verMod('fiados')">💳 Fiados</button>
 <button id="b-balance" onclick="verMod('balance')">📊 Balance</button>
-<button id="b-admin" onclick="verMod('admin')" style="display:none;background:#7f1d1d;color:#fff">👑 ADMIN</button>
+<button id="b-admin" onclick="verMod('admin')" style="display:none;background:#7f1d1d">👑 ADMIN</button>
 <button onclick="logout()" style="background:#ef4444">Salir</button>
 </div>
-<div id="mod-venta" class="modulo"><h3>🛒 Venta</h3><div class="card"><input id="v-buscar" placeholder="Escanear / Buscar..."><div id="v-lista"></div></div><div class="card"><div id="v-carrito"></div><h2 id="v-total">$0</h2><button onclick="cobrar()" style="background:#22c55e">Cobrar</button></div></div>
-<div id="mod-productos" class="modulo"><h3>📦 Productos</h3><div class="card"><input id="p-nombre" placeholder="Nombre"><input id="p-costo" type="number" placeholder="Costo"><input id="p-precio" type="number" placeholder="Precio"><input id="p-stock" type="number" placeholder="Stock"><button onclick="addProd()" style="background:#3b82f6">Guardar</button></div><div id="p-lista"></div></div>
+<div id="mod-venta" class="modulo"><h3>🛒 Venta</h3><div class="card"><input id="v-buscar" placeholder="Escanear o buscar producto..." oninput="buscarProd(this.value)"><div id="v-lista"></div></div>
+<div class="card"><div id="v-carrito"></div><h2 id="v-total">$0</h2><button onclick="cobrar()" style="background:#22c55e">Cobrar</button></div></div>
+<div id="mod-productos" class="modulo"><h3>📦 Productos</h3><div class="card"><input id="p-nombre" placeholder="Nombre"><input id="p-costo" type="number" placeholder="Costo"><input id="p-precio" type="number" placeholder="Precio venta"><input id="p-stock" type="number" placeholder="Stock"><button onclick="addProd()" style="background:#3b82f6">Guardar producto</button></div><div id="p-lista"></div></div>
 <div id="mod-fiados" class="modulo"><h3>💳 Fiados</h3><div id="f-lista"></div></div>
-<div id="mod-balance" class="modulo"><h3>📊 Balance Hoy</h3><div class="card"><b id="bal-hoy">$0</b><div id="bal-det"></div></div><div id="bal-hist"></div></div>
+<div id="mod-balance" class="modulo"><h3>📊 Balance Hoy</h3><div class="card"><b id="bal-hoy">$0</b><br><small id="bal-det"></small></div><div id="bal-hist"></div></div>
 <div id="mod-admin" class="modulo"><h3 style="color:#ef4444">👑 ADMIN - <span id="admin-fecha" style="font-size:12px;color:#94a3b8"></span></h3>
 
-<!-- BALANCE GANANCIAS NUEVO -->
 <div class="card" style="background:linear-gradient(135deg,#1e293b,#0f172a);border:2px solid #facc15">
 <h4 style="color:#facc15;margin:0 0 10px 0">💰 MI BALANCE - Ganancias</h4>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-<div style="text-align:center;background:#0f172a;padding:10px;border-radius:10px"><small>Total Vendido</small><br><b id="bal-total" style="font-size:18px;color:#22c55e">$0</b></div>
-<div style="text-align:center;background:#0f172a;padding:10px;border-radius:10px"><small>Este Mes</small><br><b id="bal-mes" style="font-size:18px;color:#facc15">$0</b></div>
-<div style="text-align:center;background:#0f172a;padding:10px;border-radius:10px"><small>Ventas 15d</small><br><b id="bal-15d">0</b></div>
-<div style="text-align:center;background:#0f172a;padding:10px;border-radius:10px"><small>1M/3M/1A</small><br><b id="bal-otros">0 / 0 / 0</b></div>
+<div style="text-align:center;background:#0f172a;padding:10px;border-radius:10px"><small style="color:#94a3b8">Total Vendido</small><br><b id="bal-total" style="font-size:18px;color:#22c55e">$0</b></div>
+<div style="text-align:center;background:#0f172a;padding:10px;border-radius:10px"><small style="color:#94a3b8">Este Mes</small><br><b id="bal-mes" style="font-size:18px;color:#facc15">$0</b></div>
+<div style="text-align:center;background:#0f172a;padding:10px;border-radius:10px"><small style="color:#94a3b8">Ventas 15d</small><br><b id="bal-15d">0</b></div>
+<div style="text-align:center;background:#0f172a;padding:10px;border-radius:10px"><small style="color:#94a3b8">1M / 3M / 1A</small><br><b id="bal-otros">0 / 0 / 0</b></div>
 </div>
-<details style="margin-top:10px"><summary style="color:#94a3b8;font-size:12px;cursor:pointer">⚙️ Configurar precios</summary>
+<details style="margin-top:10px"><summary style="color:#94a3b8;font-size:12px">⚙️ Precios</summary>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px">
 <input id="precio-15" type="number" value="15000"><input id="precio-30" type="number" value="40000">
 <input id="precio-90" type="number" value="100000"><input id="precio-365" type="number" value="350000">
-<button onclick="guardarPrecios()" style="grid-column:span 2;background:#facc15;color:#000">💾 Guardar</button>
+<button onclick="guardarPrecios()" style="grid-column:span 2;background:#facc15;color:#000">Guardar</button>
 </div></details>
 <div id="bal-lista" style="margin-top:10px;max-height:200px;overflow:auto;font-size:11px;color:#94a3b8"></div>
 </div>
 
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-<div class="card" style="text-align:center;padding:10px;border-left:4px solid #22c55e"><small>Total</small><br><b id="adm-total" style="font-size:20px">0</b></div>
-<div class="card" style="text-align:center;padding:10px;border-left:4px solid #facc15"><small>Activas</small><br><b id="adm-activas" style="font-size:20px;color:#facc15">0</b></div>
-<div class="card" style="text-align:center;padding:10px;border-left:4px solid #ef4444"><small>Vencidas</small><br><b id="adm-vencidas" style="font-size:20px;color:#ef4444">0</b></div>
-<div class="card" style="text-align:center;padding:10px;border-left:4px solid #fb923c"><small>Por vencer 5d</small><br><b id="adm-porvencer" style="font-size:20px;color:#fb923c">0</b></div>
+<div class="card" style="text-align:center;padding:10px;border-left:4px solid #22c55e"><small>Total</small><br><b id="adm-total">0</b></div>
+<div class="card" style="text-align:center;padding:10px;border-left:4px solid #facc15"><small>Activas</small><br><b id="adm-activas" style="color:#facc15">0</b></div>
+<div class="card" style="text-align:center;padding:10px;border-left:4px solid #ef4444"><small>Vencidas</small><br><b id="adm-vencidas" style="color:#ef4444">0</b></div>
+<div class="card" style="text-align:center;padding:10px;border-left:4px solid #fb923c"><small>Por vencer 5d</small><br><b id="adm-porvencer" style="color:#fb923c">0</b></div>
 </div>
 
-<div class="card" style="background:#1e293b;border:2px solid #ef4444"><h4 style="color:#facc15">➕ Crear Tienda - Control Preciso</h4>
-<input id="gen-store" placeholder="Usuario Ej: PATIA2" style="text-transform:uppercase;border:2px solid #3b82f6">
-<input id="gen-nombre-tienda" placeholder="Nombre Tienda Ej: Tienda La Esquina">
-<input id="gen-dueno" placeholder="Dueño / Responsable de pago Ej: Carlos Pérez">
-<input id="gen-whatsapp" placeholder="WhatsApp Ej: 3001234567" type="tel">
-<input id="gen-ciudad" placeholder="Lugar / Ubicación precisa Ej: Patía, Cauca - Calle 5 #10-20">
-<div style="display:flex;gap:6px"><input id="gen-pass-jefe" placeholder="Clave Jefe" value="1234" style="flex:1"><button onclick="let i=$('gen-pass-jefe'); i.type=i.type==='password'?'text':'password'" style="width:60px;background:#334155">👁️</button></div>
-<select id="gen-dias">
-  <option value="15">15 días - Prueba</option>
-  <option value="30" selected>1 Mes - 30 días</option>
-  <option value="90">3 Meses - 90 días</option>
-  <option value="365">1 Año - 365 días</option>
-</select>
-<textarea id="gen-notas" placeholder="Notas internas Ej: Cliente bueno, paga puntual / No pagó enero" style="width:100%;background:#1e293b;color:#fff;border:1px solid #334155;border-radius:12px;padding:14px;min-height:60px;box-sizing:border-box"></textarea>
-<button onclick="generarLicencia()" style="background:#facc15;color:#000;font-weight:900">Crear Tienda</button>
-<div id="lic-generada" style="color:#4ade80;font-weight:800;margin-top:10px;word-break:break-all;font-size:11px;background:#0f172a;padding:10px;border-radius:10px;display:none;white-space:pre-wrap"></div>
+<div class="card" style="border:2px solid #ef4444"><h4 style="color:#facc15">➕ Crear Tienda</h4>
+<input id="gen-store" placeholder="Usuario Ej: PATIA2" style="text-transform:uppercase">
+<input id="gen-nombre-tienda" placeholder="Nombre Tienda">
+<input id="gen-dueno" placeholder="Dueño / Responsable pago">
+<input id="gen-whatsapp" placeholder="WhatsApp" type="tel">
+<input id="gen-ciudad" placeholder="Lugar / Ubicación precisa">
+<div style="display:flex;gap:6px"><input id="gen-pass-jefe" value="1234" style="flex:1"><button onclick="$('gen-pass-jefe').type=$('gen-pass-jefe').type==='password'?'text':'password'" style="width:60px;background:#334155">👁️</button></div>
+<select id="gen-dias"><option value="15">15d Prueba</option><option value="30" selected>1 Mes</option><option value="90">3 Meses</option><option value="365">1 Año</option></select>
+<textarea id="gen-notas" placeholder="Notas internas"></textarea>
+<button onclick="generarLicencia()" style="background:#facc15;color:#000">Crear Tienda</button>
+<div id="lic-generada" style="display:none;background:#0f172a;padding:10px;border-radius:10px;margin-top:10px;color:#4ade80;font-size:11px;word-break:break-all"></div>
 </div>
-
-<div class="card"><input id="adm-search" placeholder="🔍 Buscar usuario, tienda, dueño o WhatsApp..." oninput="renderAdminList(this.value)" style="border:2px solid #ef4444"><button onclick="cargarAdmin()" style="background:#334155;margin-top:6px">🔄 Actualizar</button></div>
-<div id="admin-stats" style="color:#94a3b8;font-size:12px;margin:6px"></div>
+<div class="card"><input id="adm-search" placeholder="🔍 Buscar..." oninput="renderAdminList(this.value)"><button onclick="cargarAdmin()" style="background:#334155;margin-top:6px">🔄 Actualizar</button></div>
+<div id="admin-stats" style="color:#94a3b8;font-size:12px"></div>
 <div id="admin-tiendas"></div>
-<button onclick="logout()" style="background:#ef4444;color:#fff;margin-top:20px">Salir</button>
 </div></div>
 <script>
 const $=id=>document.getElementById(id);
-const firebaseConfig = {
-  apiKey: "AIzaSyAHGzYL9ZLiZqUgP7JrtqCndJebuSDWh3g",
-  authDomain: "tienda-patia-v2.firebaseapp.com",
-  databaseURL: "https://tienda-patia-v2-default-rtdb.firebaseio.com",
-  projectId: "tienda-patia-v2",
-  storageBucket: "tienda-patia-v2.firebasestorage.app",
-  messagingSenderId: "318384915612",
-  appId: "1:318384915612:web:7d15b36f6065e2bb645959",
-  measurementId: "G-XKVNZ8R94D"
-};
+const firebaseConfig={databaseURL:"https://TU-PROYECTO.firebaseio.com"}; // <-- PEGA TU CONFIG AQUI
 firebase.initializeApp(firebaseConfig); const rtdb=firebase.database();
 let rol='',storeCode='',config={},productos=[],ventas=[],adminCache={};
 let preciosAdmin=JSON.parse(localStorage.getItem('preciosAdmin')||'{"15":15000,"30":40000,"90":100000,"365":350000}');
 function initPrecios(){ if($('precio-15')){ $('precio-15').value=preciosAdmin["15"]; $('precio-30').value=preciosAdmin["30"]; $('precio-90').value=preciosAdmin["90"]; $('precio-365').value=preciosAdmin["365"]; } }
-function guardarPrecios(){ preciosAdmin={"15":Number($('precio-15').value||0),"30":Number($('precio-30').value||0),"90":Number($('precio-90').value||0),"365":Number($('precio-365').value||0)}; localStorage.setItem('preciosAdmin',JSON.stringify(preciosAdmin)); alert('✅ Precios guardados'); cargarBalance(); }
+function guardarPrecios(){ preciosAdmin={"15":Number($('precio-15').value),"30":Number($('precio-30').value),"90":Number($('precio-90').value),"365":Number($('precio-365').value)}; localStorage.setItem('preciosAdmin',JSON.stringify(preciosAdmin)); alert('Precios guardados'); cargarBalance(); }
 function verMod(m){ document.querySelectorAll('.modulo').forEach(x=>x.classList.remove('activo')); let el=$('mod-'+m); if(el)el.classList.add('activo'); document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('act')); let bn=$('b-'+m); if(bn)bn.classList.add('act'); if(m==='admin')cargarAdmin(); }
 async function login(){
  let s=$('l-store').value.trim().toUpperCase(), p=$('l-pass').value.trim(), lic=$('l-lic').value.trim();
@@ -109,98 +93,19 @@ async function login(){
  if(s==='ADMIN'&&p==='ADMIN123'){ rol='admin'; $('login').style.display='none'; $('app').style.display='block'; $('b-admin').style.display='block'; verMod('admin'); cargarAdmin(); return; }
  try{ let snap=await rtdb.ref('tiendas/'+s).once('value'); let data=snap.val(); if(!data){$('login-msg').innerText='Tienda no existe';return;}
  if(data.config.pass_jefe!==p){$('login-msg').innerText='Clave incorrecta';return;}
- if(data.config.bloqueada){$('login-msg').innerText='Tienda bloqueada';return;}
- if(data.config.licVence<Date.now()){if(lic){ let l=await rtdb.ref('licencias/'+lic).once('value'); if(l.val()&&l.val().tienda===s){ await rtdb.ref('tiendas/'+s+'/config/licVence').set(l.val().vence); await rtdb.ref('tiendas/'+s+'/config/licencia').set(lic); data.config.licVence=l.val().vence; } else {$('login-msg').innerText='Licencia no válida';return;}} else {$('login-msg').innerText='Licencia vencida';return;}}
- storeCode=s; config=data.config; rol='jefe'; $('login').style.display='none'; $('app').style.display='block'; verMod('venta'); }catch(e){$('login-msg').innerText=e.message;}
+ if(data.config.bloqueada){$('login-msg').innerText='Tienda bloqueada contacta admin';return;}
+ if(data.config.licVence<Date.now()){if(lic){ let l=await rtdb.ref('licencias/'+lic).once('value'); if(l.val()&&l.val().tienda===s){ await rtdb.ref('tiendas/'+s+'/config/licVence').set(l.val().vence); await rtdb.ref('tiendas/'+s+'/config/licencia').set(lic); data.config.licVence=l.val().vence; } else {$('login-msg').innerText='Licencia no válida';return;}} else {$('login-msg').innerText='Licencia vencida, pon nueva';return;}}
+ storeCode=s; config=data.config; productos=data.productos||[]; ventas=data.ventas||[]; rol='jefe';
+ $('login').style.display='none'; $('app').style.display='block'; verMod('venta'); }catch(e){$('login-msg').innerText=e.message;}
 }
 function logout(){ location.reload(); }
-</script>
-<script>
-let adminVentasCache=[];
-async function cargarAdmin(){
-  if(rol!=='admin')return; initPrecios();
-  $('admin-stats').innerHTML='Cargando...';
-  if($('admin-fecha')) $('admin-fecha').innerText=new Date().toLocaleString();
-  try{
-    let snap=await rtdb.ref('tiendas').once('value');
-    adminCache=snap.val()||{};
-    let total=Object.keys(adminCache).length, vencidas=0, porVencer=0, activas=0;
-    Object.values(adminCache).forEach(d=>{
-      let vence=d.config?.licVence||0; let dias=Math.ceil((vence-Date.now())/86400000);
-      if(dias<0) vencidas++; else if(dias<=5) porVencer++; else activas++;
-    });
-    $('adm-total').innerText=total; $('adm-activas').innerText=activas; $('adm-vencidas').innerText=vencidas; $('adm-porvencer').innerText=porVencer;
-    $('admin-stats').innerHTML=`Total: ${total} | Activas: ${activas} | Vencidas: ${vencidas}`;
-    renderAdminList($('adm-search')?.value||""); cargarBalance();
-  }catch(e){$('admin-stats').innerHTML='Error: '+e.message;}
-}
-async function cargarBalance(){
-  try{
-    let snap=await rtdb.ref('adminVentas').once('value'); let ventas=snap.val()||{}; let arr=Object.values(ventas); adminVentasCache=arr;
-    let total=arr.reduce((s,v)=>s+(v.precio||0),0); let mes=new Date().getMonth(); let totalMes=arr.filter(v=>new Date(v.fecha).getMonth()===mes).reduce((s,v)=>s+(v.precio||0),0);
-    let c15=arr.filter(v=>v.dias===15).length; let c30=arr.filter(v=>v.dias===30).length; let c90=arr.filter(v=>v.dias===90).length; let c365=arr.filter(v=>v.dias===365).length;
-    $('bal-total').innerText='$'+total.toLocaleString(); $('bal-mes').innerText='$'+totalMes.toLocaleString(); $('bal-15d').innerText=c15; $('bal-otros').innerText=`${c30} / ${c90} / ${c365}`;
-    $('bal-lista').innerHTML=arr.slice(-10).reverse().map(v=>`💳 ${new Date(v.fecha).toLocaleDateString()} - ${v.tienda} - ${v.plan} - $${(v.precio||0).toLocaleString()} ${v.tipo==='renovacion'?'(Renov)':''}`).join('<br>')||'Sin ventas';
-  }catch(e){}
-}
-function generarLicencia(){
-  if(rol!=='admin'){alert('Solo ADMIN');return;}
-  let store=($('gen-store').value||'').trim().toUpperCase(); let nombreTienda=($('gen-nombre-tienda').value||'').trim(); let dueno=($('gen-dueno').value||'').trim(); let whatsapp=($('gen-whatsapp').value||'').trim(); let ciudad=($('gen-ciudad').value||'').trim(); let passJefe=($('gen-pass-jefe').value||'1234').trim(); let dias=Number($('gen-dias').value||30); let notas=($('gen-notas').value||'').trim();
-  if(!store){alert('Pon Usuario Ej: PATIA2');return;} if(!nombreTienda){alert('Pon Nombre Tienda');return;} if(!dueno){alert('Pon Dueño responsable');return;}
-  let rand=Math.random().toString(36).substring(2,4).toUpperCase()+Math.random().toString(36).substring(2,4).toUpperCase(); let codigo='PATIA-'+store+'-'+rand; let vence=Date.now()+dias*86400000; let planTxt=dias===15?'15d PRUEBA':dias===30?'1 MES':dias===90?'3 MESES':'1 AÑO'; let precio=preciosAdmin[String(dias)]||0;
-  let cfgTienda={storeCode:store,consec:1,licencia:codigo,licVence:vence,pass_jefe:passJefe,bloqueada:false};
-  rtdb.ref('licencias/'+codigo).set({tienda:store,nombreTienda:nombreTienda,dueno:dueno,whatsapp:whatsapp,ciudad:ciudad,notas:notas,vence,activa:true,creada:Date.now(),plan:planTxt,dias:dias}).then(()=>{
-    return rtdb.ref('tiendas/'+store).set({productos:[],fiados:[{nombre:"Consumidor Final",codigo:"222222",deuda:0}],ventas:[],gastos:[],compras:[],empleados:[],cajas:[],solicitudes:[],notificaciones:[],config:cfgTienda,ultSync:Date.now(),nombreTienda:nombreTienda,dueno:dueno,whatsapp:whatsapp,ciudad:ciudad,notas:notas,plan:planTxt,dias:dias});
-  }).then(()=>{ return rtdb.ref('adminVentas').push({tienda:store,nombreTienda,dueno,whatsapp,ciudad,plan:planTxt,dias,precio,fecha:Date.now(),tipo:'creacion'}); }).then(()=>{
-    let info=`✅ CREADA\nUsuario: ${store}\nTienda: ${nombreTienda}\nDueño: ${dueno}\nWA: ${whatsapp}\nLugar: ${ciudad}\nClave: ${passJefe}\nPlan: ${planTxt} $${precio.toLocaleString()}\nLic: ${codigo}\nVence: ${new Date(vence).toLocaleDateString()}`;
-    $('lic-generada').style.display='block'; $('lic-generada').innerText=info;
-    $('gen-store').value=''; $('gen-nombre-tienda').value=''; $('gen-dueno').value=''; $('gen-whatsapp').value=''; $('gen-ciudad').value=''; $('gen-notas').value='';
-    cargarAdmin();
-  }).catch(e=>alert(e.message));
-}
-function renderAdminList(filtro=""){
-  let lista=Object.entries(adminCache);
-  if(filtro){let f=filtro.toLowerCase(); lista=lista.filter(([code,d])=>code.toLowerCase().includes(f)||(d.nombreTienda||"").toLowerCase().includes(f)||(d.dueno||"").toLowerCase().includes(f)||(d.whatsapp||"").includes(f));}
-  $('admin-tiendas').innerHTML=lista.map(([code,data])=>{
-    let cfg=data.config||{}; let vence=cfg.licVence||0; let dias=Math.ceil((vence-Date.now())/86400000);
-    let color=dias<0?"#ef4444":dias<=5?"#fb923c":dias<=15?"#facc15":"#22c55e";
-    let txt=dias<0?`VENCIDA ${Math.abs(dias)}d`:dias===0?"HOY":`${dias}d - ${data.plan||''}`;
-    let sync=data.ultSync? Math.round((Date.now()-data.ultSync)/3600000)+"h":"Nunca"; let offline=data.ultSync && (Date.now()-data.ultSync)>86400000;
-    return `<div class="card" style="border-left:5px solid ${color};opacity:${cfg.bloqueada?'0.5':'1'}">
-      <div style="display:flex;justify-content:space-between"><b style="font-size:16px">${code}</b><span style="background:${color};color:${color==='#facc15'?'#000':'#fff'};padding:4px 10px;border-radius:20px;font-size:11px;font-weight:900">${txt}</span></div>
-      <b style="color:#facc15">${data.nombreTienda||'--'}</b><br>
-      <small style="color:#94a3b8">👤 Dueño: ${data.dueno||'--'} | 📲 ${data.whatsapp||'--'}<br>📍 ${data.ciudad||'--'} | Sync: ${sync} ${offline?'🔴':'🟢'} ${cfg.bloqueada?'🔒 BLOQUEADA':''}</small><br>
-      ${data.notas?`<small style="background:#422006;padding:4px 8px;border-radius:8px;display:block;margin-top:4px">📝 ${data.notas}</small>`:''}
-      <div style="background:#0f172a;padding:8px;border-radius:8px;margin-top:8px;display:flex;justify-content:space-between;align-items:center">
-        <span style="font-size:12px">🔑 Clave Jefe: <b style="color:#facc15;filter:blur(5px);cursor:pointer" onclick="this.style.filter='none'">${cfg.pass_jefe||'1234'}</b> <small style="color:#94a3b8">(toca para ver)</small></span>
-        <button onclick="copiarTexto('${cfg.pass_jefe||'1234'}')" style="width:auto;background:#334155;padding:6px 10px;font-size:10px">📋</button>
-      </div>
-      <small style="color:#64748b;font-size:10px">Lic: ${(cfg.licencia||'').slice(0,20)}... | Vence: ${vence?new Date(vence).toLocaleDateString():'--'}</small>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4px;margin-top:10px">
-        <button onclick="renovarLicencia('${code}',15)" style="background:#334155;padding:8px;font-size:10px">+15d</button>
-        <button onclick="renovarLicencia('${code}',30)" style="background:#22c55e;color:#000;padding:8px;font-size:10px">+1M</button>
-        <button onclick="renovarLicencia('${code}',90)" style="background:#3b82f6;padding:8px;font-size:10px">+3M</button>
-        <button onclick="renovarLicencia('${code}',365)" style="background:#facc15;color:#000;padding:8px;font-size:10px">+1A</button>
-      </div>
-      <div style="display:flex;gap:6px;margin-top:6px">
-        <button onclick="copiarTexto('🏪 ${data.nombreTienda||code}\\n👤 Dueño: ${data.dueno||''}\\n👤 Usuario: ${code}\\n🔑 Clave: ${cfg.pass_jefe||'1234'}\\n📲 WA: ${data.whatsapp||''}\\n📍 ${data.ciudad||''}\\n📄 Lic: ${cfg.licencia||''}\\n⏰ Vence: ${vence?new Date(vence).toLocaleDateString():''} (${dias}d)\\n💳 Plan: ${data.plan||''}')" style="flex:1;background:#facc15;color:#000;padding:8px;font-size:11px">📋 Copiar para WA</button>
-        <button onclick="if('${data.whatsapp||''}') window.open('https://wa.me/${(data.whatsapp||'').replace(/[^0-9]/g,'')}')" style="flex:0.5;background:#25D366;color:#fff;padding:8px">💬</button>
-        <button onclick="toggleBloqueo('${code}')" style="flex:0.5;background:${cfg.bloqueada?'#22c55e':'#334155'};padding:8px">${cfg.bloqueada?'🔓':'🔒'}</button>
-        <button onclick="if(confirm('¿Borrar ${code}?'))rtdb.ref('tiendas/${code}').remove().then(()=>cargarAdmin())" style="flex:0.5;background:#7f1d1d;padding:8px">🗑️</button>
-      </div>
-    </div>`;
-  }).join('')||'<div class="card">Sin tiendas</div>';
-}
-function renovarLicencia(code,dias){
-  if(!confirm(`¿Renovar ${code} +${dias} días?`)) return;
-  let d=adminCache[code]; let actual=d.config?.licVence||Date.now(); if(actual<Date.now()) actual=Date.now();
-  let nuevo=actual+dias*86400000; let precio=preciosAdmin[String(dias)]||0; let planTxt=dias===15?'15d':dias===30?'1 MES':dias===90?'3 MESES':'1 AÑO';
-  rtdb.ref('tiendas/'+code+'/config/licVence').set(nuevo).then(()=>{
-    if(d.config?.licencia) rtdb.ref('licencias/'+d.config.licencia+'/vence').set(nuevo);
-    return rtdb.ref('adminVentas').push({tienda:code,nombreTienda:d.nombreTienda||code,dueno:d.dueno||'',plan:planTxt,dias,precio,fecha:Date.now(),tipo:'renovacion'});
-  }).then(()=>{alert(`✅ ${code} renovada +${dias}d $${precio.toLocaleString()}`); cargarAdmin();});
-}
-function toggleBloqueo(code){ let b=adminCache[code].config?.bloqueada; rtdb.ref('tiendas/'+code+'/config/bloqueada').set(!b).then(()=>{alert(b?'🔓 Desbloqueada':'🔒 Bloqueada'); cargarAdmin();});}
-function copiarTexto(t){navigator.clipboard.writeText(t).then(()=>alert('📋 Copiado')).catch(()=>{prompt('Copia manual:',t);});}
-function addProd(){} function cobrar(){} function buscarProd(){}
+function generarLicencia(){ if(rol!=='admin'){alert('Solo ADMIN');return;} let store=($('gen-store').value||'').trim().toUpperCase(); let nombreTienda=($('gen-nombre-tienda').value||'').trim(); let dueno=($('gen-dueno').value||'').trim(); let whatsapp=($('gen-whatsapp').value||'').trim(); let ciudad=($('gen-ciudad').value||'').trim(); let passJefe=($('gen-pass-jefe').value||'1234').trim(); let dias=Number($('gen-dias').value||30); let notas=($('gen-notas').value||'').trim(); if(!store||!nombreTienda||!dueno){alert('Falta Usuario/Nombre/Dueño');return;} let rand=Math.random().toString(36).substring(2,4).toUpperCase()+Math.random().toString(36).substring(2,4).toUpperCase(); let codigo='PATIA-'+store+'-'+rand; let vence=Date.now()+dias*86400000; let planTxt=dias===15?'15d PRUEBA':dias===30?'1 MES':dias===90?'3 MESES':'1 AÑO'; let precio=preciosAdmin[String(dias)]||0; let cfgTienda={storeCode:store,consec:1,licencia:codigo,licVence:vence,pass_jefe:passJefe,bloqueada:false}; rtdb.ref('licencias/'+codigo).set({tienda:store,nombreTienda,dueno,whatsapp,ciudad,notas,vence,activa:true,creada:Date.now(),plan:planTxt,dias}).then(()=>{return rtdb.ref('tiendas/'+store).set({productos:[],fiados:[{nombre:"Consumidor Final",codigo:"222222",deuda:0}],ventas:[],gastos:[],compras:[],empleados:[],cajas:[],solicitudes:[],notificaciones:[],config:cfgTienda,ultSync:Date.now(),nombreTienda,dueno,whatsapp,ciudad,notas,plan:planTxt,dias});}).then(()=>{return rtdb.ref('adminVentas').push({tienda:store,nombreTienda,dueno,plan:planTxt,dias,precio,fecha:Date.now(),tipo:'creacion'});}).then(()=>{let info=`✅ CREADA\nUsuario: ${store}\nTienda: ${nombreTienda}\nDueño: ${dueno}\nWA: ${whatsapp}\nLugar: ${ciudad}\nClave: ${passJefe}\nPlan: ${planTxt} $${precio.toLocaleString()}\nLic: ${codigo}\nVence: ${new Date(vence).toLocaleDateString()}`; $('lic-generada').style.display='block'; $('lic-generada').innerText=info; $('gen-store').value=''; $('gen-nombre-tienda').value=''; $('gen-dueno').value=''; $('gen-whatsapp').value=''; $('gen-ciudad').value=''; $('gen-notas').value=''; cargarAdmin(); cargarBalance();});}
+  <script>
+async function cargarAdmin(){ if(rol!=='admin')return; initPrecios(); $('admin-stats').innerHTML='Cargando...'; if($('admin-fecha')) $('admin-fecha').innerText=new Date().toLocaleString(); try{ let snap=await rtdb.ref('tiendas').once('value'); adminCache=snap.val()||{}; let total=Object.keys(adminCache).length, vencidas=0, porVencer=0, activas=0; Object.values(adminCache).forEach(d=>{ let v=d.config?.licVence||0; let dias=Math.ceil((v-Date.now())/86400000); if(dias<0) vencidas++; else if(dias<=5) porVencer++; else activas++; }); $('adm-total').innerText=total; $('adm-activas').innerText=activas; $('adm-vencidas').innerText=vencidas; $('adm-porvencer').innerText=porVencer; $('admin-stats').innerHTML=`Total:${total} Activas:${activas} Vencidas:${vencidas}`; renderAdminList($('adm-search')?.value||""); cargarBalance(); }catch(e){$('admin-stats').innerHTML=e.message;} }
+async function cargarBalance(){ try{ let snap=await rtdb.ref('adminVentas').once('value'); let ventas=snap.val()||{}; let arr=Object.values(ventas); let total=arr.reduce((s,v)=>s+(v.precio||0),0); let mes=new Date().getMonth(); let totalMes=arr.filter(v=>new Date(v.fecha).getMonth()===mes).reduce((s,v)=>s+(v.precio||0),0); let c15=arr.filter(v=>v.dias===15).length; let c30=arr.filter(v=>v.dias===30).length; let c90=arr.filter(v=>v.dias===90).length; let c365=arr.filter(v=>v.dias===365).length; if($('bal-total')){$('bal-total').innerText='$'+total.toLocaleString(); $('bal-mes').innerText='$'+totalMes.toLocaleString(); $('bal-15d').innerText=c15; $('bal-otros').innerText=`${c30}/${c90}/${c365}`; $('bal-lista').innerHTML=arr.slice(-10).reverse().map(v=>`💳 ${new Date(v.fecha).toLocaleDateString()} - ${v.tienda} - ${v.plan} - $${(v.precio||0).toLocaleString()} ${v.tipo==='renovacion'?'(Renov)':''}`).join('<br>')||'Sin ventas';}}catch(e){} }
+function renderAdminList(filtro=""){ let lista=Object.entries(adminCache); if(filtro){let f=filtro.toLowerCase(); lista=lista.filter(([c,d])=>c.toLowerCase().includes(f)||(d.nombreTienda||"").toLowerCase().includes(f)||(d.dueno||"").toLowerCase().includes(f)||(d.whatsapp||"").includes(f));} $('admin-tiendas').innerHTML=lista.map(([code,data])=>{ let cfg=data.config||{}; let vence=cfg.licVence||0; let dias=Math.ceil((vence-Date.now())/86400000); let color=dias<0?"#ef4444":dias<=5?"#fb923c":dias<=15?"#facc15":"#22c55e"; let txt=dias<0?`VENCIDA ${Math.abs(dias)}d`:dias===0?"HOY":`${dias}d - ${data.plan||''}`; let sync=data.ultSync? Math.round((Date.now()-data.ultSync)/3600000)+"h":"Nunca"; return `<div class="card" style="border-left:5px solid ${color};opacity:${cfg.bloqueada?'0.5':'1'}"><div style="display:flex;justify-content:space-between"><b>${code}</b><span style="background:${color};color:${color==='#facc15'?'#000':'#fff'};padding:4px 10px;border-radius:20px;font-size:11px;font-weight:900">${txt}</span></div><b style="color:#facc15">${data.nombreTienda||'--'}</b><br><small style="color:#94a3b8">👤 ${data.dueno||'--'} | 📲 ${data.whatsapp||'--'}<br>📍 ${data.ciudad||'--'} | Sync:${sync}</small>${data.notas?`<small style="background:#422006;padding:4px 8px;border-radius:8px;display:block;margin-top:4px">📝 ${data.notas}</small>`:''}<div style="background:#0f172a;padding:8px;border-radius:8px;margin-top:8px;display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px">🔑 Clave: <b style="color:#facc15;filter:blur(5px);cursor:pointer" onclick="this.style.filter='none'">${cfg.pass_jefe||'1234'}</b> <small style="color:#94a3b8">(toca)</small></span><button onclick="copiarTexto('${cfg.pass_jefe||'1234'}')" style="width:auto;background:#334155;padding:6px 10px;font-size:10px">📋</button></div><div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4px;margin-top:8px"><button onclick="renovarLicencia('${code}',15)" style="background:#334155;padding:8px;font-size:10px">+15d</button><button onclick="renovarLicencia('${code}',30)" style="background:#22c55e;color:#000;padding:8px;font-size:10px">+1M</button><button onclick="renovarLicencia('${code}',90)" style="background:#3b82f6;padding:8px;font-size:10px">+3M</button><button onclick="renovarLicencia('${code}',365)" style="background:#facc15;color:#000;padding:8px;font-size:10px">+1A</button></div><div style="display:flex;gap:6px;margin-top:6px"><button onclick="copiarTexto('🏪 ${data.nombreTienda||code}\\n👤 Dueño:${data.dueno||''}\\nUsuario:${code}\\nClave:${cfg.pass_jefe||'1234'}\\nWA:${data.whatsapp||''}\\n📍 ${data.ciudad||''}\\nLic:${cfg.licencia||''}\\nVence:${vence?new Date(vence).toLocaleDateString():''} (${dias}d)')" style="flex:1;background:#facc15;color:#000;padding:8px;font-size:11px">📋 WA</button><button onclick="toggleBloqueo('${code}')" style="flex:0.3;background:${cfg.bloqueada?'#22c55e':'#334155'};padding:8px">${cfg.bloqueada?'🔓':'🔒'}</button><button onclick="if(confirm('Borrar ${code}?'))rtdb.ref('tiendas/${code}').remove().then(()=>cargarAdmin())" style="flex:0.3;background:#7f1d1d;padding:8px">🗑️</button></div></div>`;}).join('')||'<div class="card">Sin tiendas</div>';}
+function renovarLicencia(code,dias){ if(!confirm(`¿Renovar ${code} +${dias} días?`))return; let d=adminCache[code]; let actual=d.config?.licVence||Date.now(); if(actual<Date.now()) actual=Date.now(); let nuevo=actual+dias*86400000; let precio=preciosAdmin[String(dias)]||0; let planTxt=dias===15?'15d':dias===30?'1 MES':dias===90?'3 MESES':'1 AÑO'; rtdb.ref('tiendas/'+code+'/config/licVence').set(nuevo).then(()=>{ if(d.config?.licencia) rtdb.ref('licencias/'+d.config.licencia+'/vence').set(nuevo); return rtdb.ref('adminVentas').push({tienda:code,nombreTienda:d.nombreTienda||code,dueno:d.dueno||'',plan:planTxt,dias,precio,fecha:Date.now(),tipo:'renovacion'}); }).then(()=>{alert(`✅ ${code} +${dias}d $${precio.toLocaleString()}`); cargarAdmin();});}
+function toggleBloqueo(code){ let b=adminCache[code].config?.bloqueada; rtdb.ref('tiendas/'+code+'/config/bloqueada').set(!b).then(()=>{alert(b?'Desbloqueada':'Bloqueada'); cargarAdmin();});}
+function copiarTexto(t){navigator.clipboard.writeText(t).then(()=>alert('Copiado')).catch(()=>{prompt('Copia:',t);});}
+function buscarProd(q){} function addProd(){alert('Demo add prod');} function cobrar(){alert('Demo cobrar');}
 </script></body></html>
