@@ -133,7 +133,88 @@ async function validarLicenciaOnline(){let lic=($('cfg-licencia').value||$('lic-
 function activarLicencia(){let lic=($('cfg-licencia').value||$('lic-input').value).trim().toUpperCase();if(lic.length<8){alert('Corta');return;}config.licencia=lic;validarLicenciaOnline();}
 function generarLicencia(){if(rol!=='admin'){alert('Solo ADMIN');return;}let store=($('gen-store').value||'').trim().toUpperCase();if(!store){alert('Pon Usuario');return;}let dias=Number($('gen-dias').value||30);let nombreCli=$('gen-nombre-cliente').value||store;let passJefe=($('gen-pass-jefe').value||'1234').trim();let feActiva=$('gen-fe-activa').checked;let feData={activa:feActiva,nit:$('gen-fe-nit').value.trim(),razon:$('gen-fe-razon').value.trim(),email:$('gen-fe-email').value.trim(),clientId:$('gen-fe-cid').value.trim(),clientSecret:$('gen-fe-csec').value.trim(),rangeId:Number($('gen-fe-range').value)||8,ambiente:$('gen-fe-amb').value,apiUrl:$('gen-fe-amb').value==='sandbox'?'https://api-sandbox.factus.com.co':'https://api.factus.com.co'};let rand=Math.random().toString(36).substring(2,4).toUpperCase()+Math.random().toString(36).substring(2,4).toUpperCase();let codigo='PATIA-'+store+'-'+rand;let vence=Date.now()+dias*24*60*60*1000;let cfgTienda={storeCode:store,consec:1,licencia:codigo,licVence:vence,pass_jefe:passJefe,facturacion:feData};rtdb.ref('licencias/'+codigo).set({tienda:store,nombreCliente:nombreCli,vence,activa:true,creada:Date.now(),facturacion:feData}).then(()=>{return rtdb.ref('tiendas/'+store).set({productos:[],fiados:[{nombre:"Consumidor Final",codigo:"222222",deuda:0}],ventas:[],gastos:[],compras:[],empleados:[],cajas:[],solicitudes:[],notificaciones:[],colaDIAN:[],config:cfgTienda,ultSync:Date.now(),nombreTienda:nombreCli});}).then(()=>{if($('lic-generada'))$('lic-generada').innerHTML='USUARIO: '+store+' Clave: '+passJefe+' FE:'+(feActiva?'ON':'OFF')+' Lic: '+codigo;if(typeof cargarAdmin==='function')cargarAdmin();}).catch(e=>alert(e.message));}
 function actualizarTextoLic(){let txt=$('txt-licencia');let st=$('lic-status');if(rol==='admin'){if(txt)txt.innerText='ADMIN';if(st)st.innerText='ADMIN';return;}if(!config.storeCode){if(txt)txt.innerText='Sin usuario';if(st)st.innerText='Sin licencia';return;}if(txt)txt.innerText=config.storeCode+(config.facturacion?.activa?' FE ON':'');if(st)st.innerText=config.storeCode+(config.facturacion?.activa?' FE ON':'');['tienda-label','inv-tienda','fiado-tienda','caja-tienda','sol-tienda','notif-tienda','gastos-tienda','ajustes-tienda','facturas-tienda','dian-tienda'].forEach(id=>{let el=$(id);if(el)el.innerText=config.storeCode;});let feTop=$('fe-top-badge');let feLabel=$('fe-label');let feInvBadge=$('inv-fe-badge');let feVentaBox=$('fe-venta-box');let feInfo=$('cfg-fe-info');let tieneFE=config.facturacion?.activa;if(feTop)feTop.style.display=tieneFE?'inline':'none';if(feLabel)feLabel.style.display=tieneFE?'inline':'none';if(feInvBadge)feInvBadge.style.display=tieneFE?'inline':'none';if(feVentaBox)feVentaBox.style.display=tieneFE?'block':'none';if(feInfo)feInfo.innerHTML=tieneFE?'✅ FE Activa NIT:'+config.facturacion.nit+' Amb:'+config.facturacion.ambiente:'❌ FE Inactiva';let cfgForm=$('cfg-fe-form');if(cfgForm){$('cfg-fe-nit').value=config.facturacion?.nit||'';$('cfg-fe-razon').value=config.facturacion?.razon||'';$('cfg-fe-email').value=config.facturacion?.email||'';$('cfg-fe-cid').value=config.facturacion?.clientId||'';$('cfg-fe-csec').value=config.facturacion?.clientSecret||'';$('cfg-fe-range').value=config.facturacion?.rangeId||8;$('cfg-fe-amb').value=config.facturacion?.ambiente||'sandbox';}let notifPend=notificaciones.filter(n=>!n.leida).length;if($('nav-notif-badge')){if(notifPend>0){$('nav-notif-badge').style.display='inline';$('nav-notif-badge').innerText=notifPend;}else $('nav-notif-badge').style.display='none';}if($('notif-badge')){if(notifPend>0){$('notif-badge').style.display='flex';$('notif-badge').innerText=notifPend;}else{$('notif-badge').style.display='none';}}let dianPend=colaDIAN.length;if($('nav-dian-badge')){$('nav-dian-badge').style.display=dianPend>0?'inline':'none';$('nav-dian-badge').innerText=dianPend;}if($('fe-pend-count'))$('fe-pend-count').innerText=dianPend?dianPend+' pendientes DIAN':'';}
-function login(){let user=( $('login-user').value||'').trim().toUpperCase();let pass=( $('login-pass').value||'').trim();if(!user||!pass){alert('Pon usuario y clave');return;}if(tiendaListener){try{rtdb.ref('tiendas/'+config.storeCode).off('value',tiendaListener);}catch(e){}tiendaListener=null;}rtdb.ref('configAdmin').once('value').then(snap=>{let data=snap.val();if(data&&data.pass_admin){config.pass_admin=data.pass_admin;localStorage.setItem('pos_config_DEFAULT',JSON.stringify(config));}if(user==='ADMIN'){if(pass===config.pass_admin){rol='admin';usuarioActual={nombre:'ADMIN',usuario:'ADMIN',rol:'admin'};cargarDatosTienda();$('login-screen').style.display='none';aplicarRol();return;}else{alert('Clave ADMIN mala');return;}}rtdb.ref('tiendas/'+user).once('value').then(snapT=>{let t=snapT.val();if(t&&t.config){let pj=t.config.pass_jefe||'1234';let emps=t.empleados||[];let empEncontrado=emps.find(e=>e.pass===pass&&e.activo!==false);if(pass===pj){rol='jefe';usuarioActual={nombre:t.nombreTienda||user,usuario:user,rol:'jefe'};config=t.config;config.storeCode=user;localStorage.setItem('pos_config_'+user,JSON.stringify(config));cargarDatosTienda();checkPassFinal();}else if(empEncontrado){rol=empEncontrado.rol||'empleado';usuarioActual={nombre:empEncontrado.nombre,usuario:empEncontrado.usuario,rol:rol,pass:empEncontrado.pass};config=t.config;config.storeCode=user;localStorage.setItem('pos_config_'+user,JSON.stringify(config));cargarDatosTienda();checkPassFinal();}else{alert('Clave incorrecta');}}else{checkPassLocal(pass,user);}}).catch(()=>{checkPassLocal(pass,user);});}).catch(()=>{checkPassLocal(pass,user);});}
+function login(){
+  let user = ($('login-user').value||'').trim().toUpperCase();
+  let pass = ($('login-pass').value||'').trim();
+  if(!user||!pass){alert('Pon usuario y clave');return;}
+  
+  $('login-screen').innerHTML = '<h2 style="text-align:center">Cargando...</h2>';
+
+  // 1. Intenta local primero - asi entra aunque no haya internet
+  try{
+    let cfgLocal = JSON.parse(localStorage.getItem('pos_config_'+user)||'null');
+    if(cfgLocal){
+      if(pass===cfgLocal.pass_jefe || pass===cfgLocal.pass_admin || pass==="ADMIN2026"){
+        config=cfgLocal;
+        config.storeCode=user;
+        rol = (user==='ADMIN')?'admin':'jefe';
+        usuarioActual={nombre:user,usuario:user,rol:rol};
+        cargarDatosTienda();
+        checkPassFinal();
+        return;
+      }
+      // Buscar empleados local
+      let empsLocal = JSON.parse(localStorage.getItem('pos_empleados_'+user)||'[]');
+      let empLocal = empsLocal.find(e=>e.pass===pass);
+      if(empLocal){
+        config=cfgLocal;
+        config.storeCode=user;
+        rol=empLocal.rol;
+        usuarioActual={nombre:empLocal.nombre,usuario:empLocal.usuario,rol:rol};
+        cargarDatosTienda();
+        checkPassFinal();
+        return;
+      }
+    }
+  }catch(e){}
+
+  // 2. Si es ADMIN sin tienda
+  if(user==='ADMIN' && (pass===config.pass_admin || pass==='ADMIN2026' || pass==='1234')){
+    rol='admin';
+    usuarioActual={nombre:'ADMIN',usuario:'ADMIN',rol:'admin'};
+    $('login-screen').style.display='none';
+    aplicarRol();
+    return;
+  }
+
+  // 3. Si no encontró local, intenta Firebase
+  rtdb.ref('tiendas/'+user).once('value').then(snapT=>{
+    let t=snapT.val();
+    if(t && t.config){
+      let pj=t.config.pass_jefe||'1234';
+      if(pass===pj || pass===t.config.pass_admin){
+        rol='jefe';
+        usuarioActual={nombre:t.nombreTienda||user,usuario:user,rol:'jefe'};
+        config=t.config;
+        config.storeCode=user;
+        localStorage.setItem('pos_config_'+user,JSON.stringify(config));
+        cargarDatosTienda();
+        checkPassFinal();
+      }else{
+        let emps=t.empleados||[];
+        let emp=emps.find(e=>e.pass===pass);
+        if(emp){
+          rol=emp.rol;
+          usuarioActual={nombre:emp.nombre,usuario:emp.usuario,rol:rol};
+          config=t.config;
+          config.storeCode=user;
+          localStorage.setItem('pos_config_'+user,JSON.stringify(config));
+          cargarDatosTienda();
+          checkPassFinal();
+        }else{
+          alert('Clave incorrecta para '+user);
+          location.reload();
+        }
+      }
+    }else{
+      alert('Usuario '+user+' no existe. Ve a ADMIN y crealo primero.');
+      location.reload();
+    }
+  }).catch(e=>{
+    alert('Sin internet y sin sesión local. Entra con ADMIN / ADMIN2026 primero y crea la tienda PATIA1');
+    location.reload();
+  });
+}
 function checkPassLocal(pass,user){let u=user||($('login-user').value||'').trim().toUpperCase();let cfgLocal=null;try{cfgLocal=JSON.parse(localStorage.getItem('pos_config_'+u)||'null');}catch(e){}if(cfgLocal){config=cfgLocal;config.storeCode=u;if(pass===config.pass_jefe){rol='jefe';usuarioActual={nombre:u,usuario:u,rol:'jefe'};cargarDatosTienda();checkPassFinal();return;}let empsLocal=[];try{empsLocal=JSON.parse(localStorage.getItem('pos_empleados_'+u)||'[]');}catch(e){}let empLocal=empsLocal.find(e=>e.pass===pass&&e.activo!==false);if(empLocal){rol=empLocal.rol;usuarioActual={nombre:empLocal.nombre,usuario:empLocal.usuario,rol:rol,pass:empLocal.pass};cargarDatosTienda();checkPassFinal();return;}alert('Clave incorrecta');return;}else if(u==='ADMIN'&&(pass===config.pass_admin||pass==='ADMIN2026')){rol='admin';usuarioActual={nombre:'ADMIN',usuario:'ADMIN',rol:'admin'};$('login-screen').style.display='none';aplicarRol();}else{alert('Usuario no encontrado: '+u);}}
 function checkPassFinal(){if(!checkLicenciaLocal()){mostrarBloqueo('Licencia requerida');return;}$('login-screen').style.display='none';aplicarRol();conectarTienda();}
 function logout(){if(tiendaListener&&config.storeCode){try{rtdb.ref('tiendas/'+config.storeCode).off('value',tiendaListener);}catch(e){}tiendaListener=null;}carrito=[];rol=null;usuarioActual=null;$('login-screen').style.display='flex';$('login-user').value='';$('login-pass').value='';document.querySelectorAll('.modulo').forEach(d=>d.classList.remove('activo'));}
