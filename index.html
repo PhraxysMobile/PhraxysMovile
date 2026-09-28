@@ -251,73 +251,47 @@ async function getTokenFactus(){
 async function enviarAFactus(venta){
   let FE=config.facturacion;
   let token=await getTokenFactus();
-  
-  // Intentamos obtener el primer rango disponible del sandbox automáticamente
-  let rangeId = FE.rangeId;
+  let rangeId=FE.rangeId;
   try{
-    let rRanges = await fetch(FE.apiUrl+'/v1/numbering-ranges?filter[is_active]=1',{headers:{'Authorization':'Bearer '+token,'Accept':'application/json'}});
-    let jRanges = await rRanges.json();
-    let lista = jRanges.data || jRanges || [];
-    if(lista.length>0 && lista[0].id) rangeId = lista[0].id;
+    let r=await fetch(FE.apiUrl+'/v1/numbering-ranges?filter[is_active]=1',{headers:{'Authorization':'Bearer '+token}});
+    let j=await r.json(); let lista=j.data||j; if(lista[0]?.id) rangeId=lista[0].id;
   }catch(e){}
-
   let items=venta.productos.map(it=>{
-    let ivaRate=Number(it.iva||19);
-    let price = Number(it.precio_final||it.publico);
-    let base = ivaRate>0 ? price/(1+ivaRate/100) : price;
+    let iva=Number(it.iva||19); let price=Number(it.precio_final||it.publico);
+    let base=iva>0?price/(1+iva/100):price;
     return{
-      code_reference: String(it.codigo).substring(0,20),
-      name: String(it.nombre).substring(0,80),
-      quantity: Number(it.cant||1),
-      price: base.toFixed(2),
-      tax_rate: ivaRate==0 ? "0" : (ivaRate==5?"5":"19"),
-      unit_measure_id: 70,
-      standard_code_id: 1,
-      is_excluded: ivaRate==0 ? 1 : 0,
-      tribute_id: 1
+      code_reference:String(it.codigo).substring(0,20),
+      name:String(it.nombre).substring(0,80),
+      quantity:Number(it.cant||1),
+      discount_rate:0,
+      price:base.toFixed(2),
+      tax_rate:iva==0?"0":(iva==5?"5":"19"),
+      unit_measure_id:70,
+      standard_code_id:1,
+      is_excluded:iva==0?1:0,
+      tribute_id:1
     };
   });
-
-  let nitLimpio = (venta.clienteFE?.nit||'222222222').replace(/\D/g,'').substring(0,10);
   let payload={
-    numbering_range_id: Number(rangeId),
-    reference_code: venta.consec,
-    observation: "POS "+config.storeCode,
-    payment_form: "1",
-    payment_due_date: new Date().toISOString().split('T')[0],
-    payment_method_code: "10",
+    numbering_range_id:Number(rangeId),
+    reference_code:venta.consec,
+    observation:"POS "+config.storeCode,
+    payment_form:"1",payment_method_code:"10",
+    payment_due_date:new Date().toISOString().split('T')[0],
     customer:{
-      identification: nitLimpio,
-      dv: "3",
-      company: (venta.clienteFE?.nombre||"Consumidor Final").substring(0,80),
-      trade_name: (venta.clienteFE?.nombre||"Consumidor Final").substring(0,80),
-      names: (venta.clienteFE?.nombre||"Consumidor Final").substring(0,80),
-      address: "Calle 1 # 1-01 Patia",
-      email: venta.clienteFE?.email||"cliente@gmail.com",
-      phone: "3000000000",
-      legal_organization_id: "2",
-      tribute_id: "21",
-      identification_document_id: "3",
-      municipality_id: "524"
+      identification:(venta.clienteFE?.nit||'222222222').replace(/\D/g,'').substring(0,10),
+      dv:"3",company:venta.clienteFE?.nombre||"Consumidor",trade_name:venta.clienteFE?.nombre||"Consumidor",
+      names:venta.clienteFE?.nombre||"Consumidor",address:"Calle 1 Patia",
+      email:venta.clienteFE?.email||"cliente@gmail.com",phone:"3000000000",
+      legal_organization_id:"2",tribute_id:"21",identification_document_id:"3",municipality_id:"524"
     },
-    items: items
+    items
   };
-
-  let url=FE.apiUrl+'/v1/bills/validate';
-  let res=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token,'Accept':'application/json'},body:JSON.stringify(payload)});
+  let res=await fetch(FE.apiUrl+'/v1/bills/validate',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify(payload)});
   let data=await res.json();
-  
-  if(!res.ok){
-    let msg = data.message || "";
-    if(data.errors){
-      msg += " " + JSON.stringify(data.errors).substring(0,600);
-    }else{
-      msg += " " + JSON.stringify(data).substring(0,600);
-    }
-    throw new Error(msg);
-  }
+  if(!res.ok) throw new Error((data.message||"Error")+" "+JSON.stringify(data.data||data.errors||data).substring(0,800));
   let bill=data.data||data;
-  return{cufe:bill.cufe||bill.bill?.cufe||"CUFE",qr:bill.qr||bill.bill?.qr||"",numero:bill.number||bill.bill?.number||venta.consec};
+  return{cufe:bill.cufe||bill.bill?.cufe,qr:bill.qr||bill.bill?.qr,numero:bill.number||bill.bill?.number||venta.consec};
 }
 async function reenviarDIAN(idx){let v=colaDIAN[idx];if(!v)return;try{let bill=await enviarAFactus(v);v.cufe=bill.cufe;v.qr=bill.qr;v.estadoDIAN='APROBADA';let vr=ventas.find(x=>x.consec===v.consec);if(vr){vr.cufe=bill.cufe;vr.qr=bill.qr;vr.estadoDIAN='APROBADA';}colaDIAN.splice(idx,1);saveAll();alert('✅ '+bill.numero);renderDIAN();renderFacturas();}catch(e){alert('Error: '+e.message);}}
 function borrarDIAN(idx){if(confirm('Borrar?')){colaDIAN.splice(idx,1);saveAll();renderDIAN();}}
