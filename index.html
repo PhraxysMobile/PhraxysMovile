@@ -469,8 +469,22 @@ async function toggleCam(t){
   html5QrCode=new Html5Qrcode(id); camAbierta=true;
   try{
     await html5QrCode.start({facingMode:"environment"},{fps:10,qrbox:{width:250,height:100}},d=>{
-      if(t==='venta'){buscarProducto(d,true);}else if(t==='inv'){$('search-inv').value=d; buscarInv(d);}else{$('inv-codigo').value=d.toUpperCase();}
-      toggleCam(t);
+      let code = (d||'').trim();
+      if(!code) return;
+      if(t==='venta'){
+        // FIX VENTA: ya no depende solo de exacto, el buscarProducto tolerante lo arregla
+        buscarProducto(code,true);
+      }else if(t==='inv'){
+        $('search-inv').value=code; buscarInv(code);
+      }else{
+        $('inv-codigo').value=code.toUpperCase();
+      }
+      // Solo cierra si es venta y sí agregó (para que no se cierre si no encontró)
+      if(t==='venta'){
+        setTimeout(()=>{ if(carrito.length>0 || productos.find(p=>p.codigo.toUpperCase()===code.toUpperCase())) toggleCam(t); },300);
+      }else{
+        toggleCam(t);
+      }
     });
     setTimeout(()=>{try{let v=el.querySelector('video'); if(v&&v.srcObject){let tracks=v.srcObject.getVideoTracks(); if(tracks&&tracks[0]) currentTrack=tracks[0];}}catch(e){}},800);
   }catch(e){camAbierta=false; if(elCtrl)elCtrl.style.display='none'; alert('Camara: '+e);}
