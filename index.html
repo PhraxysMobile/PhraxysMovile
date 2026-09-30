@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>TIENDA PATIA v4.9.8 LITE PLUS FINAL FIX CAM</title>
+<title>TIENDA PATIA v4.9.9 LOGIN PHRAXYS</title>
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
@@ -53,14 +53,29 @@ button{font-weight:700; cursor:pointer; box-shadow: 0 4px 12px -2px rgba(0,0,0,.
   </div>
 </div>
 <div id="login-screen" style="position:fixed;inset:0;background: var(--bg);z-index:9999;display:flex;flex-direction:column;justify-content:center;padding:28px">
-<h1 style="color:var(--primary);text-align:center;margin:0;font-size:32px;font-weight:900">TIENDA PATÍA</h1><p style="text-align:center;color:var(--text-sec);margin:6px 0 18px;font-size:13px">v4.9.8 FIX CAM ✨</p>
+<div style="text-align:center;margin-bottom:18px">
+<h1 style="color:var(--primary);margin:0;font-size:28px;font-weight:900;letter-spacing:-0.5px;line-height:1.1">Sistema<br>Control Inventario</h1>
+<p style="margin:4px 0 0;font-size:12px;color:var(--text-sec);font-weight:700;letter-spacing:2px">by Phraxys</p>
+<p style="margin:8px 0 0;font-size:11px;color:var(--primary);font-weight:800;background:#DBEAFE;display:inline-block;padding:3px 10px;border-radius:20px">v4.9.9 LOGIN PHRAXYS ✨</p>
+</div>
 <input id="login-user" placeholder="Usuario" style="text-transform:uppercase;text-align:center;border:2px solid var(--primary);font-size:18px;background:#fff">
 <input id="login-pass" type="password" placeholder="Contraseña" style="text-align:center;border:2px solid #E2E8F0;font-size:18px;background:#fff">
-<button class="btn-verde" onclick="login()" id="btn-login" style="margin-top:16px">ENTRAR 🚀</button>
-<div style="text-align:center;margin-top:14px">
-  <a onclick="abrirOlvido()" style="color:var(--primary);font-size:13px;font-weight:800;cursor:pointer;text-decoration:underline">¿Olvidaste tu contraseña? 🔑</a>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;gap:8px">
+  <a onclick="abrirOlvido()" style="color:var(--primary);font-size:12px;font-weight:700;cursor:pointer;text-decoration:underline">¿Olvidaste tu contraseña? 🔑</a>
+  <label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--text-sec);cursor:pointer;margin:0;width:auto"><input id="check-recordar" type="checkbox" style="width:16px;height:16px;margin:0"> Recordar usuario</label>
 </div>
+<button class="btn-verde" onclick="login()" id="btn-login" style="margin-top:18px">INGRESAR 🚀</button>
 <div id="login-msg" style="text-align:center;margin-top:10px;font-size:13px;color:var(--danger)"></div>
+<div style="text-align:center;margin-top:22px">
+  <a onclick="abrirTerminos()" style="color:var(--text-sec);font-size:11px;font-weight:600;cursor:pointer;text-decoration:underline">Términos y condiciones</a>
+</div>
+</div>
+<div id="modal-terminos" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99999;justify-content:center;align-items:center;padding:16px">
+  <div class="card" style="width:100%;max-width:360px;max-height:80vh;overflow:auto">
+    <div style="display:flex;justify-content:space-between;align-items:center"><h3 style="margin:0">📄 Términos y condiciones</h3><button onclick="$('modal-terminos').style.display='none'" style="width:36px;background:#fff;border:1px solid #E2E8F0;box-shadow:none">✕</button></div>
+    <p style="font-size:13px;color:var(--text-sec);margin-top:12px">Próximamente aquí irá el texto de términos y condiciones jaja por ahora vacío.</p>
+    <button onclick="$('modal-terminos').style.display='none'" style="background:#fff;box-shadow:none">Cerrar</button>
+  </div>
 </div>
 <div id="modal-olvido" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99999;justify-content:center;align-items:center;padding:16px">
   <div class="card" style="width:100%;max-width:360px">
@@ -179,7 +194,8 @@ function login(){
   let pass=($('login-pass').value||'').trim();
   let msg=$('login-msg');
   if(!user||!pass){msg.innerText='Pon usuario y clave';return;}
-  try{ localStorage.setItem('ultimo_user', user); }catch(e){}
+  let recordar=$('check-recordar')?.checked;
+  try{ if(recordar){ localStorage.setItem('ultimo_user', user); localStorage.setItem('recordar_user','1'); }else{ localStorage.removeItem('ultimo_user'); localStorage.removeItem('recordar_user'); } }catch(e){}
   setTimeout(()=>{
     let adminU=localStorage.getItem('admin_user')||'ADMIN';
     let adminP=localStorage.getItem('admin_pass')||'ADMIN2026';
@@ -208,8 +224,13 @@ function login(){
   },200);
 }
 function cargarRecordarUsuario(){
-  try{ let ult=localStorage.getItem('ultimo_user'); if(ult && $('login-user')) $('login-user').value=ult; }catch(e){}
+  try{ 
+    let rec=localStorage.getItem('recordar_user');
+    let ult=localStorage.getItem('ultimo_user'); 
+    if(rec && ult && $('login-user')){ $('login-user').value=ult; if($('check-recordar')) $('check-recordar').checked=true; } 
+  }catch(e){}
 }
+function abrirTerminos(){ $('modal-terminos').style.display='flex'; }
 function logout(){carrito=[];rol=null;usuarioActual=null;$('login-screen').style.display='flex';document.querySelectorAll('.modulo').forEach(d=>d.classList.remove('activo')); if($('modal-perfil-jefe'))$('modal-perfil-jefe').style.display='none'; if($('modal-config-jefe'))$('modal-config-jefe').style.display='none'; if(document.getElementById('topbar')) document.getElementById('topbar').style.display='flex';}
 function aplicarRol(){
   let esAdmin=rol==='admin';
@@ -487,19 +508,12 @@ async function toggleCam(t){
     await html5QrCode.start({facingMode:"environment"},{fps:10,qrbox:{width:250,height:100}},d=>{
       let code=(d||'').trim();
       if(!code) return;
+      if(t==='venta'){ buscarProducto(code,true); }
+      else if(t==='inv'){ $('search-inv').value=code; buscarInv(code); }
+      else{ $('inv-codigo').value=code.toUpperCase(); }
       if(t==='venta'){
-        // FIX: tolerante mayúsculas/espacios
-        buscarProducto(code,true);
-      }else if(t==='inv'){
-        $('search-inv').value=code; buscarInv(code);
-      }else{
-        $('inv-codigo').value=code.toUpperCase();
-      }
-      if(t==='venta'){
-        setTimeout(()=>{ try{ if(carrito.length>0) { toggleCam(t); try{ navigator.vibrate(80);}catch(e){} } }catch(e){} },300);
-      }else{
-        toggleCam(t);
-      }
+        setTimeout(()=>{ try{ if(carrito.length>0){ toggleCam(t); try{ navigator.vibrate(80);}catch(e){} } }catch(e){} },300);
+      }else{ toggleCam(t); }
     });
     setTimeout(()=>{try{let v=el.querySelector('video'); if(v&&v.srcObject){let tracks=v.srcObject.getVideoTracks(); if(tracks&&tracks[0]) currentTrack=tracks[0];}}catch(e){}},800);
   }catch(e){camAbierta=false; if(elCtrl)elCtrl.style.display='none'; alert('Camara: '+e);}
@@ -587,6 +601,7 @@ document.getElementById('modal-perfil-jefe')?.addEventListener('click', e=>{ if(
 document.getElementById('modal-config-jefe')?.addEventListener('click', e=>{ if(e.target.id==='modal-config-jefe') e.currentTarget.style.display='none'; });
 document.getElementById('modal-soporte-chat')?.addEventListener('click', e=>{ if(e.target.id==='modal-soporte-chat') e.currentTarget.style.display='none'; });
 document.getElementById('modal-olvido')?.addEventListener('click', e=>{ if(e.target.id==='modal-olvido') e.currentTarget.style.display='none'; });
+document.getElementById('modal-terminos')?.addEventListener('click', e=>{ if(e.target.id==='modal-terminos') e.currentTarget.style.display='none'; });
 document.getElementById('gas-foto')?.addEventListener('change', e=>{ let f=e.target.files[0]; if(!f)return; let r=new FileReader(); r.onload=ev=>{ let im=$('gas-foto-preview'); if(im){im.src=ev.target.result; im.style.display='block';} }; r.readAsDataURL(f); });
 document.getElementById('comp-foto')?.addEventListener('change', e=>{ let f=e.target.files[0]; if(!f)return; let r=new FileReader(); r.onload=ev=>{ let im=$('comp-foto-preview'); if(im){im.src=ev.target.result; im.style.display='block';} }; r.readAsDataURL(f); });function renderAll(){
   document.querySelectorAll('.modulo').forEach(d=>d.classList.remove('activo'));
