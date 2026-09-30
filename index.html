@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>TIENDA PATIA v4.9.7 LITE PLUS FINAL</title>
+<title>TIENDA PATIA v4.9.8 LITE PLUS FINAL FIX CAM</title>
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
@@ -48,12 +48,12 @@ button{font-weight:700; cursor:pointer; box-shadow: 0 4px 12px -2px rgba(0,0,0,.
       <b id="perfil-nombre-tienda" style="font-size:18px">TIENDA PATIA</b><br><small id="perfil-codigo-tienda" style="color:var(--text-sec)">PATIA6</small><br><span id="perfil-rol" style="background:var(--primary);color:#fff;padding:3px 10px;border-radius:12px;font-size:10px;font-weight:800;margin-top:6px;display:inline-block">JEFE</span>
     </div>
     <div class="card" style="margin:8px 0"><small>Atendido por</small><br><b id="perfil-empleado-nombre">JEFE</b><br><small id="perfil-empleado-usuario"></small></div>
-    <div class="card" style="margin:8px 0;border:1px solid #22c55e"><b>📡 Conexión - JEFE Y EMPLEADO</b><div id="perfil-semaforo-box" style="display:flex;align-items:center;gap:8px;margin-top:6px"><span id="perfil-semaforo-dot" class="semaforo-dot" style="background:#22c55e"></span><b id="perfil-semaforo-txt">ONLINE</b><small id="perfil-semaforo-fe" style="margin-left:auto;font-size:11px;color:var(--text-sec)"></small></div><small style="color:var(--text-sec)">Semáforo ONLINE/OFFLINE + Firebase</small></div>
+    <div class="card" style="margin:8px 0;border:1px solid #22c55e"><b>📡 Conexión</b><div id="perfil-semaforo-box" style="display:flex;align-items:center;gap:8px;margin-top:6px"><span id="perfil-semaforo-dot" class="semaforo-dot" style="background:#22c55e"></span><b id="perfil-semaforo-txt">ONLINE</b><small id="perfil-semaforo-fe" style="margin-left:auto;font-size:11px;color:var(--text-sec)"></small></div><small style="color:var(--text-sec)">Semáforo ONLINE/OFFLINE + Firebase</small></div>
     <button onclick="logout()" style="background:#FEE2E2;color:#DC2626;border:none;margin-top:10px">🚪 Cerrar sesión</button>
   </div>
 </div>
 <div id="login-screen" style="position:fixed;inset:0;background: var(--bg);z-index:9999;display:flex;flex-direction:column;justify-content:center;padding:28px">
-<h1 style="color:var(--primary);text-align:center;margin:0;font-size:32px;font-weight:900">TIENDA PATÍA</h1><p style="text-align:center;color:var(--text-sec);margin:6px 0 18px;font-size:13px">v4.9.7 LITE PLUS FINAL ✨</p>
+<h1 style="color:var(--primary);text-align:center;margin:0;font-size:32px;font-weight:900">TIENDA PATÍA</h1><p style="text-align:center;color:var(--text-sec);margin:6px 0 18px;font-size:13px">v4.9.8 FIX CAM ✨</p>
 <input id="login-user" placeholder="Usuario" style="text-transform:uppercase;text-align:center;border:2px solid var(--primary);font-size:18px;background:#fff">
 <input id="login-pass" type="password" placeholder="Contraseña" style="text-align:center;border:2px solid #E2E8F0;font-size:18px;background:#fff">
 <button class="btn-verde" onclick="login()" id="btn-login" style="margin-top:16px">ENTRAR 🚀</button>
@@ -335,20 +335,17 @@ function buscarProducto(txt,esCod){
   if(!limpio){$('sugerencias').innerHTML='';return;}
   let res = productos.filter(p=>p.activo!==false);
   if(esCod){
-    // EXACTO tolerante - es el fix de ventas
     let exacto = res.find(p=>p.codigo.trim().toUpperCase()===limpio);
     if(exacto){ addCarrito(exacto); $('search').value=''; $('sugerencias').innerHTML=''; try{ navigator.vibrate(100); }catch(e){} return; }
-    // Si no exacto, intenta que contenga el código
     let contiene = res.find(p=>p.codigo.toUpperCase().includes(limpio));
     if(contiene){ addCarrito(contiene); $('search').value=''; $('sugerencias').innerHTML=''; try{ navigator.vibrate(100); }catch(e){} return; }
-    // Si aún no, déjalo en el buscador para que el jefe lo vea
     $('search').value=limpio;
     res = res.filter(p=>p.codigo.toUpperCase().includes(limpio) || p.nombre.toLowerCase().includes(limpio.toLowerCase()));
   }else{
     res = res.filter(p=>p.nombre.toLowerCase().includes(txt.toLowerCase()) || p.codigo.toLowerCase().includes(txt.toLowerCase()));
   }
   $('sugerencias').innerHTML=res.slice(0,6).map(r=>'<div class="card" onclick="addCarrito(productos.find(p=>p.codigo===\''+r.codigo+'\'))"><b>'+r.nombre+'</b><br><small>Stock: '+r.stock+'</small><br><span style="color:var(--primary)">'+fmt(r.publico)+'</span></div>').join('');
-} onclick="addCarrito(productos.find(p=>p.codigo===\''+r.codigo+'\'))"><b>'+r.nombre+'</b><br><small>Stock: '+r.stock+'</small><br><span style="color:var(--primary)">'+fmt(r.publico)+'</span></div>').join('');}
+}
 function addCarrito(p){let ex=carrito.find(x=>x.codigo===p.codigo);if(ex)ex.cant++;else carrito.push({...p,cant:1,precio_final:p.publico});renderCarrito();}
 function renderCarrito(){let tot=0;$('carrito').innerHTML=carrito.map((c,i)=>{let sub=c.precio_final*(c.cant||1);tot+=sub;return '<div class="card" style="margin:6px 0;padding:10px"><div style="display:flex;justify-content:space-between"><b>'+c.nombre+'</b><span style="color:var(--primary);font-weight:900">'+fmt(sub)+'</span></div><div style="display:flex;align-items:center;gap:8px;margin-top:6px"><button onclick="carrito['+i+'].cant=Math.max(1,carrito['+i+'].cant-1);renderCarrito()" style="width:32px;padding:6px;background:#fff;border:1px solid #E2E8F0;border-radius:8px">-</button><b>'+c.cant+'</b><button onclick="carrito['+i+'].cant++;renderCarrito()" style="width:32px;padding:6px;background:#fff;border:1px solid #E2E8F0;border-radius:8px">+</button><button onclick="carrito.splice('+i+',1);renderCarrito()" style="width:36px;margin-left:auto;background:var(--danger);color:#fff;padding:6px;border-radius:8px;border:none">X</button></div></div>';}).join('');$('total').innerText="TOTAL: "+fmt(tot);calcAbonoFiado();}
 function toggleFECliente(){let chk=$('fe-check');let box=$('fe-cliente-box');let cobroBox=$('box-fe-cobro');let badge=$('cobro-fe-badge');if(box)box.style.display=chk&&chk.checked?'block':'none';if(cobroBox)cobroBox.style.display=chk&&chk.checked?'block':'none';if(badge)badge.style.display=chk&&chk.checked?'inline':'none';}
@@ -488,19 +485,18 @@ async function toggleCam(t){
   html5QrCode=new Html5Qrcode(id); camAbierta=true;
   try{
     await html5QrCode.start({facingMode:"environment"},{fps:10,qrbox:{width:250,height:100}},d=>{
-      let code = (d||'').trim();
+      let code=(d||'').trim();
       if(!code) return;
       if(t==='venta'){
-        // FIX VENTA: ya no depende solo de exacto, el buscarProducto tolerante lo arregla
+        // FIX: tolerante mayúsculas/espacios
         buscarProducto(code,true);
       }else if(t==='inv'){
         $('search-inv').value=code; buscarInv(code);
       }else{
         $('inv-codigo').value=code.toUpperCase();
       }
-      // Solo cierra si es venta y sí agregó (para que no se cierre si no encontró)
       if(t==='venta'){
-        setTimeout(()=>{ if(carrito.length>0 || productos.find(p=>p.codigo.toUpperCase()===code.toUpperCase())) toggleCam(t); },300);
+        setTimeout(()=>{ try{ if(carrito.length>0) { toggleCam(t); try{ navigator.vibrate(80);}catch(e){} } }catch(e){} },300);
       }else{
         toggleCam(t);
       }
