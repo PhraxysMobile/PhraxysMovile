@@ -203,7 +203,7 @@ button{font-weight:700; cursor:pointer; box-shadow: 0 4px 12px -2px rgba(0,0,0,.
   <button id="nav-inv" onclick="verMod('inventario')">📦<span>Inv</span></button>
   <button id="nav-dian" onclick="verMod('dian')" style="position:relative">📋<span>DIAN</span><span id="nav-dian-badge" style="position:absolute;top:2px;right:2px;background:#22c55e;color:#fff;padding:1px 5px;border-radius:10px;font-size:8px;display:none">0</span></button>
   <button id="nav-gastos" onclick="verMod('gastos')">💸<span>Gastos</span></button>
-</div><script>
+</div> <script>
 function setTheme(t){localStorage.setItem('phraxys_theme',t);document.documentElement.setAttribute('data-theme',t);}
 let rol=null; let _old=null; try{_old=JSON.parse(localStorage.getItem('pos_config_DEFAULT')||'null');}catch(e){}
 if(!_old) _old={pass_jefe:"1234",storeCode:"",consec:1,facturacion:{activa:false}};
@@ -220,6 +220,7 @@ const toNum=v=>Number(String(v).replace(/[^0-9]/g,''))||0;
 function formatearInput(v){let n=toNum(v);if(!n)return"";return n.toLocaleString('es-CO');}
 function genConsec(){return "POS:"+String(config.consec).padStart(4,'0');}
 function actualizarConsec(){if($('consecutivo'))$('consecutivo').innerText=genConsec();if($('consec-btn'))$('consec-btn').innerText=genConsec();}actualizarConsec();
+
 function login(){
   let user=($('login-user').value||'').trim().toUpperCase();
   let pass=($('login-pass').value||'').trim();
@@ -227,13 +228,21 @@ function login(){
   if(!user||!pass){msg.innerText='Pon usuario y clave';return;}
   let recordar=$('check-recordar')?.checked;
   try{ if(recordar){ localStorage.setItem('ultimo_user', user); localStorage.setItem('recordar_user','1'); }else{ localStorage.removeItem('ultimo_user'); localStorage.removeItem('recordar_user'); } }catch(e){}
+  // LIMPIA SESION ANTERIOR
+  rol=null; usuarioActual=null;
   setTimeout(()=>{
-    let adminU=localStorage.getItem('admin_user')||'ADMIN';
-    let adminP=localStorage.getItem('admin_pass')||'ADMIN2026';
-    if(user===adminU && (pass===adminP||pass==='ADMIN2026')){
-      rol='admin'; usuarioActual={nombre:'ADMIN',usuario:user,rol:'admin'};
-      $('login-screen').style.display='none'; aplicarRol(); return;
+    let adminU=(localStorage.getItem('admin_user')||'ADMIN').trim().toUpperCase();
+    let adminP=(localStorage.getItem('admin_pass')||'ADMIN2026').trim();
+    // 1. SOLO si usuario es ADMIN entra a admin - FIX IMPORTANTE
+    if(user===adminU){
+      if(pass===adminP || pass==='ADMIN2026'){
+        rol='admin'; usuarioActual={nombre:'ADMIN',usuario:user,rol:'admin'};
+        $('login-screen').style.display='none'; aplicarRol(); return;
+      }else{
+        msg.innerText='Clave admin mala'; return;
+      }
     }
+    // 2. Si no es admin, busca tienda
     let cfgLocal=null; try{cfgLocal=JSON.parse(localStorage.getItem('pos_config_'+user)||'null');}catch(e){}
     if(cfgLocal){
       if(pass===cfgLocal.pass_jefe || pass==='1234'){
@@ -251,18 +260,37 @@ function login(){
       }catch(e){}
       msg.innerText='Clave mala'; return;
     }
-    msg.innerText='Usuario no existe';
-  },200);
+    msg.innerText='Usuario no existe - revisa código tienda';
+  },150);
 }
 function cargarRecordarUsuario(){
   try{
     let rec=localStorage.getItem('recordar_user');
     let ult=localStorage.getItem('ultimo_user');
-    if(rec && ult && $('login-user')){ $('login-user').value=ult; if($('check-recordar')) $('check-recordar').checked=true; }
+    if(rec && ult && $('login-user')){
+      $('login-user').value=ult;
+      if($('check-recordar')) $('check-recordar').checked=true;
+    }
   }catch(e){}
 }
 function abrirTerminos(){ $('modal-terminos').style.display='flex'; }
-function logout(){carrito=[];rol=null;usuarioActual=null;$('login-screen').style.display='flex';document.querySelectorAll('.modulo').forEach(d=>d.classList.remove('activo')); if($('modal-perfil-jefe'))$('modal-perfil-jefe').style.display='none'; if($('modal-config-jefe'))$('modal-config-jefe').style.display='none'; if(document.getElementById('topbar')) document.getElementById('topbar').style.display='flex';}
+
+function logout(){
+  carrito=[]; rol=null; usuarioActual=null;
+  // RESET config a default para que no se quede pegado admin
+  try{ let def=JSON.parse(localStorage.getItem('pos_config_DEFAULT')||'null'); if(def){ config=def; }else{ config={pass_jefe:"1234",storeCode:"",consec:1,facturacion:{activa:false}}; } }catch(e){ config={pass_jefe:"1234",storeCode:"",consec:1,facturacion:{activa:false}}; }
+  $('login-screen').style.display='flex';
+  document.querySelectorAll('.modulo').forEach(d=>d.classList.remove('activo'));
+  if($('modal-perfil-jefe'))$('modal-perfil-jefe').style.display='none';
+  if($('modal-config-jefe'))$('modal-config-jefe').style.display='none';
+  if($('modal-perfil-admin'))$('modal-perfil-admin').style.display='none';
+  if($('modal-ajustes-admin'))$('modal-ajustes-admin').style.display='none';
+  let topbar=document.getElementById('topbar'); if(topbar) topbar.style.display='flex';
+  let nav=document.getElementById('nav'); if(nav) nav.style.display='flex';
+  // no borramos ultimo_user para respetar recordar, pero si quieres que al salir de admin no recuerde admin, descomenta:
+  // try{ localStorage.removeItem('ultimo_user'); localStorage.removeItem('recordar_user'); if($('login-user')) $('login-user').value=''; if($('check-recordar')) $('check-recordar').checked=false; }catch(e){}
+}
+
 function aplicarRol(){
   let esAdmin=rol==='admin';
   if(esAdmin){
@@ -339,7 +367,7 @@ function actualizarTextoLic(){
   }
   let dianPend=colaDIAN.length; if($('nav-dian-badge')){$('nav-dian-badge').style.display=dianPend>0?'inline':'none';$('nav-dian-badge').innerText=dianPend;} if($('fe-pend-count'))$('fe-pend-count').innerText=dianPend?dianPend+' pendientes':''; let solPend=solicitudes.filter(s=>s.estado!=='aprobada'&&s.estado!=='rechazada').length; if($('nav-sol-badge')){$('nav-sol-badge').style.display=solPend>0?'inline':'none';$('nav-sol-badge').innerText=solPend;}
   try{ actualizarSemaforoOnline(); }catch(e){}
-}function renderSolicitudes(){
+} function renderSolicitudes(){
   let el=$('lista-solicitudes'); if(!el) return;
   let esEmpleado=rol==='empleado';
   if(esEmpleado){
