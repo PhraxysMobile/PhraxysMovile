@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>TIENDA PATIA v4.5</title>
+<title>TIENDA PATIA v4.6 LOGIN</title>
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -96,13 +96,30 @@ button:active{ transform: scale(.94)!important; }
     <div class="card" style="border:2px solid #22c55e"><h4 style="color:#22c55e">⚡ FE DIAN</h4><div id="cfg-fe-info-jefe" style="font-size:12px"></div><input id="cfg-fe-nit-jefe" placeholder="NIT"><input id="cfg-fe-razon-jefe" placeholder="Razón"><input id="cfg-fe-email-jefe" placeholder="Email"><input id="cfg-fe-cid-jefe" placeholder="Client ID"><input id="cfg-fe-csec-jefe" placeholder="Client Secret"><input id="cfg-fe-range-jefe" placeholder="Range ID" value="8"><select id="cfg-fe-amb-jefe"><option value="sandbox">PRUEBAS</option><option value="production">PRODUCCION</option></select><button class="btn-verde" style="background:#22c55e;color:#000" onclick="guardarCfgFEJefe()">Guardar FE</button><button onclick="probarConexionFE()" style="background:#fff">Probar Factus</button></div>
   </div>
 </div>
+<!-- LOGIN v4.6 MODIFICADO - SIN LETRAS VERDES + OLVIDO + RECORDAR -->
 <div id="login-screen" style="position:fixed;inset:0;background: radial-gradient(800px 400px at 30% -10%, #BFDBFE, transparent), radial-gradient(600px 300px at 90% 10%, #A7F3D0, transparent), var(--bg);z-index:9999;display:flex;flex-direction:column;justify-content:center;padding:28px">
-<h1 style="color:var(--primary);text-align:center;margin:0;font-size:32px">TIENDA PATÍA</h1><p style="text-align:center;color:var(--text-sec)">v4.5 RESPONDER ✨</p><p style="text-align:center;color:var(--accent);font-size:12px;font-weight:800">ADMIN / ADMIN2026</p>
-<input id="login-user" placeholder="PATIA1" style="text-transform:uppercase;text-align:center;border:2px solid var(--primary);font-size:18px;background:#fff">
-<input id="login-pass" type="password" placeholder="1234" style="text-align:center;border:2px solid var(--accent);font-size:18px;background:#fff">
-<button class="btn-verde" onclick="login()" id="btn-login" style="margin-top:12px">ENTRAR 🚀</button>
+<h1 style="color:var(--primary);text-align:center;margin:0;font-size:32px;font-weight:900">TIENDA PATÍA</h1><p style="text-align:center;color:var(--text-sec);margin:6px 0 18px;font-size:13px">v4.6 LOGIN ✨</p>
+<input id="login-user" placeholder="Usuario" style="text-transform:uppercase;text-align:center;border:2px solid var(--primary);font-size:18px;background:#fff" oninput="guardarRecordar()">
+<input id="login-pass" type="password" placeholder="Contraseña" style="text-align:center;border:2px solid #E2E8F0;font-size:18px;background:#fff">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding:0 4px">
+<span onclick="abrirOlvido()" style="font-size:12px;color:var(--primary);font-weight:700;cursor:pointer;text-decoration:underline">¿Olvidaste tu contraseña?</span>
+<label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-sec);cursor:pointer;font-weight:600"><input type="checkbox" id="chk-recordar" onchange="guardarRecordar()" style="width:16px;height:16px;margin:0"> Recordar usuario</label>
+</div>
+<button class="btn-verde" onclick="login()" id="btn-login" style="margin-top:16px">ENTRAR 🚀</button>
 <div id="login-msg" style="text-align:center;margin-top:10px;font-size:13px;color:var(--danger)"></div>
 <button onclick="borrarSesion()" style="background:none;color:var(--text-sec);font-size:11px;border:none;margin-top:10px;box-shadow:none">Borrar todo</button>
+</div>
+<div id="modal-olvido" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(8px);z-index:99999;justify-content:center;align-items:center;padding:16px">
+  <div class="card" style="width:100%;max-width:360px;animation:entrar.35s ease">
+    <div style="display:flex;justify-content:space-between;align-items:center"><h3 style="margin:0">🔑 Recuperar</h3><button onclick="cerrarOlvido()" style="width:36px;background:#fff;box-shadow:none;border:1px solid #E2E8F0">✕</button></div>
+    <p style="font-size:12px;color:var(--text-sec);margin:8px 0">Te envío nueva clave por WhatsApp</p>
+    <input id="olv-cedula" placeholder="Cédula">
+    <input id="olv-tienda" placeholder="Nombre de tienda">
+    <input id="olv-telefono" placeholder="WhatsApp - 310...">
+    <input id="olv-usuario" placeholder="Usuario - Ej: PATIA6" style="text-transform:uppercase">
+    <button class="btn-verde" onclick="enviarRecuperacion()" style="background:var(--primary);margin-top:8px">📤 Enviar a ADMIN</button>
+    <button onclick="cerrarOlvido()" style="background:#fff;box-shadow:none;margin-top:6px">Cancelar</button>
+  </div>
 </div><div id="mod-vender" class="modulo">
 <div class="card" style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;margin-top:8px"><div><small style="color:var(--text-sec);font-weight:700">Consecutivo</small><br><b id="consecutivo" style="font-weight:900">POS:0001</b></div><div style="text-align:right"><small style="color:var(--text-sec)">Tienda</small><br><b id="tienda-label" style="color:var(--primary)">PATIA6</b> <span id="fe-label" class="fe-badge" style="display:none">FE ON</span></div><button onclick="logout()" style="width:auto;background:#FEE2E2;color:#DC2626;padding:6px 12px;border-radius:10px;font-size:11px;border:none;box-shadow:none">Salir</button></div><span id="rol-label" style="display:none"></span><span id="empleado-label" style="display:none"></span>
 <div style="display:flex;gap:8px;margin-top:12px"><input id="search" placeholder="🔍 Buscar..." oninput="buscarProducto(this.value)" style="border:2px solid var(--primary);background:#fff"><button style="width:60px;background:var(--primary);color:#fff" onclick="toggleCam('venta')">📷</button></div><div id="reader-venta" class="cam-box" style="display:none"></div><div id="controls-venta" style="display:none;gap:8px;margin-top:6px"><button onclick="toggleLinterna()">🔦</button><button onclick="toggleCam('venta')">❌</button></div><div id="sugerencias"></div><div id="carrito"></div><h2 id="total" style="text-align:right;color:var(--primary);font-size:30px;font-weight:900">TOTAL: $ 0</h2>
@@ -151,8 +168,8 @@ button:active{ transform: scale(.94)!important; }
     <div id="lic-generada" style="font-weight:800;margin-top:8px;word-break:break-all;font-size:12px"></div>
   </div>
   <button onclick="abrirFormTienda()" style="position:fixed;bottom:85px;right:16px;background: linear-gradient(135deg, #2563EB, #1D4ED8);color:#fff;border-radius:50px;padding:16px 28px;z-index:85;font-weight:900;border:none;box-shadow:0 10px 25px -5px rgba(37,99,235,.5)">+ Agregar Tienda ✨</button>
-</div><div id="admin-sub-reportes" class="admin-sub" style="display:none"><div class="card"><h3>📊 Reportes</h3><div id="admin-reportes-content"></div></div></div>
-<div id="admin-sub-alertas" class="admin-sub" style="display:none"><h3 style="padding:10px">🔔 Soporte Tiendas → ADMIN</h3><div style="background:#FEF3C7;padding:10px;border-radius:12px;margin:0 10px"><small>💬 Aquí llegan los problemas que reportan jefe/empleado. Puedes responder y les llega a su perfil.</small></div><div id="admin-alertas-lista" style="padding:10px"></div></div>
+</div><div id="admin-sub-reportes" class="admin-sub" style="display:none"><div class="card"><h3>📊 Reportes + Recuperaciones</h3><div id="admin-reportes-content"></div><h4 style="margin-top:12px">🔑 Recuperaciones clave</h4><div id="admin-recuperaciones-lista"></div></div></div>
+<div id="admin-sub-alertas" class="admin-sub" style="display:none"><h3 style="padding:10px">🔔 Soporte Tiendas → ADMIN</h3><div style="background:#FEF3C7;padding:10px;border-radius:12px;margin:0 10px"><small>💬 Aquí llegan problemas y recuperaciones de clave. Puedes responder.</small></div><div id="admin-alertas-lista" style="padding:10px"></div></div>
 <div style="position:fixed;bottom:0;width:100%;background:rgba(255,255,255,.9);backdrop-filter:blur(16px);border-top:1px solid rgba(0,0,0,.05);display:flex;justify-content:space-around;padding:10px 0;z-index:80">
   <button onclick="verAdminSub('inicio')" id="adm-nav-inicio" style="flex:1;border:none;background:none;font-size:11px;color:var(--primary);font-weight:900;box-shadow:none">🏠<br>Inicio</button>
   <button onclick="verAdminSub('tiendas')" id="adm-nav-tiendas" style="flex:1;border:none;background:none;font-size:11px;color:var(--text-sec);box-shadow:none">🏪<br>Tiendas</button>
@@ -188,7 +205,10 @@ const toNum=v=>Number(String(v).replace(/[^0-9]/g,''))||0;
 function formatearInput(v){let n=toNum(v);if(!n)return"";return n.toLocaleString('es-CO');}
 function genConsec(){return "POS:"+String(config.consec).padStart(4,'0');}
 function actualizarConsec(){if($('consecutivo'))$('consecutivo').innerText=genConsec();if($('consec-btn'))$('consec-btn').innerText=genConsec();}actualizarConsec();
+function cargarRecordarUsuario(){try{let rec=localStorage.getItem('phraxys_recordar_user');if(rec){$('login-user').value=rec;let chk=$('chk-recordar');if(chk)chk.checked=true; setTimeout(()=>{let p=$('login-pass'); if(p)p.focus();},200);} }catch(e){}}
+function guardarRecordar(){try{let chk=$('chk-recordar');let user=($('login-user').value||'').trim().toUpperCase();if(chk&&chk.checked&&user){localStorage.setItem('phraxys_recordar_user',user);}else if(chk&&!chk.checked){localStorage.removeItem('phraxys_recordar_user');}}catch(e){}}
 function login(){
+  guardarRecordar();
   let user=($('login-user').value||'').trim().toUpperCase(); let pass=($('login-pass').value||'').trim(); let msg=$('login-msg'); let btn=$('btn-login');
   if(!user||!pass){msg.innerText='Pon usuario y clave';return;} msg.innerText='Entrando...'; if(btn)btn.disabled=true;
   setTimeout(()=>{
@@ -204,7 +224,7 @@ function login(){
     msg.innerText='Usuario no existe'; if(btn)btn.disabled=false;
   },200);
 }
-function logout(){carrito=[];rol=null;usuarioActual=null;$('login-screen').style.display='flex';$('login-user').value='';$('login-pass').value='';$('login-msg').innerText='';document.querySelectorAll('.modulo').forEach(d=>d.classList.remove('activo')); $('modal-perfil-jefe').style.display='none'; $('modal-config-jefe').style.display='none'; $('modal-soporte-chat').style.display='none'; $('modal-responder-soporte').style.display='none'; if(document.getElementById('topbar')) document.getElementById('topbar').style.display='flex';}
+function logout(){carrito=[];rol=null;usuarioActual=null;$('login-screen').style.display='flex';cargarRecordarUsuario();$('login-pass').value='';$('login-msg').innerText='';document.querySelectorAll('.modulo').forEach(d=>d.classList.remove('activo')); $('modal-perfil-jefe').style.display='none'; $('modal-config-jefe').style.display='none'; $('modal-soporte-chat').style.display='none'; $('modal-responder-soporte').style.display='none'; if($('modal-olvido'))$('modal-olvido').style.display='none'; if(document.getElementById('topbar')) document.getElementById('topbar').style.display='flex';}
 function borrarSesion(){if(confirm('Borrar todo?')){localStorage.clear();location.reload();}}
 function aplicarRol(){
   let topbar = document.getElementById('topbar');
@@ -492,8 +512,9 @@ function cargarAlertasAdmin(){
     } else {
       $('admin-alertas-lista').innerHTML=alertas.slice().reverse().map(a=>{
         let realIdx = alertas.findIndex(x=>x.id===a.id);
+        let esRecup = a.tipo==='RECUPERACION';
         let tieneRespuesta = a.respuesta? '<div style="background:#DCFCE7;padding:10px;border-radius:12px;margin-top:8px;border:1px solid #22c55e"><b>↩️ Tu respuesta:</b><br>'+a.respuesta+'<br><small>'+(a.fechaRespuesta?new Date(a.fechaRespuesta).toLocaleString():'')+'</small></div>' : '<div style="background:#FEF9C3;padding:8px;border-radius:10px;margin-top:8px;font-size:12px">⏳ Sin responder</div>';
-        return '<div class="card" style="border-left:5px solid '+(a.respuesta?'var(--accent)':'var(--warning)')+'"><div style="display:flex;justify-content:space-between"><b>🏪 '+a.tienda+' • '+(a.tiendaNombre||'')+'</b><small>'+new Date(a.fecha).toLocaleString()+'</small></div><small>👤 '+a.usuario+' ('+a.rol+')</small><div style="background:#F8FAFC;padding:10px;border-radius:12px;margin:8px 0;border:1px solid #E2E8F0"><b>💬 Problema:</b><br>'+a.mensaje+'</div>'+tieneRespuesta+'<div style="display:flex;gap:6px;margin-top:10px"><button onclick="responderSoporte('+realIdx+')" style="flex:2;background:var(--primary);color:#fff;padding:12px;border-radius:12px;border:none;font-weight:900">💬 '+(a.respuesta?'Responder de nuevo':'Responder')+'</button><button onclick="marcarSoporteLeido('+realIdx+')" style="flex:1;background:#fff;padding:10px;border-radius:12px;border:1px solid #E2E8F0">'+(a.leida?'✅':'👁️')+'</button><button onclick="borrarSoporte('+realIdx+')" style="background:#FEE2E2;color:#DC2626;padding:10px;border-radius:12px;border:none;width:46px">🗑️</button></div></div>';
+        return '<div class="card" style="border-left:5px solid '+(esRecup?'#3B82F6':(a.respuesta?'var(--accent)':'var(--warning)'))+'"><div style="display:flex;justify-content:space-between"><b>🏪 '+(a.tienda||a.usuarioRecuperar)+' '+(esRecup?'🔑 RECUPERACION':'')+'</b><small>'+new Date(a.fecha).toLocaleString()+'</small></div><small>👤 '+(a.usuario||a.tiendaNombre||'')+' ('+(a.rol||'RECUP')+')</small><div style="background:#F8FAFC;padding:10px;border-radius:12px;margin:8px 0;border:1px solid #E2E8F0"><b>💬 '+(esRecup?'Datos:':'Problema:')+'</b><br>'+(a.mensaje||('Cedula:'+a.cedula+'<br>Tienda:'+a.tiendaNombre+'<br>Tel:'+a.telefono+'<br>Usuario:'+a.usuarioRecuperar))+'</div>'+tieneRespuesta+'<div style="display:flex;gap:6px;margin-top:10px"><button onclick="responderSoporte('+realIdx+')" style="flex:2;background:var(--primary);color:#fff;padding:12px;border-radius:12px;border:none;font-weight:900">💬 '+(a.respuesta?'Responder de nuevo':'Responder')+'</button><button onclick="marcarSoporteLeido('+realIdx+')" style="flex:1;background:#fff;padding:10px;border-radius:12px;border:1px solid #E2E8F0">'+(a.leida?'✅':'👁️')+'</button><button onclick="borrarSoporte('+realIdx+')" style="background:#FEE2E2;color:#DC2626;padding:10px;border-radius:12px;border:none;width:46px">🗑️</button></div></div>';
       }).join('');
     }
   }
@@ -504,8 +525,8 @@ function responderSoporte(idx){
   let alertas=[]; try{ alertas=JSON.parse(localStorage.getItem('pos_soporte_admin')||'[]'); }catch(e){ alertas=[]; }
   let a = alertas[idx]; if(!a) return;
   soporteResponderIdx = idx;
-  $('responder-tienda-nombre').innerText = a.tienda;
-  $('responder-problema-original').innerHTML = '<b>Problema de '+a.usuario+':</b><br>'+a.mensaje;
+  $('responder-tienda-nombre').innerText = a.tienda||a.usuarioRecuperar;
+  $('responder-problema-original').innerHTML = '<b>Problema de '+(a.usuario||a.tiendaNombre)+':</b><br>'+(a.mensaje||a.telefono);
   $('responder-mensaje-admin').value = a.respuesta||'';
   $('modal-responder-soporte').style.display='flex';
 }
@@ -520,7 +541,7 @@ function enviarRespuestaSoporte(){
   alertas[soporteResponderIdx].leida = true;
   alertas[soporteResponderIdx].estado = 'respondido';
   localStorage.setItem('pos_soporte_admin', JSON.stringify(alertas));
-  let tienda = alertas[soporteResponderIdx].tienda;
+  let tienda = alertas[soporteResponderIdx].tienda||alertas[soporteResponderIdx].usuarioRecuperar;
   try{
     let keyMios = 'pos_soporte_mios_'+tienda;
     let miosGlobal = JSON.parse(localStorage.getItem(keyMios)||'[]');
@@ -542,6 +563,17 @@ function borrarSoporte(idx){
   if(!confirm('¿Borrar?')) return;
   let alertas=[]; try{ alertas=JSON.parse(localStorage.getItem('pos_soporte_admin')||'[]'); }catch(e){ alertas=[]; }
   alertas.splice(idx,1); localStorage.setItem('pos_soporte_admin', JSON.stringify(alertas)); cargarAlertasAdmin();
+}
+function abrirOlvido(){ try{ let u=$('login-user').value; if(u&&$('olv-usuario')) $('olv-usuario').value=u; }catch(e){} $('modal-olvido').style.display='flex'; }
+function cerrarOlvido(){ $('modal-olvido').style.display='none'; }
+function enviarRecuperacion(){
+  let ced=$('olv-cedula').value.trim(), tienda=$('olv-tienda').value.trim(), tel=$('olv-telefono').value.trim(), usu=$('olv-usuario').value.trim().toUpperCase();
+  if(!ced||!tienda||!tel||!usu){ alert('Completa todos: cédula, tienda, teléfono y usuario'); return; }
+  let rec={id:Date.now(), cedula:ced, tiendaNombre:tienda, telefono:tel, usuarioRecuperar:usu, tienda:usu, fecha:Date.now(), estado:'pendiente', leida:false, tipo:'RECUPERACION', mensaje:'🔑 RECUPERACION CLAVE<br>Cedula: '+ced+'<br>Tienda: '+tienda+'<br>Tel WhatsApp: '+tel+'<br>Usuario: '+usu, usuario:tienda};
+  let lista=[]; try{lista=JSON.parse(localStorage.getItem('pos_recuperaciones_admin')||'[]');}catch(e){lista=[];} lista.push(rec); localStorage.setItem('pos_recuperaciones_admin', JSON.stringify(lista));
+  let admin=[]; try{admin=JSON.parse(localStorage.getItem('pos_soporte_admin')||'[]');}catch(e){admin=[];} admin.push(rec); localStorage.setItem('pos_soporte_admin', JSON.stringify(admin));
+  try{ if(rtdb){ rtdb.ref('recuperaciones/'+usu+'/'+rec.id).set(rec); rtdb.ref('soporte/'+usu+'/'+rec.id).set(rec);} }catch(e){}
+  alert('✅ Enviado al ADMIN. Te responderá al WhatsApp '+tel+' 🚀'); cerrarOlvido(); $('olv-cedula').value=''; $('olv-tienda').value=''; $('olv-telefono').value=''; $('olv-usuario').value='';
 }function generarLicencia(){
   let store=($('gen-store').value||'').trim().toUpperCase(); if(!store){alert('Pon codigo PATIA7');return;}
   let passJefe=($('gen-pass-jefe').value||'1234').trim(); let nombreCli=$('gen-nombre-cliente').value.trim()||store; let feActiva=$('gen-fe-activa').checked; let dias=Number($('gen-dias').value)||30;
@@ -556,14 +588,21 @@ function borrarSoporte(idx){
   tiendaEditando=null; $('gen-store').disabled=false;
   setTimeout(()=>{ $('admin-form-tienda').style.display='none'; cargarAdminLista(); },800);
 }
-function cargarReportesAdmin(){ let totalVentas=0; let tiendas=Object.keys(localStorage).filter(k=>k.startsWith('pos_config_PATIA')).length; try{ Object.keys(localStorage).filter(k=>k.startsWith('pos_ventas_PATIA')).forEach(k=>{try{let v=JSON.parse(localStorage.getItem(k)||'[]'); totalVentas+=v.reduce((s,x)=>s+(x.total||0),0)}catch(e){}}); }catch(e){} if($('admin-reportes-content')) $('admin-reportes-content').innerHTML='<div style="font-size:48px;text-align:center">💰</div>Total tiendas: <b>'+tiendas+'</b><br>Ventas: <b>'+fmt(totalVentas)+'</b><br><div style="background: linear-gradient(135deg, #DCFCE7, #BBF7D0);padding:12px;border-radius:14px">Ganancia: <b>'+fmt(totalVentas*0.2)+'</b> ✨</div>'; }
+function cargarReportesAdmin(){
+  let totalVentas=0; let tiendas=Object.keys(localStorage).filter(k=>k.startsWith('pos_config_PATIA')).length;
+  try{ Object.keys(localStorage).filter(k=>k.startsWith('pos_ventas_PATIA')).forEach(k=>{try{let v=JSON.parse(localStorage.getItem(k)||'[]'); totalVentas+=v.reduce((s,x)=>s+(x.total||0),0)}catch(e){}}); }catch(e){}
+  let recs=[]; try{recs=JSON.parse(localStorage.getItem('pos_recuperaciones_admin')||'[]');}catch(e){recs=[];}
+  if($('admin-reportes-content')) $('admin-reportes-content').innerHTML='<div style="font-size:48px;text-align:center">💰</div>Total tiendas: <b>'+tiendas+'</b><br>Ventas: <b>'+fmt(totalVentas)+'</b><br><div style="background: linear-gradient(135deg, #DCFCE7, #BBF7D0);padding:12px;border-radius:14px;margin-top:8px">Ganancia: <b>'+fmt(totalVentas*0.2)+'</b> ✨</div>';
+  if($('admin-recuperaciones-lista')){ $('admin-recuperaciones-lista').innerHTML=recs.slice().reverse().map(r=>'<div class="card" style="border-left:4px solid #3B82F6"><b>🔑 '+r.usuarioRecuperar+'</b> - '+r.tiendaNombre+'<br><small>Cedula: '+r.cedula+' | Tel: '+r.telefono+'</small><br><small>'+new Date(r.fecha).toLocaleString()+'</small><br><button onclick="window.open(\'https://wa.me/57'+r.telefono.replace(/\D/g,'').slice(-10)+'?text=Hola '+encodeURIComponent(r.tiendaNombre)+' tu nueva clave para '+r.usuarioRecuperar+' es: \')" style="background:#22c55e;color:#fff;padding:8px;border-radius:10px;border:none;margin-top:6px">📲 WhatsApp</button></div>').join('')||'<small>Sin recuperaciones</small>'; }
+}
 document.getElementById('modal-perfil-jefe')?.addEventListener('click', e=>{ if(e.target.id==='modal-perfil-jefe') e.currentTarget.style.display='none'; });
 document.getElementById('modal-config-jefe')?.addEventListener('click', e=>{ if(e.target.id==='modal-config-jefe') e.currentTarget.style.display='none'; });
 document.getElementById('modal-soporte-chat')?.addEventListener('click', e=>{ if(e.target.id==='modal-soporte-chat') e.currentTarget.style.display='none'; });
 document.getElementById('modal-responder-soporte')?.addEventListener('click', e=>{ if(e.target.id==='modal-responder-soporte') e.currentTarget.style.display='none'; });
+document.getElementById('modal-olvido')?.addEventListener('click', e=>{ if(e.target.id==='modal-olvido') e.currentTarget.style.display='none'; });
 document.addEventListener('click', e=>{ let btn = e.target.closest('button,.card'); if(!btn) return; btn.style.transform='scale(.96)'; setTimeout(()=> btn.style.transform='',140); });
 function renderAll(){renderInv();renderFiado();renderBalance();renderCaja();renderFacturas();renderDIAN();renderSolicitudes();actualizarTextoLic();}
-renderAll();verSubGastos('gastos');cambiarModoCobro();actualizarTextoLic();filtrarInv('todos');verAdminSub('inicio');setTimeout(actualizarAvatarJefe,500);
+renderAll();verSubGastos('gastos');cambiarModoCobro();actualizarTextoLic();filtrarInv('todos');verAdminSub('inicio');setTimeout(()=>{actualizarAvatarJefe(); cargarRecordarUsuario();},500);
 </script>
 </body>
 </html>
