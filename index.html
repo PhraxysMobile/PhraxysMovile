@@ -329,7 +329,26 @@ function buscarInv(txt){renderInv(txt);}
 function verSubGastos(t){$('lista-gastos').style.display=t==='gastos'?'block':'none';$('lista-compras').style.display=t==='compras'?'block':'none';$('tab-gastos').style.background=t==='gastos'?'var(--warning)':'#fff';$('tab-compras').style.background=t==='compras'?'var(--warning)':'#fff';}
 function cambiarModoCobro(){let m=$('metodo').value;$('box-efectivo').style.display=m==='efectivo'?'block':'none';$('box-fiado').style.display=m==='credito'?'block':'none';$('box-transfer').style.display=m==='transferencia'?'block':'none';}
 function calcAbonoFiado(){let total=carrito.reduce((s,p)=>s+p.precio_final*(p.cant||1),0);let abono=toNum($('abono-fiado').value);if($('saldo-fiado'))$('saldo-fiado').innerText=abono?'Total: '+fmt(total)+' | Abono: '+fmt(abono)+' | Saldo: '+fmt(total-abono):'Total: '+fmt(total);}
-function buscarProducto(txt,esCod){if(!txt){$('sugerencias').innerHTML='';return;}let res=productos.filter(p=>p.activo!==false).filter(p=>esCod?p.codigo===txt.toUpperCase():p.nombre.toLowerCase().includes(txt.toLowerCase()));if(esCod&&res[0]){addCarrito(res[0]);$('search').value='';$('sugerencias').innerHTML='';return;}$('sugerencias').innerHTML=res.slice(0,6).map(r=>'<div class="card" onclick="addCarrito(productos.find(p=>p.codigo===\''+r.codigo+'\'))"><b>'+r.nombre+'</b><br><small>Stock: '+r.stock+'</small><br><span style="color:var(--primary)">'+fmt(r.publico)+'</span></div>').join('');}
+function buscarProducto(txt,esCod){
+  if(!txt){$('sugerencias').innerHTML='';return;}
+  let limpio = txt.trim().toUpperCase();
+  if(!limpio){$('sugerencias').innerHTML='';return;}
+  let res = productos.filter(p=>p.activo!==false);
+  if(esCod){
+    // EXACTO tolerante - es el fix de ventas
+    let exacto = res.find(p=>p.codigo.trim().toUpperCase()===limpio);
+    if(exacto){ addCarrito(exacto); $('search').value=''; $('sugerencias').innerHTML=''; try{ navigator.vibrate(100); }catch(e){} return; }
+    // Si no exacto, intenta que contenga el código
+    let contiene = res.find(p=>p.codigo.toUpperCase().includes(limpio));
+    if(contiene){ addCarrito(contiene); $('search').value=''; $('sugerencias').innerHTML=''; try{ navigator.vibrate(100); }catch(e){} return; }
+    // Si aún no, déjalo en el buscador para que el jefe lo vea
+    $('search').value=limpio;
+    res = res.filter(p=>p.codigo.toUpperCase().includes(limpio) || p.nombre.toLowerCase().includes(limpio.toLowerCase()));
+  }else{
+    res = res.filter(p=>p.nombre.toLowerCase().includes(txt.toLowerCase()) || p.codigo.toLowerCase().includes(txt.toLowerCase()));
+  }
+  $('sugerencias').innerHTML=res.slice(0,6).map(r=>'<div class="card" onclick="addCarrito(productos.find(p=>p.codigo===\''+r.codigo+'\'))"><b>'+r.nombre+'</b><br><small>Stock: '+r.stock+'</small><br><span style="color:var(--primary)">'+fmt(r.publico)+'</span></div>').join('');
+} onclick="addCarrito(productos.find(p=>p.codigo===\''+r.codigo+'\'))"><b>'+r.nombre+'</b><br><small>Stock: '+r.stock+'</small><br><span style="color:var(--primary)">'+fmt(r.publico)+'</span></div>').join('');}
 function addCarrito(p){let ex=carrito.find(x=>x.codigo===p.codigo);if(ex)ex.cant++;else carrito.push({...p,cant:1,precio_final:p.publico});renderCarrito();}
 function renderCarrito(){let tot=0;$('carrito').innerHTML=carrito.map((c,i)=>{let sub=c.precio_final*(c.cant||1);tot+=sub;return '<div class="card" style="margin:6px 0;padding:10px"><div style="display:flex;justify-content:space-between"><b>'+c.nombre+'</b><span style="color:var(--primary);font-weight:900">'+fmt(sub)+'</span></div><div style="display:flex;align-items:center;gap:8px;margin-top:6px"><button onclick="carrito['+i+'].cant=Math.max(1,carrito['+i+'].cant-1);renderCarrito()" style="width:32px;padding:6px;background:#fff;border:1px solid #E2E8F0;border-radius:8px">-</button><b>'+c.cant+'</b><button onclick="carrito['+i+'].cant++;renderCarrito()" style="width:32px;padding:6px;background:#fff;border:1px solid #E2E8F0;border-radius:8px">+</button><button onclick="carrito.splice('+i+',1);renderCarrito()" style="width:36px;margin-left:auto;background:var(--danger);color:#fff;padding:6px;border-radius:8px;border:none">X</button></div></div>';}).join('');$('total').innerText="TOTAL: "+fmt(tot);calcAbonoFiado();}
 function toggleFECliente(){let chk=$('fe-check');let box=$('fe-cliente-box');let cobroBox=$('box-fe-cobro');let badge=$('cobro-fe-badge');if(box)box.style.display=chk&&chk.checked?'block':'none';if(cobroBox)cobroBox.style.display=chk&&chk.checked?'block':'none';if(badge)badge.style.display=chk&&chk.checked?'inline':'none';}
