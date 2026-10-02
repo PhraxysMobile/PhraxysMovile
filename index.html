@@ -509,13 +509,100 @@ async function finalizarCobro(){
   $('img-factura').src=generarCanvasFactura(venta); $('bloque-factura').style.display='block';
   carrito.forEach(v=>{let pr=productos.find(p=>p.codigo===v.codigo);if(pr)pr.stock-=v.cant||1;}); saveAll(); carrito=[]; renderCarrito(); renderDIAN(); renderFacturas(); renderCaja(); actualizarCuadre();
 }
-async function getTokenFactus(){let FE=config.facturacion; if(!FE||!FE.clientId) throw new Error('FE no configurada por ADMIN'); let url=FE.apiUrl+'/oauth/token'; let body=new URLSearchParams(); body.append('grant_type','password'); body.append('client_id',FE.clientId); body.append('client_secret',FE.clientSecret); body.append('username','sandbox@factus.com.co'); body.append('password','sandbox2024%'); let res=await fetch(url,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:body.toString()}); let data=await res.json(); if(!data.access_token) throw new Error(JSON.stringify(data).substring(0,300)); return data.access_token;}
+async function getTokenFactus(){
+  let FE=config.facturacion;
+  if(!FE||!FE.clientId) throw new Error('FE no configurada por ADMIN');
+  let url=FE.apiUrl+'/oauth/token';
+  let body=new URLSearchParams();
+  body.append('grant_type','password');
+  body.append('client_id',FE.clientId);
+  body.append('client_secret',FE.clientSecret);
+  body.append('username','sandbox@factus.com.co');
+  body.append('password','sandbox2024%');
+  let res=await fetch(url,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:body.toString()});
+  let data=await res.json();
+  if(!data.access_token) throw new Error(JSON.stringify(data).substring(0,300));
+  return data.access_token;
+}
+
 async function enviarAFactus(venta){
-  let FE=config.facturacion; let token=await getTokenFactus(); let rangeId=FE.rangeId;
-  try{let r=await fetch(FE.apiUrl+'/v1/numbering-ranges?filter[is_active]=1',{headers:{'Authorization':'Bearer '+token}}); let j=await r.json(); let lista=j.data||j; if(lista[0]?.id) rangeId=lista[0].id;}catch(e){}
-  let items=venta.productos.map(it=>{let iva=Number(it.iva||19); let price=Number(it.precio_final||it.publico); let base=iva>0?price/(1+iva/100):price; return{code_reference:String(it.codigo).substring(0,20),name:String(it.nombre).substring(0,80),quantity:Number(it.cant||1),discount_rate:0,price:base.toFixed(2),tax_rate:iva==0?"0":(iva==5?"5":"19"),unit_measure_id:70,standard_code_id:1,is_excluded:iva==0?1:0,tribute_id:1};});
-  let payload={numbering_range_id:Number(rangeId),reference_code:venta.consec,observation:"POS "+config.storeCode+" Atendido:"+venta.atendidoPor,payment_form:"1",payment_method_code:"10",payment_due_date:new Date().toISOString().split('T')[0],customer:{identification:(venta.clienteFE?.nit||'222222222').replace(/\D/g,'').substring(0,10),dv:"3",company:venta.clienteFE?.nombre||"Consumidor",trade_name:venta.clienteFE?.nombre||"Consumidor",names:venta.clienteFE?.nombre||"Consumidor",address:"Calle 1 Patia",email:venta.clienteFE?.email||"cliente@gmail.com",phone:"3000000000",legal_organization_id:"2",tribute_id:"21",identification_document_id:"3",municipality_id:"524"},items};
-  let res=await fetch(FE.apiUrl+'/v1/bills/validate',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify(payload)}); let data=await res.json(); if(!res.ok) throw new Error((data.message||"")+" "+JSON.stringify(data).substring(0,800)); let bill=data.data||data; return{cufe:bill.cufe||bill.bill?.cufe,qr:bill.qr||bill.bill?.qr,numero:bill.number||bill.bill?.number||venta.consec};
+  let FE=config.facturacion;
+  let token=await getTokenFactus();
+  let rangeId=FE.rangeId||8;
+  // busca rango activo si no lo tienes
+  try{
+    let r=await fetch(FE.apiUrl+'/v1/numbering-ranges?filter[is_active]=1',{headers:{'Authorization':'Bearer '+token}});
+    let j=await r.json();
+    let lista=j.data||j;
+    if(lista[0]?.id) rangeId=lista[0].id;
+  }catch(e){}
+
+  let items=venta.productos.map(it=>{
+    let iva=Number(it.iva||19);
+    let price=Number(it.precio_final||it.publico);
+    let base=iva>0?price/(1+iva/100):price;
+    return{
+      code_reference:String(it.codigo).substring(0,20),
+      name:String(it.nombre).substring(0,80),
+      quantity:Number(it.cant||1),
+      discount_rate:0,
+      price:base.toFixed(2),
+      tax_rate:iva==0?"0":(iva==5?"5":"19"),
+      unit_measure_id:70,
+      standard_code_id:1,
+      is_excluded:iva==0?1:0,
+      tribute_id:1
+    };
+  });
+
+  let payload={
+    numbering_range_id:Number(rangeId),
+    reference_code:venta.consec,
+    observation:"POS "+config.storeCode+" Atendido:"+venta.atendidoPor,
+    payment_form:"1",
+    payment_method_code:"10",
+    payment_due_date:new Date().toISOString().split('T')[0],
+    customer:{
+      identification:(venta.clienteFE?.nit||'222222222').replace(/\D/g,'').substring(0,10),
+      dv:"3",
+      company:venta.clienteFE?.nombre||"Consumidor",
+      trade_name:venta.clienteFE?.nombre||"Consumidor",
+      names:venta.clienteFE?.nombre||"Consumidor",
+      address:"Calle 1 Patia",
+      email:venta.clienteFE?.email||"cliente@gmail.com",
+      phone:"3000000000",
+      legal_organization_id:"2",
+      tribute_id:"21",
+      identification_document_id:"3",
+      municipality_id:"524"
+    },
+    items
+  };
+
+  // CAMBIO A V2 - AQUÍ ESTABA TU ERROR
+  let urlV2 = FE.apiUrl + '/v1/bills/validate';
+  // si tu cuenta ya es v2 usa:
+  // let urlV2 = FE.apiUrl + '/v2/bills/validate';
+  // probamos v2 primero, si falla cae a v1
+  let res=await fetch(FE.apiUrl+'/v2/bills/validate',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+    body:JSON.stringify(payload)
+  });
+  let data=await res.json();
+  if(!res.ok){
+    // fallback v1 por si tu cuenta aún está en v1
+    let res2=await fetch(FE.apiUrl+'/v1/bills/validate',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+      body:JSON.stringify(payload)
+    });
+    data=await res2.json();
+    if(!res2.ok) throw new Error((data.message||"")+" "+JSON.stringify(data).substring(0,800));
+  }
+  if(!res.ok &&!data.data) throw new Error(JSON.stringify(data).substring(0,800));
+  let bill=data.data||data;
+  return{cufe:bill.cufe||bill.bill?.cufe,qr:bill.qr||bill.bill?.qr,numero:bill.number||bill.bill?.number||venta.consec};
 }
 async function reenviarDIAN(idx){let v=colaDIAN[idx];if(!v)return;try{let bill=await enviarAFactus(v);v.cufe=bill.cufe;v.qr=bill.qr;v.numeroDIAN=bill.numero;v.estadoDIAN='APROBADA';let vr=ventas.find(x=>x.consec===v.consec);if(vr){vr.cufe=bill.cufe;vr.qr=bill.qr;vr.numeroDIAN=bill.numero;vr.estadoDIAN='APROBADA';}colaDIAN.splice(idx,1);saveAll();alert('✅ '+bill.numero+' APROBADA ONLINE 🟢');renderDIAN();renderFacturas();}catch(e){alert('Error: '+e.message);}}
 function borrarDIAN(idx){if(confirm('Borrar?')){colaDIAN.splice(idx,1);saveAll();renderDIAN();}}
