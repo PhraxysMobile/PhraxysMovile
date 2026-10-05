@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>TIENDA PATIA v5.5 STOCK REAL</title>
+<title>TIENDA PATIA v5.6 FORMULARIOS</title>
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
@@ -35,6 +35,8 @@ button{font-weight:700; cursor:pointer; box-shadow: 0 4px 12px -2px rgba(0,0,0,.
 .grupo-fe{background:#F0FDF4;border:2px dashed #22c55e;padding:12px;border-radius:16px;margin:8px 0}
 .unidad-extra{border:1px solid #E2E8F0;padding:10px;border-radius:12px;margin:6px 0;background:#fff}
 .stock-real-box{background:linear-gradient(135deg,#EEF2FF,#DBEAFE);border:2px solid var(--primary);padding:12px;border-radius:14px;margin:8px 0;text-align:center}
+.tab-form{flex:1;padding:10px;border-radius:12px;font-size:11px;font-weight:800;border:1px solid #E2E8F0;background:#fff;box-shadow:none}
+.tab-form.activo{background:var(--primary)!important;color:#fff!important}
 </style>
 </head>
 <body>
@@ -53,14 +55,13 @@ button{font-weight:700; cursor:pointer; box-shadow: 0 4px 12px -2px rgba(0,0,0,.
       <b id="perfil-nombre-tienda" style="font-size:18px">TIENDA PATIA</b><br><small id="perfil-codigo-tienda" style="color:var(--text-sec)">PATIA6</small><br><span id="perfil-rol" style="background:var(--primary);color:#fff;padding:3px 10px;border-radius:12px;font-size:10px;font-weight:800;margin-top:6px;display:inline-block">JEFE</span>
     </div>
     <div class="card" style="margin:8px 0"><small>Atendido por</small><br><b id="perfil-empleado-nombre">JEFE</b></div>
-    <div class="card" style="margin:8px 0;border:1px solid #22c55e"><b>📡 Conexión</b><div style="display:flex;align-items:center;gap:8px;margin-top:6px"><span id="perfil-semaforo-dot" class="semaforo-dot" style="background:#22c55e"></span><b id="perfil-semaforo-txt">ONLINE</b></div></div>
     <button onclick="logout()" style="background:#FEE2E2;color:#DC2626;border:none;margin-top:10px">🚪 Cerrar sesión</button>
   </div>
 </div>
 <div id="login-screen" style="position:fixed;inset:0;background: var(--bg);z-index:9999;display:flex;flex-direction:column;justify-content:center;padding:28px">
 <div style="text-align:center;margin-bottom:18px">
 <h1 style="color:var(--primary);margin:0;font-size:28px;font-weight:900">Sistema<br>Control Inventario</h1>
-<p style="margin:8px 0 0;font-size:11px;color:var(--primary);font-weight:800;background:#DBEAFE;display:inline-block;padding:3px 10px;border-radius:20px">v5.5 STOCK REAL Kg/L/Und ✨</p>
+<p style="margin:8px 0 0;font-size:11px;color:var(--primary);font-weight:800;background:#DBEAFE;display:inline-block;padding:3px 10px;border-radius:20px">v5.6 FORMULARIOS ✨</p>
 </div>
 <input id="login-user" placeholder="Usuario" style="text-transform:uppercase;text-align:center;border:2px solid var(--primary);font-size:18px;background:#fff">
 <input id="login-pass" type="password" placeholder="Contraseña" style="text-align:center;border:2px solid #E2E8F0;font-size:18px;background:#fff">
@@ -71,14 +72,11 @@ button{font-weight:700; cursor:pointer; box-shadow: 0 4px 12px -2px rgba(0,0,0,.
 <button class="btn-verde" onclick="login()" style="margin-top:18px">INGRESAR 🚀</button>
 <div id="login-msg" style="text-align:center;margin-top:10px;font-size:13px;color:var(--danger)"></div>
 </div>
-<div id="modal-terminos" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99999;justify-content:center;align-items:center;padding:16px"><div class="card" style="width:100%;max-width:360px"><div style="display:flex;justify-content:space-between"><h3 style="margin:0">📄 Términos</h3><button onclick="$('modal-terminos').style.display='none'" style="width:36px;background:#fff;border:1px solid #E2E8F0;box-shadow:none">✕</button></div><p style="font-size:13px;color:var(--text-sec)">Próximamente.</p></div></div>
 <div id="modal-olvido" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99999;justify-content:center;align-items:center;padding:16px"><div class="card" style="width:100%;max-width:360px"><h3>🔑 Recuperar</h3><input id="olv-cedula" placeholder="Cédula"><input id="olv-tienda" placeholder="Nombre tienda"><input id="olv-telefono" placeholder="WhatsApp"><input id="olv-usuario" placeholder="Usuario" style="text-transform:uppercase"><button class="btn-verde" onclick="enviarRecuperacion()">📤 Enviar</button><button onclick="cerrarOlvido()" style="background:#fff;box-shadow:none">Cancelar</button></div></div><div id="modal-config-jefe" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(8px);z-index:200;justify-content:center;align-items:center;padding:16px">
   <div class="card" style="width:100%;max-width:380px;max-height:90vh;overflow:auto">
     <div style="display:flex;justify-content:space-between"><h3 style="margin:0">⚙️ Ajustes</h3><button onclick="$('modal-config-jefe').style.display='none'" style="width:36px;background:#fff;border:1px solid #E2E8F0;box-shadow:none">✕</button></div>
     <div class="card"><b>🏪 Mi tienda</b><input id="cfg-nombre-jefe" placeholder="Nombre tienda"><input id="cfg-tel-jefe" placeholder="Tel"><input id="cfg-dir-jefe" placeholder="Dir"><button onclick="guardarCfgTiendaJefe()" style="background:var(--primary);color:#fff;border:none">Guardar</button></div>
-    <div class="card"><b>🔑 Clave jefe</b><input id="cfg-pass-actual" type="password" placeholder="Actual"><input id="cfg-pass-nueva" type="password" placeholder="Nueva"><button onclick="cambiarPassAdminJefe()" style="background:var(--warning);border:none">Cambiar</button></div>
     <div class="card"><b>👷 Empleados</b><input id="emp-nombre-jefe" placeholder="Nombre"><input id="emp-usuario-jefe" placeholder="Usuario"><input id="emp-pass-jefe" placeholder="Clave"><select id="emp-rol-jefe"><option value="empleado">Empleado</option><option value="jefe">Jefe</option></select><button onclick="guardarEmpleadoJefe()" style="background:var(--accent);color:#fff;border:none">+ Crear</button><div id="lista-empleados-jefe"></div></div>
-    <div class="card" style="border:2px solid #22c55e;background:#F0FDF4"><b>⚡ FE DIAN</b><div id="cfg-fe-info-jefe" style="font-size:12px;background:#DCFCE7;padding:10px;border-radius:10px;margin:8px 0"></div></div>
     <button onclick="$('modal-config-jefe').style.display='none'" style="background:#fff;box-shadow:none">Cerrar</button>
   </div>
 </div>
@@ -89,98 +87,130 @@ button{font-weight:700; cursor:pointer; box-shadow: 0 4px 12px -2px rgba(0,0,0,.
 <div id="reader-venta" class="cam-box"></div><div id="controls-venta" style="display:none;gap:8px;justify-content:center"><button onclick="toggleCam('venta')" style="width:auto;background:var(--danger);color:#fff;padding:8px 14px;border-radius:20px">❌ Cerrar</button><button onclick="toggleLinterna()" style="width:auto;background:#fff;padding:8px 14px;border-radius:20px">🔦 Linterna</button></div>
 <h2 id="total" style="text-align:right;color:var(--primary);font-size:28px;font-weight:900">TOTAL: $ 0</h2>
 <div id="carrito"></div>
-<div id="fe-venta-box" class="card" style="display:none;border:2px dashed #22c55e"><h4 style="color:#22c55e;margin:0">⚡ FE DIAN</h4><label><input type="checkbox" id="fe-check" style="width:auto" onchange="toggleFECliente()"> Cliente pide FE</label><div id="fe-cliente-box" style="display:none"><input id="fe-nit-cli" placeholder="NIT" value="222222222"><input id="fe-nombre-cli" placeholder="Nombre" value="Consumidor Final"><input id="fe-email-cli" placeholder="Email"></div></div>
 <div class="venta-footer"><div style="display:flex;gap:10px"><button class="btn-amarillo" style="flex:1" onclick="abrirCobro('credito')">FIAR</button><button class="btn-verde" style="flex:2" onclick="abrirCobro('efectivo')">COBRAR ✨</button></div></div>
 </div>
-<div id="mod-inventario" class="modulo"><h3>📦 Inventario - <span id="inv-tienda"></span> <span id="inv-fe-badge" class="fe-badge" style="display:none">FE ON</span></h3><div style="display:flex;gap:8px"><button onclick="filtrarInv('todos')" style="flex:1">Todos</button><button onclick="filtrarInv('bajo')" style="flex:1">Bajo</button><button onclick="filtrarInv('vence')" style="flex:1">Vence</button></div><div class="search-wrap"><input id="search-inv" placeholder="🔍 Buscar..." oninput="buscarInv(this.value)" style="flex:2;border:2px solid var(--accent);background:#fff"><button style="width:50px;background:var(--accent);color:#fff" onclick="toggleCam('inv')">📷</button></div><div style="display:flex;gap:8px;margin:8px 0"><div class="card" style="flex:1;margin:0;padding:8px;text-align:center"><small>Total prod</small><br><b id="count-inv">0</b></div><div class="card" style="flex:1;margin:0;padding:8px;text-align:center"><small>Valor</small><br><b id="valor-inv">$0</b></div><div class="card" style="flex:1;margin:0;padding:8px;text-align:center"><small>Bajo</small><br><b id="count-bajo">0</b></div><div class="card" style="flex:1;margin:0;padding:8px;text-align:center"><small>Vence</small><br><b id="count-vence">0</b></div></div><div id="reader-inv" class="cam-box"></div><div id="controls-inv" style="display:none;gap:8px;justify-content:center"><button onclick="toggleCam('inv')" style="width:auto;background:var(--danger);color:#fff;padding:8px 14px;border-radius:20px">❌ Cerrar</button><button onclick="toggleLinterna()" style="width:auto;background:#fff;padding:8px 14px;border-radius:20px">🔦</button></div><div id="lista-inv"></div><button class="btn-flotante" onclick="abrirModalInv(-1)">+ Producto</button></div>
-<div id="mod-fiado" class="modulo"><h3>👥 Fiados - <span id="fiado-tienda"></span></h3><div class="search-wrap"><input id="search-fiado" placeholder="🔍 Buscar cliente..." oninput="buscarFiado(this.value)" style="border:2px solid var(--primary);background:#fff;flex:1"></div><div style="display:flex;gap:6px;margin:8px 0"><div class="card" style="flex:1;margin:0;padding:8px;text-align:center"><small>Total fiado</small><br><b id="fiado-total-deuda" style="color:var(--danger)">$0</b></div><div class="card" style="flex:1;margin:0;padding:8px;text-align:center"><small>Clientes</small><br><b id="fiado-count">0</b></div></div><div id="lista-fiado"></div><button class="btn-flotante" onclick="abrirModalFiado()">+ Cliente</button></div><div id="mod-facturas" class="modulo"><h3>🧾 Facturas - <span id="facturas-tienda"></span></h3><div style="display:flex;gap:6px;margin-bottom:8px"><button onclick="filtrarFacturas('todas')" style="flex:1">Todas</button><button onclick="filtrarFacturas('fe')" style="flex:1;background:#DCFCE7">FE</button><button onclick="filtrarFacturas('pos')" style="flex:1">POS</button></div><div id="lista-facturas"></div></div>
-<div id="mod-caja" class="modulo"><h3>💰 Caja - <span id="caja-tienda"></span></h3><div id="caja-estado" class="card" style="text-align:center;border:2px solid var(--primary)"></div><div class="card"><input id="caja-base" placeholder="Base hoy" oninput="this.value=formatearInput(this.value);actualizarCuadre()"><input id="caja-contado" placeholder="Caja contada" oninput="this.value=formatearInput(this.value);actualizarCuadre()"><div id="caja-cuadre-auto" style="background:#EEF2FF;padding:12px;border-radius:12px;margin:8px 0;border:1px dashed var(--primary);font-size:13px"></div><div style="display:flex;gap:8px"><button class="btn-verde" onclick="abrirCaja()">Abrir</button><button class="btn-amarillo" onclick="cerrarCaja()">Cerrar</button></div></div><div id="caja-resumen" class="card"></div><div id="caja-historial" class="card"></div></div>
-<div id="mod-solicitudes" class="modulo"><h3>📩 Solicitudes - <span id="sol-tienda"></span></h3><div id="lista-solicitudes"></div></div>
-<div id="mod-dian" class="modulo"><h3>📋 DIAN - <span id="dian-tienda"></span></h3><div id="dian-pend-lista"></div><div id="dian-aprobadas" class="card"></div></div>
-<div id="mod-gastos" class="modulo"><h3>💸 Gastos</h3><div style="display:flex;gap:8px;margin-bottom:8px"><button id="tab-gastos" onclick="verSubGastos('gastos')" style="flex:1;background:var(--warning);border:none">Gastos</button><button id="tab-compras" onclick="verSubGastos('compras')" style="flex:1;background:#fff;border:none">Compras</button></div><div id="lista-gastos"></div><div id="lista-compras" style="display:none"></div><button class="btn-flotante" onclick="abrirModalGasto()">+ Gasto</button></div>
+<div id="mod-inventario" class="modulo"><h3>📦 Inventario - <span id="inv-tienda"></span></h3><div style="display:flex;gap:8px"><button onclick="filtrarInv('todos')" style="flex:1">Todos</button><button onclick="filtrarInv('bajo')" style="flex:1">Bajo</button></div><div class="search-wrap"><input id="search-inv" placeholder="🔍 Buscar..." oninput="buscarInv(this.value)" style="flex:2;border:2px solid var(--accent);background:#fff"><button style="width:50px;background:var(--accent);color:#fff" onclick="toggleCam('inv')">📷</button></div><div style="display:flex;gap:8px;margin:8px 0"><div class="card" style="flex:1;margin:0;padding:8px;text-align:center"><small>Total</small><br><b id="count-inv">0</b></div><div class="card" style="flex:1;margin:0;padding:8px;text-align:center"><small>Valor</small><br><b id="valor-inv">$0</b></div></div><div id="reader-inv" class="cam-box"></div><div id="controls-inv" style="display:none;gap:8px;justify-content:center"><button onclick="toggleCam('inv')" style="width:auto;background:var(--danger);color:#fff;padding:8px 14px;border-radius:20px">❌ Cerrar</button><button onclick="toggleLinterna()" style="width:auto;background:#fff;padding:8px 14px;border-radius:20px">🔦</button></div><div id="lista-inv"></div><button class="btn-flotante" onclick="abrirModalInv(-1)">+ Producto</button></div>
+<div id="mod-fiado" class="modulo"><h3>👥 Fiados</h3><div id="lista-fiado"></div><button class="btn-flotante" onclick="abrirModalFiado()">+ Cliente</button></div><div id="mod-facturas" class="modulo"><h3>🧾 Facturas</h3><div id="lista-facturas"></div></div>
+<div id="mod-caja" class="modulo"><h3>💰 Caja</h3><div id="caja-estado" class="card" style="text-align:center;border:2px solid var(--primary)"></div><div class="card"><input id="caja-base" placeholder="Base hoy" oninput="this.value=formatearInput(this.value);actualizarCuadre()"><input id="caja-contado" placeholder="Caja contada" oninput="this.value=formatearInput(this.value);actualizarCuadre()"><div id="caja-cuadre-auto" style="background:#EEF2FF;padding:12px;border-radius:12px;margin:8px 0;border:1px dashed var(--primary);font-size:13px"></div><div style="display:flex;gap:8px"><button class="btn-verde" onclick="abrirCaja()">Abrir</button><button class="btn-amarillo" onclick="cerrarCaja()">Cerrar</button></div></div><div id="caja-resumen" class="card"></div></div>
+<div id="mod-solicitudes" class="modulo"><h3>📩 Solicitudes</h3><div id="lista-solicitudes"></div></div>
+<div id="mod-dian" class="modulo"><h3>📋 DIAN</h3><div id="dian-pend-lista"></div></div>
+<div id="mod-gastos" class="modulo"><h3>💸 Gastos</h3><div id="lista-gastos"></div><button class="btn-flotante" onclick="abrirModalGasto()">+ Gasto</button></div>
 
 <div id="mod-admin" class="modulo" style="padding:0">
 <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:rgba(255,255,255,.9);border-bottom:1px solid rgba(0,0,0,.05);position:sticky;top:0;z-index:10">
   <div><b style="font-size:18px;font-weight:900">ADMIN PHRAXYS 🔒</b><br><small id="admin-fecha" style="color:var(--text-sec)"></small></div>
-  <div style="display:flex;gap:8px;align-items:center"><div id="admin-semaforo" style="display:flex;align-items:center;gap:4px;background:#fff;padding:6px 10px;border-radius:12px;border:1px solid #E2E8F0"><span id="admin-dot" class="semaforo-dot" style="background:#22c55e"></span><small id="admin-txt" style="font-weight:800">ONLINE</small></div><div onclick="abrirPerfilAdmin()" style="width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#0F172A,#334155);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;cursor:pointer">A</div><div onclick="abrirAjustesAdmin()" style="width:38px;height:38px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;border:1px solid #E2E8F0">⚙️</div></div>
+  <div style="display:flex;gap:8px;align-items:center"><div id="admin-semaforo" style="display:flex;align-items:center;gap:4px;background:#fff;padding:6px 10px;border-radius:12px;border:1px solid #E2E8F0"><span id="admin-dot" class="semaforo-dot" style="background:#22c55e"></span><small id="admin-txt" style="font-weight:800">ONLINE</small></div><div onclick="abrirPerfilAdmin()" style="width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#0F172A,#334155);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;cursor:pointer">A</div></div>
 </div>
-<div id="admin-sub-inicio" class="admin-sub"><div style="padding:14px"><b style="color:var(--primary);font-size:18px;font-weight:900">Panel Admin</b></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 12px"><div class="card admin-kpi" onclick="verAdminSub('tiendas');setFiltroAdminTienda('todas')" style="margin:0"><small>Total Tiendas</small><h1 id="adm-total" style="margin:6px 0;font-size:30px;font-weight:900;color:var(--primary)">0</h1></div><div class="card admin-kpi" onclick="verAdminSub('tiendas');setFiltroAdminTienda('offline')" style="margin:0;background:#FEF2F2"><small>Offline</small><h1 id="adm-offline" style="margin:6px 0;font-size:30px;font-weight:900;color:#DC2626">0</h1></div><div class="card admin-kpi" onclick="verAdminSub('tiendas');setFiltroAdminTienda('porvencer')" style="margin:0;background:#FFFBEB"><small>Por vencer</small><h1 id="adm-porvencer" style="margin:6px 0;font-size:30px;font-weight:900;color:#D97706">0</h1></div><div class="card admin-kpi" onclick="verAdminSub('tiendas');setFiltroAdminTienda('vencidas')" style="margin:0;background:#F1F5F9"><small>Vencidas</small><h1 id="adm-vencidas" style="margin:6px 0;font-size:30px;font-weight:900;color:#475569">0</h1></div></div></div>
-<div id="admin-sub-tiendas" class="admin-sub" style="display:none;padding-bottom:110px"><div style="padding:12px 12px 0"><b style="font-size:16px">🏪 Tiendas</b><div class="admin-filter-bar" style="display:flex;gap:6px;overflow:auto;padding:8px 0"><button id="f-todas" class="activo" onclick="setFiltroAdminTienda('todas')" style="flex:1;white-space:nowrap;padding:10px 12px;border-radius:12px;font-size:11px;font-weight:800;border:1px solid #E2E8F0;background:#fff;box-shadow:none">Todas</button><button id="f-offline" onclick="setFiltroAdminTienda('offline')" style="flex:1;white-space:nowrap;padding:10px 12px;border-radius:12px;font-size:11px;font-weight:800;border:1px solid #E2E8F0;background:#fff;box-shadow:none">Offline</button><button id="f-porvencer" onclick="setFiltroAdminTienda('porvencer')" style="flex:1;white-space:nowrap;padding:10px 12px;border-radius:12px;font-size:11px;font-weight:800;border:1px solid #E2E8F0;background:#fff;box-shadow:none">Por vencer</button><button id="f-vencidas" onclick="setFiltroAdminTienda('vencidas')" style="flex:1;white-space:nowrap;padding:10px 12px;border-radius:12px;font-size:11px;font-weight:800;border:1px solid #E2E8F0;background:#fff;box-shadow:none">Vencidas</button></div></div><div id="admin-lista-tiendas" style="padding:10px"></div><div id="admin-form-tienda" class="card" style="display:none;border:2px solid var(--primary);margin:10px"><h4 id="admin-form-titulo">Nueva Tienda + FE ✨</h4><input id="gen-store" placeholder="Código PATIA7" style="text-transform:uppercase"><input id="gen-nombre-cliente" placeholder="Nombre Tienda"><input id="gen-pass-jefe" placeholder="Clave jefe"><div id="gen-fe-box" style="border:2px solid #22c55e;padding:10px;border-radius:12px;margin:6px 0;background:#F0FDF4"><small style="color:#16A34A;font-weight:900">⚡ FE DIAN</small><input id="gen-fe-nit" placeholder="NIT"><input id="gen-fe-razon" placeholder="Razón Social"><input id="gen-fe-email" placeholder="Email FE"><input id="gen-fe-cid" placeholder="Client ID"><input id="gen-fe-csec" placeholder="Client Secret" type="password"><input id="gen-fe-range" placeholder="Range ID" value="8"><select id="gen-fe-amb"><option value="sandbox" selected>SANDBOX</option><option value="production">PRODUCCION</option></select></div><div style="display:flex;gap:8px"><button onclick="generarLicencia()" style="flex:2;background:var(--primary);color:#fff;font-weight:900;border:none">Guardar Tienda + FE 🚀</button><button onclick="$('admin-form-tienda').style.display='none';$('gen-store').disabled=false" style="flex:1;background:#fff;border:none;box-shadow:none">Cancelar</button></div><div id="lic-generada" style="font-weight:800;margin-top:8px;word-break:break-all;font-size:12px"></div></div><button onclick="abrirFormTienda()" style="position:fixed;bottom:85px;right:16px;background: linear-gradient(135deg, #2563EB, #1D4ED8);color:#fff;border-radius:50px;padding:16px 28px;z-index:85;font-weight:900;border:none">+ Agregar Tienda ✨</button></div><div id="admin-sub-alertas" class="admin-sub" style="display:none"><h3 style="padding:10px 12px 0">🔔 Alertas</h3><div id="admin-alertas-lista" style="padding:10px"></div></div>
+<div id="admin-sub-inicio" class="admin-sub"><div style="padding:14px"><b style="color:var(--primary);font-size:18px;font-weight:900">Panel Admin</b></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 12px"><div class="card" onclick="verAdminSub('tiendas');setFiltroAdminTienda('todas')" style="margin:0"><small>Total Tiendas</small><h1 id="adm-total" style="margin:6px 0;font-size:30px;font-weight:900;color:var(--primary)">0</h1></div><div class="card" onclick="verAdminSub('tiendas');setFiltroAdminTienda('offline')" style="margin:0;background:#FEF2F2"><small>Offline</small><h1 id="adm-offline" style="margin:6px 0;font-size:30px;font-weight:900;color:#DC2626">0</h1></div></div></div>
+<div id="admin-sub-tiendas" class="admin-sub" style="display:none;padding-bottom:110px">
+<div style="padding:12px 12px 0"><b style="font-size:16px">🏪 Tiendas - Formularios separados</b><div class="admin-filter-bar" style="display:flex;gap:6px;overflow:auto;padding:8px 0"><button id="f-todas" class="tab-form activo" onclick="setFiltroAdminTienda('todas')" style="flex:1">Todas</button><button id="f-offline" class="tab-form" onclick="setFiltroAdminTienda('offline')" style="flex:1">Offline</button><button id="f-fe" class="tab-form" onclick="setFiltroAdminTienda('fe')" style="flex:1;background:#DCFCE7">Con FE</button><button id="f-normal" class="tab-form" onclick="setFiltroAdminTienda('normal')" style="flex:1">Normales</button></div></div>
+<div id="admin-lista-tiendas" style="padding:10px"></div>
+
+<div id="admin-form-tienda" class="card" style="display:none;border:2px solid var(--primary);margin:10px;max-height:90vh;overflow:auto">
+  <div style="display:flex;justify-content:space-between;align-items:center"><h4 id="admin-form-titulo" style="margin:0">Nueva Tienda ✨</h4><button onclick="$('admin-form-tienda').style.display='none';$('gen-store').disabled=false" style="width:36px;background:#fff;border:1px solid #E2E8F0;box-shadow:none">✕</button></div>
+  <div style="display:flex;gap:6px;margin:10px 0"><button id="tab-normal" class="tab-form activo" onclick="verTabFormTienda('normal')" style="flex:1">🏪 Normal</button><button id="tab-fe" class="tab-form" onclick="verTabFormTienda('fe')" style="flex:1">⚡ Con FE DIAN</button></div>
+  
+  <div id="form-normal">
+    <b style="color:var(--primary)">🏪 FORMULARIO TIENDA NORMAL</b><small style="display:block;color:var(--text-sec);margin-bottom:8px">Para tienda de barrio sin facturación electrónica</small>
+    <label class="label-prod">Código único *</label><input id="gen-store" placeholder="PATIA7" style="text-transform:uppercase;border:2px solid var(--primary)">
+    <label class="label-prod">Nombre comercial *</label><input id="gen-nombre-cliente" placeholder="Tienda La Esquina">
+    <label class="label-prod">Ciudad / Vereda *</label><input id="gen-ciudad" placeholder="El Bordo, Patía">
+    <label class="label-prod">Dirección</label><input id="gen-dir" placeholder="Calle 5 # 3-10">
+    <label class="label-prod">Teléfono / WhatsApp *</label><input id="gen-tel" placeholder="3001234567">
+    <label class="label-prod">Nombre dueño *</label><input id="gen-dueno" placeholder="Juan Pérez">
+    <label class="label-prod">Cédula dueño</label><input id="gen-cedula" placeholder="12345678">
+    <label class="label-prod">Clave jefe inicial *</label><input id="gen-pass-jefe" placeholder="1234" value="1234">
+    <label class="label-prod">Plan / Licencia</label><select id="gen-plan"><option value="30">30 días Básico</option><option value="90">90 días</option><option value="180">180 días</option><option value="365">365 días Pro</option></select>
+    <div style="display:flex;gap:8px;margin-top:10px"><button onclick="generarLicenciaNormal()" style="flex:2;background:var(--primary);color:#fff;font-weight:900;border:none">💾 Crear Tienda Normal 🚀</button><button onclick="$('admin-form-tienda').style.display='none'" style="flex:1;background:#fff;border:1px solid #E2E8F0;box-shadow:none">Cancelar</button></div>
+  </div>
+
+  <div id="form-fe" style="display:none">
+    <b style="color:#16A34A">⚡ FORMULARIO TIENDA CON FE DIAN - SOLO ADMIN</b><small style="display:block;color:var(--text-sec);margin-bottom:8px">Necesitas RUT y credenciales Factus</small>
+    <div style="border:2px dashed #22c55e;padding:10px;border-radius:12px;background:#F0FDF4;margin:8px 0">
+      <label class="label-prod">Vincular a tienda existente *</label><select id="gen-fe-store-select"></select><small style="font-size:11px;color:var(--text-sec)">O crea nueva con código</small><input id="gen-fe-store-new" placeholder="Nuevo código PATIA9 (opcional)" style="text-transform:uppercase">
+    </div>
+    <b>Datos RUT / DIAN *</b>
+    <label class="label-prod">NIT sin DV *</label><input id="gen-fe-nit" placeholder="900123456">
+    <label class="label-prod">DV *</label><input id="gen-fe-dv" placeholder="3" style="width:80px">
+    <label class="label-prod">Razón social (como en RUT) *</label><input id="gen-fe-razon" placeholder="TIENDA LA ESQUINA SAS">
+    <label class="label-prod">Nombre comercial</label><input id="gen-fe-comercial" placeholder="Tienda La Esquina">
+    <label class="label-prod">Email FE DIAN * (donde llega FE)</label><input id="gen-fe-email" placeholder="facturacion@tienda.com">
+    <label class="label-prod">Régimen</label><select id="gen-fe-regimen"><option value="no_responsable">No responsable IVA</option><option value="responsable">Responsable IVA</option><option value="gran_contribuyente">Gran contribuyente</option></select>
+    <label class="label-prod">Dirección fiscal (RUT)</label><input id="gen-fe-dir-fiscal" placeholder="Calle 5 # 3-10 El Bordo">
+    <label class="label-prod">Municipio ID DIAN (ej: 524 El Bordo)</label><input id="gen-fe-municipio" placeholder="524" value="524">
+    <b style="margin-top:10px;display:block">Credenciales Factus API *</b>
+    <label class="label-prod">Ambiente</label><select id="gen-fe-amb"><option value="sandbox" selected>SANDBOX pruebas</option><option value="production">PRODUCCION real</option></select>
+    <label class="label-prod">Client ID *</label><input id="gen-fe-cid" placeholder="xxxx-xxxx">
+    <label class="label-prod">Client Secret *</label><input id="gen-fe-csec" type="password" placeholder="secret">
+    <label class="label-prod">Range ID / Numeración *</label><input id="gen-fe-range" placeholder="8" value="8">
+    <div style="display:flex;gap:8px;margin-top:10px"><button onclick="generarLicenciaFE()" style="flex:2;background:#16A34A;color:#fff;font-weight:900;border:none">⚡ Activar FE DIAN 🚀</button><button onclick="probarConexionFEAdmin()" style="flex:1;background:#fff;border:1px solid #22c55e">🔍 Probar</button></div>
+  </div>
+  <div id="lic-generada" style="font-weight:800;margin-top:8px;word-break:break-all;font-size:12px"></div>
+</div>
+<button onclick="abrirFormTienda()" style="position:fixed;bottom:85px;right:16px;background: linear-gradient(135deg, #2563EB, #1D4ED8);color:#fff;border-radius:50px;padding:16px 28px;z-index:85;font-weight:900;border:none">+ Agregar Tienda ✨</button>
+</div><div id="admin-sub-alertas" class="admin-sub" style="display:none"><h3 style="padding:10px 12px 0">🔔 Alertas</h3><div id="admin-alertas-lista" style="padding:10px"></div></div>
 <div id="admin-sub-reportes" class="admin-sub" style="display:none"><h3 style="padding:10px 12px 0">📊 Reportes</h3><div id="admin-reportes-content" style="padding:10px"></div></div>
-<div style="position:fixed;bottom:0;width:100%;background:rgba(255,255,255,.95);display:flex;justify-content:space-around;padding:10px 0;z-index:80;border-top:1px solid rgba(0,0,0,.06)"><button onclick="verAdminSub('inicio')" id="adm-nav-inicio" style="flex:1;border:none;background:none;font-size:11px;color:var(--primary);font-weight:900;box-shadow:none">🏠<br>Inicio</button><button onclick="verAdminSub('tiendas')" id="adm-nav-tiendas" style="flex:1;border:none;background:none;font-size:11px;box-shadow:none">🏪<br>Tiendas</button><button onclick="verAdminSub('alertas')" id="adm-nav-alertas" style="flex:1;border:none;background:none;font-size:11px;box-shadow:none;position:relative">🔔<br>Alertas<span id="admin-alert-dot" style="display:none;position:absolute;top:2px;right:18px;width:8px;height:8px;background:#EF4444;border-radius:50%"></span></button><button onclick="verAdminSub('reportes')" id="adm-nav-reportes" style="flex:1;border:none;background:none;font-size:11px;box-shadow:none">📊<br>Reportes</button></div><div style="height:70px"></div>
+<div style="position:fixed;bottom:0;width:100%;background:rgba(255,255,255,.95);display:flex;justify-content:space-around;padding:10px 0;z-index:80;border-top:1px solid rgba(0,0,0,.06)"><button onclick="verAdminSub('inicio')" id="adm-nav-inicio" style="flex:1;border:none;background:none;font-size:11px;color:var(--primary);font-weight:900;box-shadow:none">🏠<br>Inicio</button><button onclick="verAdminSub('tiendas')" id="adm-nav-tiendas" style="flex:1;border:none;background:none;font-size:11px;box-shadow:none">🏪<br>Tiendas</button><button onclick="verAdminSub('alertas')" id="adm-nav-alertas" style="flex:1;border:none;background:none;font-size:11px;box-shadow:none;position:relative">🔔<br>Alertas</button><button onclick="verAdminSub('reportes')" id="adm-nav-reportes" style="flex:1;border:none;background:none;font-size:11px;box-shadow:none">📊<br>Reportes</button></div><div style="height:70px"></div>
 </div>
-<div id="modal-perfil-admin" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:200;padding:16px;overflow:auto"><div style="display:flex;justify-content:space-between;align-items:center"><h3 style="margin:0">👤 Perfil Admin</h3><button onclick="$('modal-perfil-admin').style.display='none'" style="width:36px;background:#fff;border:1px solid #E2E8F0;box-shadow:none">✕</button></div><div class="card" style="text-align:center;background: linear-gradient(135deg, #0F172A 0%, #334155 100%);color:#fff"><div style="width:60px;height:60px;border-radius:18px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;margin:0 auto 8px">A</div><b id="perfil-admin-nombre">ADMIN</b></div><div class="card"><b>✏️ Cambiar credenciales</b><input id="perfil-user" placeholder="Usuario ADMIN"><input id="perfil-pass" type="password" placeholder="Nueva clave"><button class="btn-verde" onclick="guardarPerfilAdmin()">💾 Guardar</button></div></div>
-<div id="modal-ajustes-admin" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:200;padding:16px"><div style="display:flex;justify-content:space-between"><h3 style="margin:0">⚙️ Configuración</h3><button onclick="$('modal-ajustes-admin').style.display='none'" style="width:36px;background:#fff;border:1px solid #E2E8F0;box-shadow:none">✕</button></div><div class="card"><b>🎨 Tema</b><select id="sel-tema" onchange="setTheme(this.value)"><option value="light">Claro</option><option value="dark">Oscuro</option></select></div></div>
+<div id="modal-perfil-admin" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:200;padding:16px;overflow:auto"><div style="display:flex;justify-content:space-between"><h3 style="margin:0">👤 Perfil Admin</h3><button onclick="$('modal-perfil-admin').style.display='none'" style="width:36px;background:#fff;border:1px solid #E2E8F0;box-shadow:none">✕</button></div><div class="card"><b>✏️ Cambiar credenciales</b><input id="perfil-user" placeholder="Usuario ADMIN"><input id="perfil-pass" type="password" placeholder="Nueva clave"><button class="btn-verde" onclick="guardarPerfilAdmin()">💾 Guardar</button></div></div>
 
 <div id="modal-inv" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:100;padding:0;overflow:auto">
-  <div style="position:sticky;top:0;background:rgba(255,255,255,.97);backdrop-filter:blur(12px);padding:12px 14px;border-bottom:1px solid rgba(0,0,0,.06);display:flex;justify-content:space-between;align-items:center;z-index:10">
-    <div><b id="titulo-inv" style="font-size:16px">Producto Universal</b><br><small id="subtitulo-inv" style="color:var(--text-sec);font-size:11px">Kg / Litro / Und real</small></div>
+  <div style="position:sticky;top:0;background:rgba(255,255,255,.97);padding:12px 14px;border-bottom:1px solid rgba(0,0,0,.06);display:flex;justify-content:space-between;align-items:center;z-index:10">
+    <div><b id="titulo-inv" style="font-size:16px">Producto Universal</b><br><small style="color:var(--text-sec);font-size:11px">Kg / Litro / Und real</small></div>
     <button onclick="cerrarModalInv()" style="width:36px;background:#fff;border:1px solid #E2E8F0;box-shadow:none">✕</button>
   </div>
   <div style="padding:12px 12px 90px">
     <div class="card" style="margin:0 0 12px">
-      <label style="display:flex;align-items:center;gap:8px;font-weight:900"><input id="inv-activo" type="checkbox" checked style="width:20px;height:20px"> 1. Activo</label>
-      <label class="label-prod">2. Código barras con linterna 🔦</label>
+      <label style="display:flex;align-items:center;gap:8px;font-weight:900"><input id="inv-activo" type="checkbox" checked style="width:20px;height:20px"> Activo</label>
+      <label class="label-prod">Código barras con linterna 🔦</label>
       <div style="display:flex;gap:6px"><input id="inv-codigo" placeholder="7701234..." style="text-transform:uppercase;flex:1"><button onclick="toggleCam('modal')" style="width:50px;background:var(--primary);color:#fff">📷</button></div>
       <div id="reader-modal" class="cam-box"></div>
       <div id="controls-modal" style="display:none;gap:8px;justify-content:center;margin:8px 0"><button onclick="toggleCam('modal')" style="width:auto;background:var(--danger);color:#fff;padding:8px 14px;border-radius:20px">❌ Cerrar</button><button onclick="toggleLinterna()" style="width:auto;background:#F59E0B;color:#fff;padding:8px 14px;border-radius:20px">🔦 Linterna</button></div>
-      <label class="label-prod">3. Nombre *</label><input id="inv-nombre" placeholder="Arroz Diana">
-      <label class="label-prod">4. Categoría</label><select id="inv-categoria"><option value="general">General</option><option value="granos">Granos - Arroz, Maíz, Frijol</option><option value="abarrotes">Abarrotes</option><option value="bebidas">Bebidas - Litros</option><option value="aseo">Aseo - Litros</option><option value="licores">Licores - Litros</option><option value="otros">Otros</option></select>
-      <label class="label-prod">5. Tipo universal existencias *</label><select id="inv-tipo-universal" onchange="cambiarTipoUniversal()"><option value="kg">⚖️ Peso - Kilo (Kg) - para granos, arroz, azúcar</option><option value="litro">🧴 Volumen - Litro (L) - para aceite, leche, gaseosa</option><option value="und">📦 Unidad - Und - para paquetes, latas</option></select>
+      <label class="label-prod">Nombre *</label><input id="inv-nombre" placeholder="Arroz Diana">
+      <label class="label-prod">Tipo universal *</label><select id="inv-tipo-universal" onchange="cambiarTipoUniversal()"><option value="kg">⚖️ Peso Kg</option><option value="litro">🧴 Volumen Litro</option><option value="und">📦 Unidad</option></select>
     </div>
     <div class="card" style="margin:0 0 12px;background:#FFFBEB;border:2px dashed #F59E0B">
-      <b id="titulo-presentacion" style="color:#D97706">📦 Presentación base</b>
-      <label class="label-prod">6. Presentación base (cómo compras)</label><select id="inv-presentacion"><option value="bulto">Bulto</option><option value="paca">Paca</option><option value="arroba">Arroba @</option><option value="caja">Caja</option><option value="kilo">Kilo suelto</option><option value="litro">Litro suelto</option><option value="und">Unidad suelta</option><option value="garrafa">Garrafa / Bidón</option><option value="botella">Botella</option></select>
-      <label class="label-prod" id="label-contenido">7. ¿Cuántos Kg trae 1 Bulto? *</label><input id="inv-contenido" type="number" step="0.01" placeholder="Ej: 50 para bulto 50kg, 40 para 40kg, 12.5 para arroba" oninput="calcStockReal()">
-      <small id="ayuda-contenido" style="color:var(--text-sec);font-size:11px">Si es bulto de arroz 50kg pon 50. Si es paca de 24 und pon 24. Si es garrafa 20L pon 20.</small>
-      <label class="label-prod">8. Stock en presentación (cuántos bultos/pacas tienes)</label><input id="inv-stock" type="number" step="0.01" placeholder="Ej: 2 bultos" oninput="calcStockReal()">
+      <b id="titulo-presentacion" style="color:#D97706">📦 Presentación</b>
+      <label class="label-prod">Presentación base</label><select id="inv-presentacion"><option value="bulto">Bulto</option><option value="paca">Paca</option><option value="arroba">Arroba</option><option value="kilo">Kilo</option><option value="litro">Litro</option><option value="und">Unidad</option></select>
+      <label class="label-prod" id="label-contenido">¿Cuántos Kg trae 1 Bulto? *</label><input id="inv-contenido" type="number" step="0.01" placeholder="Ej: 50, 40, 12.5" oninput="calcStockReal()">
+      <label class="label-prod">Stock en presentación</label><input id="inv-stock" type="number" step="0.01" placeholder="Ej: 2" oninput="calcStockReal()">
       <div id="stock-real-preview" class="stock-real-box" style="display:none"></div>
-      <label class="label-prod">7. Proveedor</label><input id="inv-proveedor" placeholder="Distribuidora">
-      <label style="display:flex;align-items:center;gap:8px;margin:8px 0;font-weight:800"><input id="inv-fiar" type="checkbox" checked style="width:20px;height:20px"> 8. Se puede fiar</label>
+      <label class="label-prod">Proveedor</label><input id="inv-proveedor" placeholder="Distribuidora">
     </div>
     <div class="card" style="margin:0 0 12px;background:#FFFBEB;border:1px dashed #F59E0B">
       <b>💰 Precios</b>
-      <label class="label-prod">9. Costo por presentación (costo del bulto/paca)</label><input id="inv-costo" placeholder="Costo del bulto completo" oninput="this.value=formatearInput(this.value);calcMargenProd();calcStockReal()">
+      <label class="label-prod">Costo presentación</label><input id="inv-costo" placeholder="Costo bulto" oninput="this.value=formatearInput(this.value);calcMargenProd()">
       <div id="margen-auto" class="margen-box" style="display:none"></div>
-      <label class="label-prod">10. Precio público base (precio del bulto/paca)</label><input id="inv-publico" placeholder="Precio bulto" oninput="this.value=formatearInput(this.value);calcMargenProd();calcStockReal()">
-      <label class="label-prod">11. Descuento máximo</label><input id="inv-desc-max" placeholder="Ej: 10%">
+      <label class="label-prod">Precio público base</label><input id="inv-publico" placeholder="Precio bulto" oninput="this.value=formatearInput(this.value);calcMargenProd()">
     </div>
     <div class="card" style="margin:0 0 12px;border:2px solid #2563EB">
-      <b style="color:var(--primary)">⚖️ Precios por unidad suelta - Automático por Kg/L/Und</b>
-      <small style="display:block;color:var(--text-sec);margin-bottom:8px">Si pones Kilo, te pide precio por Kilo. Si pones Arroba, precio por Arroba. Se calcula del stock real.</small>
-      <div class="unidad-extra"><label style="display:flex;align-items:center;gap:8px;font-weight:800"><input type="checkbox" id="chk-kg" style="width:18px;height:18px" onchange="toggleUnidadExtra('kg')"> Vender por Kilo (Kg)</label><div id="box-kg" style="display:none"><input id="precio-kg" placeholder="Precio por 1 Kg" oninput="this.value=formatearInput(this.value)"><div id="info-kg" style="font-size:11px;color:var(--text-sec)"></div></div></div>
-      <div class="unidad-extra"><label style="display:flex;align-items:center;gap:8px;font-weight:800"><input type="checkbox" id="chk-arroba" style="width:18px;height:18px" onchange="toggleUnidadExtra('arroba')"> Vender por Arroba @ (12.5 Kg)</label><div id="box-arroba" style="display:none"><input id="precio-arroba" placeholder="Precio por 1 @ = 12.5 Kg" oninput="this.value=formatearInput(this.value)"><div id="info-arroba" style="font-size:11px;color:var(--text-sec)"></div></div></div>
-      <div class="unidad-extra"><label style="display:flex;align-items:center;gap:8px;font-weight:800"><input type="checkbox" id="chk-libra" style="width:18px;height:18px" onchange="toggleUnidadExtra('libra')"> Vender por Libra (0.5 Kg)</label><div id="box-libra" style="display:none"><input id="precio-libra" placeholder="Precio por Libra" oninput="this.value=formatearInput(this.value)"></div></div>
-      <div class="unidad-extra"><label style="display:flex;align-items:center;gap:8px;font-weight:800"><input type="checkbox" id="chk-litro" style="width:18px;height:18px" onchange="toggleUnidadExtra('litro')"> Vender por Litro (L)</label><div id="box-litro" style="display:none"><input id="precio-litro" placeholder="Precio por Litro" oninput="this.value=formatearInput(this.value)"></div></div>
-      <div class="unidad-extra"><label style="display:flex;align-items:center;gap:8px;font-weight:800"><input type="checkbox" id="chk-und" style="width:18px;height:18px" onchange="toggleUnidadExtra('und')"> Vender por Unidad suelta</label><div id="box-und" style="display:none"><input id="precio-und" placeholder="Precio por Und suelta" oninput="this.value=formatearInput(this.value)"><small>Si bulto trae 50kg, la und puede ser 1kg</small></div></div>
+      <b style="color:var(--primary)">⚖️ Precios por unidad suelta</b>
+      <div class="unidad-extra"><label style="display:flex;align-items:center;gap:8px;font-weight:800"><input type="checkbox" id="chk-kg" style="width:18px" onchange="toggleUnidadExtra('kg')"> Kg</label><div id="box-kg" style="display:none"><input id="precio-kg" placeholder="Precio por Kg" oninput="this.value=formatearInput(this.value)"></div></div>
+      <div class="unidad-extra"><label style="display:flex;align-items:center;gap:8px;font-weight:800"><input type="checkbox" id="chk-arroba" style="width:18px" onchange="toggleUnidadExtra('arroba')"> Arroba @ 12.5kg</label><div id="box-arroba" style="display:none"><input id="precio-arroba" placeholder="Precio arroba" oninput="this.value=formatearInput(this.value)"></div></div>
+      <div class="unidad-extra"><label style="display:flex;align-items:center;gap:8px;font-weight:800"><input type="checkbox" id="chk-libra" style="width:18px" onchange="toggleUnidadExtra('libra')"> Libra</label><div id="box-libra" style="display:none"><input id="precio-libra" placeholder="Precio libra" oninput="this.value=formatearInput(this.value)"></div></div>
+      <div class="unidad-extra"><label style="display:flex;align-items:center;gap:8px;font-weight:800"><input type="checkbox" id="chk-litro" style="width:18px" onchange="toggleUnidadExtra('litro')"> Litro</label><div id="box-litro" style="display:none"><input id="precio-litro" placeholder="Precio litro" oninput="this.value=formatearInput(this.value)"></div></div>
+      <div class="unidad-extra"><label style="display:flex;align-items:center;gap:8px;font-weight:800"><input type="checkbox" id="chk-und" style="width:18px" onchange="toggleUnidadExtra('und')"> Und</label><div id="box-und" style="display:none"><input id="precio-und" placeholder="Precio und" oninput="this.value=formatearInput(this.value)"></div></div>
     </div>
-    <div class="card" style="margin:0 0 12px"><b>⏰ Alertas</b><label class="label-prod">12. Stock mínimo universal (en Kg/L/Und)</label><input id="inv-stock-min" type="number" step="0.01" placeholder="Ej: 10 kg mínimo"><label class="label-prod">13. Vencimiento</label><input id="inv-vence" type="date"></div>
-    <div id="prod-fe-extra" class="grupo-fe" style="display:none"><b>⚡ FE</b><select id="inv-iva"><option value="19">19%</option><option value="5">5%</option><option value="0">0%</option></select><select id="inv-und-dian"><option value="70">70 Und</option><option value="KGM">KGM Kg</option><option value="LTR">LTR Litro</option></select></div>
-    <div style="display:flex;gap:8px;margin-top:12px;position:sticky;bottom:12px;background:rgba(255,255,255,.95);padding:10px;border-radius:16px;border:1px solid #E2E8F0"><button class="btn-verde" onclick="guardarProducto()" style="flex:2">💾 Guardar con stock real</button><button onclick="cerrarModalInv()" style="flex:1;background:#fff;box-shadow:none;border:1px solid #E2E8F0">Cancelar</button></div>
+    <div class="card" style="margin:0 0 12px"><b>⏰ Alertas</b><input id="inv-stock-min" type="number" step="0.01" placeholder="Stock mínimo universal"><input id="inv-vence" type="date"></div>
+    <div style="display:flex;gap:8px;margin-top:12px;position:sticky;bottom:12px;background:rgba(255,255,255,.95);padding:10px;border-radius:16px;border:1px solid #E2E8F0"><button class="btn-verde" onclick="guardarProducto()" style="flex:2">💾 Guardar</button><button onclick="cerrarModalInv()" style="flex:1;background:#fff;box-shadow:none;border:1px solid #E2E8F0">Cancelar</button></div>
   </div>
-</div><div id="modal-fiado" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:120;padding:0;overflow:auto">
-  <div style="position:sticky;top:0;background:rgba(255,255,255,.97);padding:12px 14px;border-bottom:1px solid rgba(0,0,0,.06);display:flex;justify-content:space-between;align-items:center"><div><b id="titulo-fiado">Cliente</b><br><small id="subtitulo-fiado">Form</small></div><button onclick="cerrarModalFiado()" style="width:36px;background:#fff;border:1px solid #E2E8F0;box-shadow:none">✕</button></div>
-  <div style="padding:12px"><div class="card"><input id="fia-nombre" placeholder="Nombre *"><input id="fia-ident" placeholder="ID"><input id="fia-codigo" placeholder="Código" style="text-transform:uppercase"><input id="fia-tel" placeholder="Tel"><input id="fia-email" placeholder="Email"><input id="fia-dir" placeholder="Dir"><input id="fia-ciudad" placeholder="Ciudad"></div><div class="grupo-credito"><label style="display:flex;align-items:center;gap:8px"><input id="fia-credito-check" type="checkbox" style="width:20px" onchange="toggleCreditoNuevo()"> Crédito</label><div id="fia-credito-box" style="display:none"><input id="fia-limite" placeholder="Límite" oninput="this.value=formatearInput(this.value)"><select id="fia-dias"><option value="15">15 días</option><option value="30">30 días</option></select><select id="fia-estado-cuenta"><option value="al dia">Al día</option><option value="en mora">En mora</option></select></div></div><div id="fiado-sec-existente" style="display:none" class="card"><label><input id="fia-edit-activa-cred" type="checkbox" style="width:20px"> Activar</label><input id="fia-edit-limite" placeholder="Límite" oninput="this.value=formatearInput(this.value)"><select id="fia-edit-dias"><option value="15">15</option><option value="30">30</option></select><select id="fia-edit-grupo"><option value="general">General</option><option value="vip">VIP</option></select><input id="fia-edit-ult-rev" type="date"><input id="fia-edit-prox-rev" type="date"><textarea id="fia-edit-nota-cred"></textarea></div><button class="btn-verde" onclick="guardarFiado()">Guardar</button></div>
-</div>
-<div id="modal-cartera" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:150;padding:0;overflow:auto"><div style="position:sticky;top:0;background:#fff;padding:12px;display:flex;justify-content:space-between"><div><b id="cartera-nombre"></b><br><small id="cartera-tel"></small></div><button onclick="$('modal-cartera').style.display='none'" style="width:36px;background:#fff;border:1px solid #E2E8F0;box-shadow:none">✕</button></div><div style="padding:12px"><div class="card" style="text-align:center"><h1 id="cartera-total">$0</h1><small id="cartera-fact-count"></small><div id="cartera-extra-info"></div></div><div class="card"><input id="cartera-abono-valor" placeholder="Abono" oninput="this.value=formatearInput(this.value)"><select id="cartera-abono-metodo"><option value="efectivo">Efectivo</option></select><button class="btn-verde" onclick="registrarAbono()">Abonar</button></div><div style="display:flex;gap:6px"><button id="tab-cartera-fact" onclick="verTabCartera('fact')" style="flex:1;background:var(--primary);color:#fff;border:none">Facturas</button><button id="tab-cartera-abonos" onclick="verTabCartera('abonos')" style="flex:1;background:#fff;border:none">Abonos</button></div><div id="cartera-lista-facturas"></div><div id="cartera-lista-abonos" style="display:none"></div></div></div>
-<div id="modal-gasto" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:100;padding:16px"><h3>Gasto</h3><input id="gas-que"><input id="gas-precio" oninput="this.value=formatearInput(this.value)"><input type="file" id="gas-foto" accept="image/*"><img id="gas-foto-preview" style="display:none;width:100%;max-height:200px;border-radius:12px;margin-top:8px"><button class="btn-verde" onclick="guardarGasto()">Guardar</button><button onclick="cerrarModalGasto()" style="background:#fff;box-shadow:none">Cancelar</button></div>
-<div id="modal-compra" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:100;padding:16px"><h3>Compra</h3><input id="comp-empresa"><input id="comp-que"><input id="comp-valor" oninput="this.value=formatearInput(this.value)"><input type="file" id="comp-foto" accept="image/*"><img id="comp-foto-preview" style="display:none;width:100%;max-height:200px;border-radius:12px;margin-top:8px"><button class="btn-verde" onclick="guardarCompra()">Guardar</button><button onclick="cerrarModalCompra()" style="background:#fff;box-shadow:none">Cancelar</button></div>
-<div id="modal-cobro" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:102;padding:16px;overflow:auto"><h3>COBRAR - <span id="consec-btn">POS:0001</span></h3><select id="metodo" onchange="cambiarModoCobro()"><option value="efectivo">Efectivo</option><option value="credito">Fiado</option><option value="transferencia">Transfer</option></select><div class="card"><input id="cliente-cobro" placeholder="Cliente"><div id="lista-clientes-cobro"></div></div><div id="box-efectivo"><input id="paga-con" placeholder="Paga con" oninput="this.value=formatearInput(this.value);calcVueltas()"><div id="vueltas" style="font-weight:900;color:var(--accent)"></div></div><div id="box-fiado" style="display:none"><input id="abono-fiado" placeholder="Abono" oninput="this.value=formatearInput(this.value);calcAbonoFiado()"><div id="saldo-fiado"></div></div><div id="box-fe-cobro" style="display:none" class="card"><input id="cobro-fe-nit"><input id="cobro-fe-nombre"><input id="cobro-fe-email"></div><button class="btn-verde" onclick="finalizarCobro()">FACTURAR ✨</button><div id="bloque-factura" style="display:none"><canvas id="canvas-factura" style="display:none"></canvas><img id="img-factura" style="width:100%;border:2px dashed var(--primary);margin-top:10px;border-radius:16px"><div id="fe-factura-extra" style="display:none;margin-top:10px;padding:10px;background:#0f172a;border-radius:12px;color:#fff"></div></div><button onclick="cerrarCobro()" style="background:#fff;box-shadow:none">Cerrar</button></div>
-<div id="modal-soporte-chat" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:250;justify-content:center;align-items:center;padding:16px"><div class="card" style="width:100%;max-width:380px"><h3>💬 Soporte</h3><div id="soporte-historial"></div><textarea id="soporte-mensaje" placeholder="Tu problema..."></textarea><button class="btn-verde" onclick="enviarSoporte()">Enviar</button><button onclick="$('modal-soporte-chat').style.display='none'" style="background:#fff;box-shadow:none">Cerrar</button></div></div>
+</div><div id="modal-fiado" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:120;padding:12px;overflow:auto"><div style="display:flex;justify-content:space-between"><b>Cliente</b><button onclick="cerrarModalFiado()" style="width:36px;background:#fff;border:1px solid #E2E8F0;box-shadow:none">✕</button></div><div class="card"><input id="fia-nombre" placeholder="Nombre *"><input id="fia-ident" placeholder="ID"><input id="fia-codigo" placeholder="Código" style="text-transform:uppercase"><input id="fia-tel" placeholder="Tel"></div><button class="btn-verde" onclick="guardarFiado()">Guardar</button></div>
+<div id="modal-cartera" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:150;padding:12px;overflow:auto"><div style="display:flex;justify-content:space-between"><div><b id="cartera-nombre"></b></div><button onclick="$('modal-cartera').style.display='none'" style="width:36px;background:#fff;border:1px solid #E2E8F0;box-shadow:none">✕</button></div><div class="card" style="text-align:center"><h1 id="cartera-total">$0</h1></div><div class="card"><input id="cartera-abono-valor" placeholder="Abono" oninput="this.value=formatearInput(this.value)"><button class="btn-verde" onclick="registrarAbono()">Abonar</button></div><div id="cartera-lista-facturas"></div><div id="cartera-lista-abonos" style="display:none"></div></div>
+<div id="modal-gasto" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:100;padding:16px"><h3>Gasto</h3><input id="gas-que"><input id="gas-precio" oninput="this.value=formatearInput(this.value)"><button class="btn-verde" onclick="guardarGasto()">Guardar</button><button onclick="cerrarModalGasto()" style="background:#fff;box-shadow:none">Cancelar</button></div>
+<div id="modal-cobro" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:102;padding:16px;overflow:auto"><h3>COBRAR - <span id="consec-btn">POS:0001</span></h3><select id="metodo"><option value="efectivo">Efectivo</option><option value="credito">Fiado</option></select><div class="card"><input id="cliente-cobro" placeholder="Cliente"></div><div id="box-efectivo"><input id="paga-con" placeholder="Paga con" oninput="this.value=formatearInput(this.value);calcVueltas()"><div id="vueltas"></div></div><div id="box-fiado" style="display:none"><input id="abono-fiado" placeholder="Abono" oninput="this.value=formatearInput(this.value);calcAbonoFiado()"><div id="saldo-fiado"></div></div><button class="btn-verde" onclick="finalizarCobro()">FACTURAR ✨</button><div id="bloque-factura" style="display:none"><canvas id="canvas-factura" style="display:none"></canvas><img id="img-factura" style="width:100%;border:2px dashed var(--primary);margin-top:10px;border-radius:16px"></div><button onclick="cerrarCobro()" style="background:#fff;box-shadow:none">Cerrar</button></div>
 <div id="nav"><button id="nav-facturas" onclick="verMod('facturas')">📄<span>Facturas</span></button><button id="nav-fiado" onclick="verMod('fiado')">👥<span>Fiado</span></button><button id="nav-solicitudes" onclick="verMod('solicitudes')">📩<span>Solic</span></button><button id="nav-vender" onclick="verMod('vender')" class="ventas-centro">🛒<span>Ventas</span></button><button id="nav-caja" onclick="verMod('caja')">💰<span>Caja</span></button><button id="nav-inv" onclick="verMod('inventario')">📦<span>Inv</span></button><button id="nav-dian" onclick="verMod('dian')">📋<span>DIAN</span></button><button id="nav-gastos" onclick="verMod('gastos')">💸<span>Gastos</span></button></div><script>
-function setTheme(t){try{localStorage.setItem('phraxys_theme',t);}catch(e){}}
 let rol=null; let _old=null; try{_old=JSON.parse(localStorage.getItem('pos_config_DEFAULT')||'null');}catch(e){}
 if(!_old) _old={pass_jefe:"1234",storeCode:"",consec:1,facturacion:{activa:false}};
 let config={pass_jefe:String(_old.pass_jefe||"1234"),storeCode:(_old.storeCode||"").toUpperCase(),consec:Number(_old.consec||1),facturacion:_old.facturacion||{activa:false},nombre:_old.nombre||""};
 function getStoreKey(b){let c="";try{c=(config&&config.storeCode?config.storeCode:"").toUpperCase()||'DEFAULT';}catch(e){c='DEFAULT';}if(rol==='admin')return b+'_ADMIN';return b+'_'+c;}
 function safeGet(k,d){try{let v=localStorage.getItem(getStoreKey(k));if(v)return JSON.parse(v);let v2=localStorage.getItem(k);if(v2)return JSON.parse(v2);return d;}catch(e){return d;}}
 function safeSet(k,val){try{localStorage.setItem(getStoreKey(k),JSON.stringify(val));}catch(e){}}
-let usuarioActual=null,productos=[],fiados=[],ventas=[],gastos=[],compras=[],empleados=[],cajas=[],solicitudes=[],carrito=[],editIndex=-1,filtroInv='todos',colaDIAN=[],ultimaFactura=null,filtroFact='todas',filtroFiadoTxt='',clienteCarteraIdx=-1,tabCartera='fact';
+let usuarioActual=null,productos=[],fiados=[],ventas=[],gastos=[],compras=[],empleados=[],cajas=[],solicitudes=[],carrito=[],editIndex=-1,filtroInv='todos',colaDIAN=[],ultimaFactura=null,filtroFact='todas',filtroFiadoTxt='',clienteCarteraIdx=-1;
 function cargarDatosTienda(){
   productos=safeGet('pos_prod',[]);
   productos=productos.map(p=>{
     if(!p.tipoUniversal){ p.tipoUniversal=p.unidad==='litro'?'litro':(p.unidad==='kg'?'kg':'und'); }
-    if(!p.contenidoBase){ p.contenidoBase=p.cantidadBase||p.contenido||50; }
+    if(!p.contenidoBase){ p.contenidoBase=50; }
     if(!p.stockReal){ p.stockReal=(p.stock||0)*(p.contenidoBase||50); }
     if(!p.unidades){ p.unidades=[{unidad:p.unidad||'und',precio:p.publico||0,factor:p.contenidoBase||1,esBase:true}]; }
     return p;
@@ -196,150 +226,155 @@ function formatearInput(v){let n=toNum(v);if(!n)return"";return n.toLocaleString
 function genConsec(){return "POS:"+String(config.consec).padStart(4,'0');}
 function actualizarConsec(){if($('consecutivo'))$('consecutivo').innerText=genConsec();if($('consec-btn'))$('consec-btn').innerText=genConsec();}
 function actualizarTextoLic(){ let tieneFE=config.facturacion?.activa; if($('fe-top-badge'))$('fe-top-badge').style.display=tieneFE?'inline-block':'none'; if($('fe-label'))$('fe-label').style.display=tieneFE?'inline-block':'none'; if($('inv-fe-badge'))$('inv-fe-badge').style.display=tieneFE?'inline-block':'none'; ['tienda-label','inv-tienda','fiado-tienda','caja-tienda','sol-tienda','facturas-tienda','dian-tienda'].forEach(id=>{let el=$(id);if(el)el.innerText=config.storeCode||'';}); }
-function actualizarAvatarJefe(){ let ini=(config.storeCode||'P').charAt(0).toUpperCase(); let esEmpleado=rol==='empleado'; let av=$('perfil-avatar-jefe'); if(av) av.innerText=esEmpleado?(usuarioActual?.nombre||'E').charAt(0).toUpperCase():ini; let topCorto=$('top-nombre-corto'); if(topCorto) topCorto.innerText=esEmpleado?(usuarioActual?.nombre.split(' ')[0].toUpperCase()||'EMP'):(config.storeCode||'PATIA').substring(0,6); if($('perfil-avatar-grande'))$('perfil-avatar-grande').innerText=esEmpleado?(usuarioActual?.nombre||'E').charAt(0).toUpperCase():ini; }
+function actualizarAvatarJefe(){ let ini=(config.storeCode||'P').charAt(0).toUpperCase(); if($('perfil-avatar-jefe')) $('perfil-avatar-jefe').innerText=ini; if($('perfil-avatar-grande')) $('perfil-avatar-grande').innerText=ini; if($('top-nombre-corto')) $('top-nombre-corto').innerText=(config.storeCode||'PATIA').substring(0,6); }
 function calcMargenProd(){ let costo=toNum($('inv-costo').value); let pub=toNum($('inv-publico').value); let box=$('margen-auto'); if(!box) return; if(!costo||!pub){box.style.display='none';return;} let margen=((pub-costo)/costo*100).toFixed(1); let gan=pub-costo; box.style.display='block'; box.innerHTML='💰 Margen: '+margen+'% | Gana: '+fmt(gan); }
 function cambiarTipoUniversal(){
   let tipo=$('inv-tipo-universal').value;
-  let pres=$('inv-presentacion');
-  let label=$('label-contenido');
-  let ayuda=$('ayuda-contenido');
-  if(tipo==='kg'){
-    pres.innerHTML='<option value="bulto">Bulto</option><option value="paca">Paca / Saco</option><option value="arroba">Arroba @ (12.5kg)</option><option value="kilo">Kilo suelto</option><option value="libra">Libra</option><option value="und">Unidad</option>';
-    label.innerText='7. ¿Cuántos Kg trae 1 Bulto/Paca? *'; $('inv-contenido').placeholder='Ej: 50 = bulto 50kg, 40 = 40kg, 25 = 25kg';
-    ayuda.innerText='Para granos: bulto 50kg pon 50, bulto 40kg pon 40, arroba pon 12.5, paca de 10kg pon 10';
-  }else if(tipo==='litro'){
-    pres.innerHTML='<option value="paca">Paca (24 botellas)</option><option value="caja">Caja (12 botellas)</option><option value="garrafa">Garrafa / Bidón 20L</option><option value="botella">Botella</option><option value="litro">Litro suelto</option><option value="galon">Galón</option>';
-    label.innerText='7. ¿Cuántos Litros trae 1 Paca/Garrafa? *'; $('inv-contenido').placeholder='Ej: 20 = garrafa 20L, 24 = paca 24 und x 1L = 24L';
-    ayuda.innerText='Para líquidos: garrafa 20L pon 20, paca 24 botellas de 500ml = 12L pon 12, botella 1L pon 1';
-  }else{
-    pres.innerHTML='<option value="paca">Paca</option><option value="caja">Caja</option><option value="bulto">Bulto (con Und adentro)</option><option value="und">Unidad suelta</option><option value="docena">Docena</option>';
-    label.innerText='7. ¿Cuántas Und trae 1 Paca/Caja/Bulto? *'; $('inv-contenido').placeholder='Ej: 24 = paca 24 und, 12 = caja 12 und';
-    ayuda.innerText='Para unidades: paca 24 und pon 24, caja 12 und pon 12, bulto con 50 paquetes pon 50';
-  }
+  let pres=$('inv-presentacion'); let label=$('label-contenido');
+  if(tipo==='kg'){ pres.innerHTML='<option value="bulto">Bulto</option><option value="paca">Paca</option><option value="arroba">Arroba @ 12.5kg</option><option value="kilo">Kilo</option>'; label.innerText='¿Cuántos Kg trae 1 Bulto? *'; }
+  else if(tipo==='litro'){ pres.innerHTML='<option value="paca">Paca</option><option value="garrafa">Garrafa 20L</option><option value="botella">Botella</option><option value="litro">Litro</option>'; label.innerText='¿Cuántos Litros trae 1 Paca/Garrafa? *'; }
+  else{ pres.innerHTML='<option value="paca">Paca</option><option value="caja">Caja</option><option value="bulto">Bulto</option><option value="und">Unidad</option>'; label.innerText='¿Cuántas Und trae 1 Paca/Caja? *'; }
   calcStockReal();
 }
 function calcStockReal(){
-  let contenido=Number($('inv-contenido').value||0); let stockPres=Number($('inv-stock').value||0); let tipo=$('inv-tipo-universal').value; let presentacion=$('inv-presentacion').value;
+  let contenido=Number($('inv-contenido').value||0); let stockPres=Number($('inv-stock').value||0); let tipo=$('inv-tipo-universal').value;
   let preview=$('stock-real-preview'); if(!preview) return;
   if(!contenido||!stockPres){ preview.style.display='none'; return; }
-  let stockReal=stockPres*contenido;
-  let unidadTxt=tipo==='kg'?'Kg':tipo==='litro'?'Litros':'Und';
-  let precioBulto=toNum($('inv-publico').value); let precioUnit=contenido? (precioBulto/contenido):0;
-  preview.style.display='block';
-  preview.innerHTML='<b>📦 Stock real universal:</b><br>'+stockPres+' '+presentacion+'(s) x '+contenido+' = <b style="color:var(--primary);font-size:18px">'+stockReal.toFixed(2)+' '+unidadTxt+'</b><br><small>Si bulto trae '+contenido+unidadTxt+', 1 @ = 12.5'+unidadTxt+' = '+(precioUnit*12.5).toFixed(0)+' precio aprox</small><br><small style="color:var(--text-sec)">Ej: 1 bulto 50kg - 1 arroba = quedan 37.5kg = 0.75 bultos</small>';
-  // actualizar info precios por unidad
-  if($('info-kg')) $('info-kg').innerText=contenido?'Precio por Kg aprox: '+fmt(precioUnit):'';
-  if($('info-arroba')) $('info-arroba').innerText=contenido?'Precio por @ (12.5kg) aprox: '+fmt(precioUnit*12.5):'';
+  let stockReal=stockPres*contenido; let unidadTxt=tipo==='kg'?'Kg':tipo==='litro'?'L':'Und';
+  preview.style.display='block'; preview.innerHTML='<b>📦 Stock real:</b> '+stockPres+' x '+contenido+' = <b style="color:var(--primary);font-size:18px">'+stockReal.toFixed(2)+' '+unidadTxt+'</b>';
 }
 function toggleUnidadExtra(tipo){ let chk=$('chk-'+tipo); let box=$('box-'+tipo); if(!chk||!box) return; box.style.display=chk.checked?'block':'none'; }
-function toggleCreditoNuevo(){ let chk=$('fia-credito-check'); let box=$('fia-credito-box'); if(box) box.style.display=chk&&chk.checked?'block':'none'; }
 function buscarFiado(txt){ filtroFiadoTxt=(txt||'').toLowerCase(); renderFiado(); }
-function renderFiado(){ if(!$('lista-fiado'))return; let lista=fiados; if(filtroFiadoTxt){ lista=lista.filter(f=>f.nombre.toLowerCase().includes(filtroFiadoTxt)||f.codigo.toLowerCase().includes(filtroFiadoTxt)); } $('lista-fiado').innerHTML=lista.slice().sort((a,b)=>(b.deuda||0)-(a.deuda||0)).map(f=>{ let realIdx=fiados.indexOf(f); return '<div class="card"><b>👤 '+f.nombre+'</b><br><small>'+f.codigo+'</small><div style="display:flex;gap:6px;margin-top:10px"><button onclick="abrirModalFiado('+realIdx+')" style="flex:1;background:#fff;border:1px solid #E2E8F0;padding:10px;border-radius:12px;box-shadow:none">✏️</button><button onclick="abrirCartera('+realIdx+')" style="flex:1;background:var(--primary);color:#fff;padding:10px;border:none;border-radius:12px">📊</button></div></div>'; }).join('')||'Sin clientes'; }function abrirModalFiado(i){
-  $('fia-nombre').value=''; $('fia-ident').value=''; $('fia-codigo').value=''; $('fia-tel').value='';
-  $('fia-credito-check').checked=false; $('fia-credito-box').style.display='none'; $('fia-limite').value=''; $('fia-dias').value='15'; $('fia-estado-cuenta').value='al dia';
-  $('fia-edit-activa-cred').checked=false; $('fia-edit-limite').value=''; $('fia-edit-dias').value='15'; $('fia-edit-grupo').value='general'; $('fia-edit-ult-rev').value=''; $('fia-edit-prox-rev').value=''; $('fia-edit-nota-cred').value='';
-  if(i>=0){ let f=fiados[i]; editIndex=i; $('fia-nombre').value=f.nombre; $('fia-ident').value=f.identificacion||''; $('fia-codigo').value=f.codigo; $('fia-tel').value=f.telefono||''; }else{ editIndex=-1; }
-  $('modal-fiado').style.display='block';
+function renderFiado(){ if(!$('lista-fiado'))return; let lista=fiados; if(filtroFiadoTxt){ lista=lista.filter(f=>f.nombre.toLowerCase().includes(filtroFiadoTxt)); } $('lista-fiado').innerHTML=lista.map(f=>{ let realIdx=fiados.indexOf(f); return '<div class="card"><b>👤 '+f.nombre+'</b><br><small>'+f.codigo+'</small><div style="display:flex;gap:6px;margin-top:10px"><button onclick="abrirModalFiado('+realIdx+')" style="flex:1;background:#fff;border:1px solid #E2E8F0;padding:10px;border-radius:12px;box-shadow:none">✏️</button><button onclick="abrirCartera('+realIdx+')" style="flex:1;background:var(--primary);color:#fff;padding:10px;border:none;border-radius:12px">📊</button></div></div>'; }).join('')||'Sin clientes'; }function verTabFormTienda(tipo){
+  $('tab-normal').classList.remove('activo'); $('tab-fe').classList.remove('activo');
+  $('form-normal').style.display='none'; $('form-fe').style.display='none';
+  if(tipo==='normal'){ $('tab-normal').classList.add('activo'); $('form-normal').style.display='block'; }
+  else{ $('tab-fe').classList.add('activo'); $('form-fe').style.display='block'; cargarSelectTiendasFE(); }
 }
+function cargarSelectTiendasFE(){
+  let sel=$('gen-fe-store-select'); if(!sel) return;
+  let todas=Object.keys(localStorage).filter(k=>k.startsWith('pos_config_PATIA')).map(k=>{try{return JSON.parse(localStorage.getItem(k));}catch(e){return null}}).filter(Boolean);
+  sel.innerHTML='<option value="">-- Selecciona tienda existente --</option>' + todas.map(t=>'<option value="'+t.storeCode+'">'+t.storeCode+' - '+(t.nombre||'')+' '+(t.facturacion?.activa?'⚡FE ON':'')+'</option>').join('') + '<option value="__nueva">+ Crear nueva con FE</option>';
+}
+function abrirModalFiado(i){ $('fia-nombre').value=''; $('fia-ident').value=''; $('fia-codigo').value=''; $('fia-tel').value=''; if(i>=0){ let f=fiados[i]; editIndex=i; $('fia-nombre').value=f.nombre; $('fia-ident').value=f.identificacion||''; $('fia-codigo').value=f.codigo; $('fia-tel').value=f.telefono||''; }else{ editIndex=-1; } $('modal-fiado').style.display='block'; }
 function cerrarModalFiado(){ $('modal-fiado').style.display='none'; }
-function guardarFiado(){
-  let nombre=$('fia-nombre').value.trim(); if(!nombre){alert('Falta nombre');return;}
-  let ident=$('fia-ident').value.trim()||'222222'; let codigo=($('fia-codigo').value.trim()||nombre.slice(0,4).toUpperCase()).toUpperCase(); let tel=$('fia-tel').value.trim()||''; let email=$('fia-email').value.trim(); let dir=$('fia-dir').value.trim(); let ciudad=$('fia-ciudad').value.trim();
-  let creditoActivo=$('fia-credito-check').checked; let limite=toNum($('fia-limite').value); let dias=Number($('fia-dias').value||0);
-  let creditoObj={activo:creditoActivo,limite:limite||0,dias:dias,estadoCuenta:$('fia-estado-cuenta').value,grupo: editIndex>=0? $('fia-edit-grupo').value : 'general',ultRev: editIndex>=0? $('fia-edit-ult-rev').value : new Date().toISOString().slice(0,10),proxRev: editIndex>=0? $('fia-edit-prox-rev').value : '',notaCred: editIndex>=0? $('fia-edit-nota-cred').value : ''};
-  let objBase={nombre,identificacion:ident,codigo,telefono:tel,email,direccion:dir,ciudad,credito:creditoObj,activo:true};
-  if(editIndex>=0){ fiados[editIndex]={...fiados[editIndex],...objBase}; }else{ fiados.push({...objBase,deuda:0,facturas:[],abonos:[],creado:Date.now()}); }
-  saveAll(); cerrarModalFiado(); renderFiado();
-}
-function abrirCartera(idx){ clienteCarteraIdx=idx; let f=fiados[idx]; $('cartera-nombre').innerText='👤 '+f.nombre+' ('+f.codigo+')'; $('cartera-tel').innerText=(f.telefono||'')+' | '+(f.identificacion||''); verTabCartera('fact'); renderCartera(); $('modal-cartera').style.display='block'; }
-function verTabCartera(t){ tabCartera=t; if($('cartera-lista-facturas')) $('cartera-lista-facturas').style.display=t==='fact'?'block':'none'; if($('cartera-lista-abonos')) $('cartera-lista-abonos').style.display=t==='abonos'?'block':'none'; }
-function renderCartera(){ if(clienteCarteraIdx<0) return; let f=fiados[clienteCarteraIdx]; let totalF=(f.facturas||[]).reduce((s,x)=>s+(x.total||0),0); let totalA=(f.abonos||[]).reduce((s,x)=>s+(x.valor||0),0); f.deuda=Math.max(0,totalF-totalA); if($('cartera-total')) $('cartera-total').innerText=fmt(f.deuda); if($('cartera-fact-count')) $('cartera-fact-count').innerText=(f.facturas||[]).length+' fact'; $('cartera-lista-facturas').innerHTML=(f.facturas||[]).length? f.facturas.slice().reverse().map(fact=>'<div class="card"><b>'+fact.consec+'</b> '+fmt(fact.total)+'<br><small>'+new Date(fact.fecha).toLocaleString()+'</small></div>').join('') : 'Sin fact'; $('cartera-lista-abonos').innerHTML=(f.abonos||[]).length? f.abonos.slice().reverse().map(ab=>'<div class="card"><b>+ '+fmt(ab.valor)+'</b> <small>'+new Date(ab.fecha).toLocaleString()+'</small></div>').join('') : 'Sin abonos'; saveAll(); renderFiado(); }
-function registrarAbono(){ if(clienteCarteraIdx<0) return; let valor=toNum($('cartera-abono-valor').value); if(!valor){ alert('Pon valor'); return; } fiados[clienteCarteraIdx].abonos.push({valor,fecha:Date.now(),metodo:$('cartera-abono-metodo').value,por:usuarioActual?.nombre||'--'}); saveAll(); $('cartera-abono-valor').value=''; renderCartera(); }
-function renderSolicitudes(){ let el=$('lista-solicitudes'); if(!el) return; let pend=solicitudes.filter(s=>s.estado!=='aprobada'&&s.estado!=='rechazada'); if(!pend.length){el.innerHTML='<div class="card">Sin solicitudes</div>';return;} el.innerHTML=pend.map((s,i)=>{let idx=solicitudes.indexOf(s);return '<div class="card"><b>'+s.datos.nombre+'</b><div style="display:flex;gap:6px"><button onclick="aprobarSolicitud('+idx+')" style="flex:1;background:var(--accent);color:#fff;padding:8px;border:none;border-radius:10px">✅</button><button onclick="rechazarSolicitud('+idx+')" style="flex:1;background:var(--danger);color:#fff;padding:8px;border:none;border-radius:10px">❌</button></div></div>';}).join(''); }
+function guardarFiado(){ let nombre=$('fia-nombre').value.trim(); if(!nombre){alert('Falta nombre');return;} let ident=$('fia-ident').value.trim()||'222222'; let codigo=($('fia-codigo').value.trim()||nombre.slice(0,4).toUpperCase()).toUpperCase(); let tel=$('fia-tel').value.trim()||''; let obj={nombre,identificacion:ident,codigo,telefono:tel,credito:{activo:true,limite:500000,dias:15},activo:true}; if(editIndex>=0){ fiados[editIndex]={...fiados[editIndex],...obj}; }else{ fiados.push({...obj,deuda:0,facturas:[],abonos:[],creado:Date.now()}); } saveAll(); cerrarModalFiado(); renderFiado(); }
+function abrirCartera(idx){ clienteCarteraIdx=idx; let f=fiados[idx]; $('cartera-nombre').innerText='👤 '+f.nombre+' ('+f.codigo+')'; $('cartera-lista-facturas').innerHTML=(f.facturas||[]).map(fact=>'<div class="card"><b>'+fact.consec+'</b> '+fmt(fact.total)+'</div>').join('')||'Sin fact'; $('modal-cartera').style.display='block'; }
+function registrarAbono(){ if(clienteCarteraIdx<0) return; let valor=toNum($('cartera-abono-valor').value); if(!valor){ alert('Pon valor'); return; } fiados[clienteCarteraIdx].abonos.push({valor,fecha:Date.now()}); fiados[clienteCarteraIdx].deuda=Math.max(0,(fiados[clienteCarteraIdx].deuda||0)-valor); saveAll(); $('cartera-abono-valor').value=''; abrirCartera(clienteCarteraIdx); renderFiado(); }
+function renderSolicitudes(){ let el=$('lista-solicitudes'); if(!el) return; let pend=solicitudes.filter(s=>s.estado!=='aprobada'); if(!pend.length){el.innerHTML='<div class="card">Sin solicitudes</div>';return;} el.innerHTML=pend.map((s,i)=>{let idx=solicitudes.indexOf(s);return '<div class="card"><b>'+s.datos.nombre+'</b><div style="display:flex;gap:6px"><button onclick="aprobarSolicitud('+idx+')" style="flex:1;background:var(--accent);color:#fff;padding:8px;border:none;border-radius:10px">✅</button><button onclick="rechazarSolicitud('+idx+')" style="flex:1;background:var(--danger);color:#fff;padding:8px;border:none;border-radius:10px">❌</button></div></div>';}).join(''); }
 function aprobarSolicitud(idx){ fiados.push({...solicitudes[idx].datos,facturas:[],abonos:[],deuda:0}); solicitudes[idx].estado='aprobada'; saveAll(); renderFiado(); renderSolicitudes(); }
 function rechazarSolicitud(idx){ solicitudes[idx].estado='rechazada'; saveAll(); renderSolicitudes(); }
-function filtrarFacturas(t){ filtroFact=t; renderFacturas(); }
-function renderFacturas(){ if(!$('lista-facturas'))return; let lista=ventas; if(filtroFact==='fe') lista=lista.filter(v=>v.esFE); if(filtroFact==='pos') lista=lista.filter(v=>!v.esFE); $('lista-facturas').innerHTML=lista.slice().reverse().slice(0,30).map(v=>'<div class="card"><b>'+v.consec+'</b> '+fmt(v.total)+'<br><small>'+(v.cliente||'').slice(0,35)+' • '+(v.productos||[]).map(p=>p.cant+' '+(p.unidadSel||'')).join(', ').slice(0,50)+'</small></div>').join('')||'Sin facturas'; }
+function renderFacturas(){ if(!$('lista-facturas'))return; $('lista-facturas').innerHTML=ventas.slice().reverse().slice(0,30).map(v=>'<div class="card"><b>'+v.consec+'</b> '+fmt(v.total)+'<br><small>'+(v.cliente||'').slice(0,35)+'</small></div>').join('')||'Sin facturas'; }
 function renderDIAN(){let el=$('dian-pend-lista');if(!el)return;el.innerHTML=colaDIAN.map((v,i)=>'<div class="card"><b>'+v.consec+'</b> '+fmt(v.total)+'</div>').join('')||'No hay pendientes ✨';}
 function saveAll(){safeSet('pos_prod',productos);safeSet('pos_fiados',fiados);safeSet('pos_ventas',ventas);safeSet('pos_gastos',gastos);safeSet('pos_compras',compras);safeSet('pos_empleados',empleados);safeSet('pos_cajas',cajas);safeSet('pos_solicitudes',solicitudes);safeSet('pos_cola_dian',colaDIAN);safeSet('pos_config',config);localStorage.setItem('pos_config_'+config.storeCode,JSON.stringify(config));localStorage.setItem('pos_empleados_'+config.storeCode,JSON.stringify(empleados));}
 function diasParaVencer(f){if(!f)return 9999;let hoy=new Date();hoy.setHours(0,0,0,0);let fv=new Date(f);fv.setHours(0,0,0,0);return Math.round((fv-hoy)/86400000);}
 function filtrarInv(t){filtroInv=t;renderInv($('search-inv')?.value||"");}
 function buscarInv(txt){renderInv(txt);}
 function verSubGastos(t){$('lista-gastos').style.display=t==='gastos'?'block':'none';$('lista-compras').style.display=t==='compras'?'block':'none';}
-function cambiarModoCobro(){let m=$('metodo').value;$('box-efectivo').style.display=m==='efectivo'?'block':'none';$('box-fiado').style.display=m==='credito'?'block':'none';$('box-transfer').style.display=m==='transferencia'?'block':'none';}
 function calcAbonoFiado(){let total=carrito.reduce((s,p)=>s+p.precio_final*(p.cant||1),0);let abono=toNum($('abono-fiado').value);if($('saldo-fiado'))$('saldo-fiado').innerText=abono?'Total: '+fmt(total)+' | Abono: '+fmt(abono)+' | Saldo: '+fmt(total-abono):'Total: '+fmt(total);}
-function calcVueltas(){let paga=toNum($('paga-con').value);let tot=carrito.reduce((s,p)=>s+p.precio_final*(p.cant||1),0);if($('vueltas'))$('vueltas').innerText=paga? (paga-tot>=0?"Vueltas: "+fmt(paga-tot):"Falta: "+fmt(Math.abs(paga-tot))):"";}
-function toggleFECliente(){let chk=$('fe-check');let box=$('fe-cliente-box');let cobroBox=$('box-fe-cobro');if(box)box.style.display=chk&&chk.checked?'block':'none';if(cobroBox)cobroBox.style.display=chk&&chk.checked?'block':'none';}function abrirModalInv(i){
-  $('titulo-inv').innerText=i>=0?'Editar Producto Universal ✏️':'Nuevo Producto Universal ✨';
+function calcVueltas(){let paga=toNum($('paga-con').value);let tot=carrito.reduce((s,p)=>s+p.precio_final*(p.cant||1),0);if($('vueltas'))$('vueltas').innerText=paga? (paga-tot>=0?"Vueltas: "+fmt(paga-tot):"Falta: "+fmt(Math.abs(paga-tot))):"";}function generarLicenciaNormal(){
+  let store=($('gen-store').value||'').trim().toUpperCase(); if(!store){alert('Pon código PATIA7');return;}
+  let nombre=($('gen-nombre-cliente').value||'').trim(); if(!nombre){alert('Pon nombre comercial');return;}
+  let ciudad=($('gen-ciudad').value||'').trim(); if(!ciudad){alert('Pon ciudad/vereda');return;}
+  let tel=($('gen-tel').value||'').trim(); if(!tel){alert('Pon teléfono');return;}
+  let dueno=($('gen-dueno').value||'').trim(); if(!dueno){alert('Pon nombre dueño');return;}
+  let cedula=($('gen-cedula').value||'').trim(); let dir=($('gen-dir').value||'').trim(); let passJefe=($('gen-pass-jefe').value||'1234').trim(); let planDias=Number($('gen-plan').value||30);
+  let existente=null; try{ existente=JSON.parse(localStorage.getItem('pos_config_'+store)||'null'); }catch(e){}
+  let cfgTienda={
+    storeCode:store,consec:existente?existente.consec:1,pass_jefe:passJefe,facturacion:{activa:false},
+    nombre:nombre,ciudad:ciudad,direccion:dir,telefono:tel,dueno:dueno,cedula:cedula,
+    plan:planDias,expire:Date.now()+planDias*24*60*60*1000,creado:Date.now(),tipo:'normal'
+  };
+  localStorage.setItem('pos_config_'+store,JSON.stringify(cfgTienda));
+  // crear tienda_nombre para topbar
+  localStorage.setItem('tienda_nombre',nombre); localStorage.setItem('tienda_tel',tel); localStorage.setItem('tienda_dir',dir);
+  $('lic-generada').innerHTML='✅ Tienda NORMAL creada: '+store+' - '+nombre+' - '+planDias+' días - Clave: '+passJefe;
+  setTimeout(()=>{ $('admin-form-tienda').style.display='none'; cargarAdminLista(); },1200);
+}
+function generarLicenciaFE(){
+  let selStore=$('gen-fe-store-select').value; let newCode=($('gen-fe-store-new').value||'').trim().toUpperCase();
+  let storeCode = newCode || selStore; if(selStore==='__nueva') storeCode=newCode;
+  if(!storeCode || storeCode==='__nueva' || storeCode===''){ alert('Selecciona tienda existente o pon nuevo código'); return; }
+  let nit=($('gen-fe-nit').value||'').trim(); let dv=($('gen-fe-dv').value||'').trim(); let razon=($('gen-fe-razon').value||'').trim(); let comercial=($('gen-fe-comercial').value||'').trim();
+  let emailFE=($('gen-fe-email').value||'').trim(); let regimen=$('gen-fe-regimen').value; let dirFiscal=($('gen-fe-dir-fiscal').value||'').trim(); let municipio=($('gen-fe-municipio').value||'524').trim();
+  let amb=$('gen-fe-amb').value; let cid=($('gen-fe-cid').value||'').trim(); let csec=($('gen-fe-csec').value||'').trim(); let range=($('gen-fe-range').value||'8').trim();
+  if(!nit||!razon||!emailFE||!cid||!csec){ alert('Falta NIT, Razón, Email FE, Client ID y Secret'); return; }
+  let existente=null; try{ existente=JSON.parse(localStorage.getItem('pos_config_'+storeCode)||'null'); }catch(e){}
+  if(!existente){ // si es nueva, crear base
+    existente={storeCode:storeCode,consec:1,pass_jefe:"1234",facturacion:{activa:false},nombre:comercial||razon,expire:Date.now()+30*24*60*60*1000};
+  }
+  let fe={
+    activa:true,nit:nit,dv:dv,razon:razon,comercial:comercial,email:emailFE,regimen:regimen,dirFiscal:dirFiscal,municipio:municipio,
+    clientId:cid,clientSecret:csec,rangeId:range,ambiente:amb,apiUrl: amb==='production'?'https://api.factus.com.co':'https://api-sandbox.factus.com.co'
+  };
+  existente.facturacion=fe; existente.tipo='fe'; existente.nit=nit; existente.razon=razon;
+  localStorage.setItem('pos_config_'+storeCode,JSON.stringify(existente));
+  $('lic-generada').innerHTML='⚡ FE ACTIVADA para '+storeCode+'<br>NIT '+nit+'-'+dv+'<br>'+razon+'<br>Ambiente '+amb+' - Range '+range;
+  setTimeout(()=>{ $('admin-form-tienda').style.display='none'; cargarAdminLista(); },1500);
+}
+async function probarConexionFEAdmin(){
+  let cid=($('gen-fe-cid').value||'').trim(); let csec=($('gen-fe-csec').value||'').trim(); let amb=$('gen-fe-amb').value; let api=amb==='production'?'https://api.factus.com.co':'https://api-sandbox.factus.com.co';
+  if(!cid||!csec){alert('Pon Client ID y Secret');return;}
+  $('lic-generada').innerHTML='🔍 Probando conexión FE...';
+  try{
+    let body=new URLSearchParams(); body.append('grant_type','password'); body.append('client_id',cid); body.append('client_secret',csec); body.append('username','sandbox@factus.com.co'); body.append('password','sandbox2024%');
+    let res=await fetch(api+'/oauth/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:body.toString()});
+    let data=await res.json(); if(data.access_token){ $('lic-generada').innerHTML='✅ Conexión OK - Token válido<br>Ambiente '+amb+'<br>Token: '+data.access_token.substring(0,20)+'...'; } else { $('lic-generada').innerHTML='❌ Error: '+JSON.stringify(data).substring(0,400); }
+  }catch(e){ $('lic-generada').innerHTML='❌ Error conexión: '+e.message; }
+}
+function abrirModalInv(i){
+  $('titulo-inv').innerText=i>=0?'Editar Producto ✏️':'Nuevo Producto Universal ✨';
   editIndex=i;
-  $('inv-activo').checked=true; $('inv-codigo').value=''; $('inv-nombre').value=''; $('inv-categoria').value='general'; $('inv-tipo-universal').value='kg'; cambiarTipoUniversal();
-  $('inv-presentacion').value='bulto'; $('inv-contenido').value=''; $('inv-stock').value=''; $('inv-proveedor').value=''; $('inv-fiar').checked=true;
-  $('inv-costo').value=''; $('inv-publico').value=''; $('inv-desc-max').value=''; $('inv-stock-min').value=''; $('inv-vence').value='';
+  $('inv-activo').checked=true; $('inv-codigo').value=''; $('inv-nombre').value=''; $('inv-tipo-universal').value='kg'; cambiarTipoUniversal();
+  $('inv-presentacion').value='bulto'; $('inv-contenido').value=''; $('inv-stock').value=''; $('inv-proveedor').value='';
+  $('inv-costo').value=''; $('inv-publico').value=''; $('inv-stock-min').value=''; $('inv-vence').value='';
   $('chk-kg').checked=false; $('chk-arroba').checked=false; $('chk-libra').checked=false; $('chk-litro').checked=false; $('chk-und').checked=false;
   $('box-kg').style.display='none'; $('box-arroba').style.display='none'; $('box-libra').style.display='none'; $('box-litro').style.display='none'; $('box-und').style.display='none';
   $('precio-kg').value=''; $('precio-arroba').value=''; $('precio-libra').value=''; $('precio-litro').value=''; $('precio-und').value='';
-  $('inv-iva').value=19; $('inv-und-dian').value='KGM'; $('margen-auto').style.display='none'; $('stock-real-preview').style.display='none';
-  let tieneFE=config.facturacion?.activa; if($('prod-fe-extra')) $('prod-fe-extra').style.display=tieneFE?'block':'none';
+  $('margen-auto').style.display='none'; $('stock-real-preview').style.display='none';
   if(i>=0){
     let p=productos[i];
-    $('inv-activo').checked=p.activo!==false; $('inv-codigo').value=p.codigo||''; $('inv-nombre').value=p.nombre; $('inv-categoria').value=p.categoria||'general';
-    $('inv-tipo-universal').value=p.tipoUniversal||'kg'; cambiarTipoUniversal();
-    $('inv-presentacion').value=p.presentacion||p.unidad||'bulto'; $('inv-contenido').value=p.contenidoBase||''; $('inv-stock').value=p.stock||''; $('inv-proveedor').value=p.proveedor||''; $('inv-fiar').checked=p.permiteFiar!==false;
-    $('inv-costo').value=p.costo? fmt(p.costo).replace('$ ','') : ''; $('inv-publico').value=p.publico? fmt(p.publico).replace('$ ','') : ''; $('inv-desc-max').value=p.descMax? fmt(p.descMax).replace('$ ','') : ''; $('inv-stock-min').value=p.stockMin||''; $('inv-vence').value=p.vence||'';
+    $('inv-activo').checked=p.activo!==false; $('inv-codigo').value=p.codigo||''; $('inv-nombre').value=p.nombre; $('inv-tipo-universal').value=p.tipoUniversal||'kg'; cambiarTipoUniversal();
+    $('inv-presentacion').value=p.presentacion||'bulto'; $('inv-contenido').value=p.contenidoBase||''; $('inv-stock').value=p.stock||''; $('inv-proveedor').value=p.proveedor||'';
+    $('inv-costo').value=p.costo? fmt(p.costo).replace('$ ','') : ''; $('inv-publico').value=p.publico? fmt(p.publico).replace('$ ','') : ''; $('inv-stock-min').value=p.stockMinReal||''; $('inv-vence').value=p.vence||'';
     if(p.unidades){ p.unidades.forEach(u=>{ if(u.unidad==='kg'&&!u.esBase){$('chk-kg').checked=true; $('box-kg').style.display='block'; $('precio-kg').value=fmt(u.precio).replace('$ ','');} if(u.unidad==='arroba'&&!u.esBase){$('chk-arroba').checked=true; $('box-arroba').style.display='block'; $('precio-arroba').value=fmt(u.precio).replace('$ ','');} if(u.unidad==='libra'&&!u.esBase){$('chk-libra').checked=true; $('box-libra').style.display='block'; $('precio-libra').value=fmt(u.precio).replace('$ ','');} if(u.unidad==='litro'&&!u.esBase){$('chk-litro').checked=true; $('box-litro').style.display='block'; $('precio-litro').value=fmt(u.precio).replace('$ ','');} if(u.unidad==='und'&&!u.esBase){$('chk-und').checked=true; $('box-und').style.display='block'; $('precio-und').value=fmt(u.precio).replace('$ ','');} }); }
-    calcMargenProd(); calcStockReal();
+    calcStockReal();
   }
   $('modal-inv').style.display='block';
 }
 function cerrarModalInv(){ $('modal-inv').style.display='none'; }
-function getFactorUniversal(unidad){
-  // factor en universal base: kg base 1kg, arroba 12.5kg, libra 0.5kg, litro 1L, etc
-  let map={kg:1,arroba:12.5,libra:0.5,bulto:50,paca:24,caja:12,und:1,litro:1,garrafa:20,botella:1,galon:3.785};
-  return map[unidad]||1;
-}
 function guardarProducto(){
   let codigo=$('inv-codigo').value.trim().toUpperCase(); let nombre=$('inv-nombre').value.trim();
   if(!codigo||!nombre){alert('Falta código y nombre');return;}
   let tipoUniversal=$('inv-tipo-universal').value; let presentacion=$('inv-presentacion').value;
-  let contenidoBase=Number($('inv-contenido').value||0); if(!contenidoBase){alert('7. Pon cuántos Kg/L/Und trae 1 '+presentacion);return;}
+  let contenidoBase=Number($('inv-contenido').value||0); if(!contenidoBase){alert('Pon cuántos Kg/L/Und trae 1 '+presentacion);return;}
   let stockPresentacion=Number($('inv-stock').value||0); let stockReal=stockPresentacion*contenidoBase;
   let costo=toNum($('inv-costo').value); let publico=toNum($('inv-publico').value);
   if(!publico){alert('Falta precio público');return;}
-  let unidades=[];
-  // base siempre es la presentación
-  unidades.push({unidad:presentacion,precio:publico,factor:contenidoBase,esBase:true,tipo:tipoUniversal,contenido:contenidoBase});
-  // unidades extra según tipo
+  let unidades=[]; unidades.push({unidad:presentacion,precio:publico,factor:contenidoBase,esBase:true,tipo:tipoUniversal,contenido:contenidoBase});
   if($('chk-kg').checked){ let pr=toNum($('precio-kg').value); if(pr){ unidades.push({unidad:'kg',precio:pr,factor:1,esBase:false,tipo:'kg'}); } }
   if($('chk-arroba').checked){ let pr=toNum($('precio-arroba').value); if(pr){ unidades.push({unidad:'arroba',precio:pr,factor:12.5,esBase:false,tipo:'kg'}); } }
   if($('chk-libra').checked){ let pr=toNum($('precio-libra').value); if(pr){ unidades.push({unidad:'libra',precio:pr,factor:0.5,esBase:false,tipo:'kg'}); } }
   if($('chk-litro').checked){ let pr=toNum($('precio-litro').value); if(pr){ unidades.push({unidad:'litro',precio:pr,factor:1,esBase:false,tipo:'litro'}); } }
   if($('chk-und').checked){ let pr=toNum($('precio-und').value); if(pr){ unidades.push({unidad:'und',precio:pr,factor:1,esBase:false,tipo:'und'}); } }
-  let o={
-    codigo:codigo,barras:codigo,nombre:nombre,categoria:$('inv-categoria').value,
-    tipoUniversal:tipoUniversal, presentacion:presentacion, contenidoBase:contenidoBase,
-    stock:stockPresentacion, stockReal:stockReal, stockMinReal:Number($('inv-stock-min').value||0),
-    unidad:presentacion, proveedor:$('inv-proveedor').value.trim(),permiteFiar:$('inv-fiar').checked,activo:$('inv-activo').checked,
-    costo:costo,publico:publico,descMax:toNum($('inv-desc-max').value),stockMin:Number($('inv-stock-min').value||5),vence:$('inv-vence').value||'',
-    unidades:unidades,iva:config.facturacion?.activa?Number($('inv-iva').value||19):0,undDian:config.facturacion?.activa?$('inv-und-dian').value:(tipoUniversal==='kg'?'KGM':tipoUniversal==='litro'?'LTR':'70')
-  };
+  let o={codigo:codigo,barras:codigo,nombre:nombre,categoria:'general',tipoUniversal:tipoUniversal,presentacion:presentacion,contenidoBase:contenidoBase,stock:stockPresentacion,stockReal:stockReal,stockMinReal:Number($('inv-stock-min').value||0),unidad:presentacion,proveedor:$('inv-proveedor').value.trim(),activo:$('inv-activo').checked,costo:costo,publico:publico,stockMin:Number($('inv-stock-min').value||5),vence:$('inv-vence').value||'',unidades:unidades};
   if(editIndex>=0){ productos[editIndex]={...productos[editIndex],...o}; }else{ if(productos.find(p=>p.codigo===o.codigo)){alert('Código existe');return;} productos.push(o); }
   saveAll(); cerrarModalInv(); renderInv();
 }
 function renderInv(filtroTxt){
   if(!$('lista-inv'))return;
   let lista=productos.filter(p=>{
-    if(filtroTxt&&!p.nombre.toLowerCase().includes(filtroTxt.toLowerCase())&&!p.codigo.toLowerCase().includes(filtroTxt.toLowerCase())&&!(p.proveedor||'').toLowerCase().includes(filtroTxt.toLowerCase()))return false;
-    if(filtroInv==='bajo'){ let real=p.stockReal||0; let min=p.stockMinReal|| (p.stockMin||5)*(p.contenidoBase||1); if(real>min) return false; }
-    if(filtroInv==='vence'){let d=diasParaVencer(p.vence);if(!p.vence||d>30)return false;}
+    if(filtroTxt&&!p.nombre.toLowerCase().includes(filtroTxt.toLowerCase())&&!p.codigo.toLowerCase().includes(filtroTxt.toLowerCase()))return false;
+    if(filtroInv==='bajo'){ let real=p.stockReal||0; let min=p.stockMinReal||5; if(real>min) return false; }
     return true;
   });
-  let totalValor=lista.reduce((s,p)=>s+((p.costo||0)*(p.stock||0)),0); if($('count-inv'))$('count-inv').innerText=lista.length;if($('valor-inv'))$('valor-inv').innerText=fmt(totalValor);if($('count-bajo'))$('count-bajo').innerText=productos.filter(p=>{let real=p.stockReal||0; let min=p.stockMinReal|| (p.stockMin||5)*(p.contenidoBase||1); return real<=min;}).length;if($('count-vence'))$('count-vence').innerText=productos.filter(p=>{let d=diasParaVencer(p.vence);return p.vence&&d<=30&&d>=-5;}).length;
+  let totalValor=lista.reduce((s,p)=>s+((p.costo||0)*(p.stock||0)),0); if($('count-inv'))$('count-inv').innerText=lista.length;if($('valor-inv'))$('valor-inv').innerText=fmt(totalValor);
   $('lista-inv').innerHTML=lista.map(p=>{
-    let realIdx=productos.indexOf(p);let stockReal=p.stockReal||0; let stockPres=p.stock||0; let contenido=p.contenidoBase||1; let tipo=p.tipoUniversal||'kg'; let unidadTxt=tipo==='kg'?'Kg':tipo==='litro'?'L':'Und';
-    let stockColor=stockReal<= (p.stockMinReal||5)?'var(--danger)':(stockReal<= (p.stockMinReal||10)?'var(--warning)':'var(--accent)');
+    let realIdx=productos.indexOf(p);let stockReal=p.stockReal||0; let contenido=p.contenidoBase||1; let tipo=p.tipoUniversal||'kg'; let unidadTxt=tipo==='kg'?'Kg':tipo==='litro'?'L':'Und';
+    let stockColor=stockReal<= (p.stockMinReal||5)?'var(--danger)':'var(--accent)';
     let unidadesTxt=(p.unidades||[]).map(u=>u.unidad+':'+fmt(u.precio)).join(' • ');
-    let bultosRestantes = contenido? (stockReal/contenido).toFixed(2) : stockPres;
-    return '<div class="card" style="border-left:5px solid '+stockColor+'"><div style="display:flex;justify-content:space-between"><div><b>'+p.nombre+'</b><br><small>'+p.codigo+' • '+(p.categoria||'')+' • '+(p.presentacion||'')+' '+contenido+unidadTxt+'</small><br><div style="background:#EEF2FF;padding:6px;border-radius:10px;margin:4px 0"><b>Stock real: '+stockReal.toFixed(2)+' '+unidadTxt+'</b> = '+bultosRestantes+' '+(p.presentacion||'bultos')+'<br><small>'+unidadesTxt+'</small></div><small>Prov: '+(p.proveedor||'-')+' | Vence: '+(p.vence||'-')+'</small></div><div style="text-align:right"><span style="color:var(--primary);font-weight:900">'+fmt(p.publico)+'</span><br><small>'+(p.presentacion||'')+'</small></div></div><div style="display:flex;gap:6px;margin-top:8px"><button onclick="abrirModalInv('+realIdx+')" style="flex:1;background:var(--primary);color:#fff;padding:10px;border:none;border-radius:12px">✏️ Editar universal</button><button onclick="borrarProducto('+realIdx+')" style="background:var(--danger);color:#fff;padding:10px;border:none;border-radius:12px">X</button></div></div>';
+    let bultosRestantes = contenido? (stockReal/contenido).toFixed(2) : p.stock;
+    return '<div class="card" style="border-left:5px solid '+stockColor+'"><b>'+p.nombre+'</b><br><small>'+p.codigo+' • '+(p.presentacion||'')+' '+contenido+unidadTxt+'</small><br><div style="background:#EEF2FF;padding:6px;border-radius:10px;margin:4px 0"><b>Stock real: '+stockReal.toFixed(2)+' '+unidadTxt+'</b> = '+bultosRestantes+' '+(p.presentacion||'')+'<br><small>'+unidadesTxt+'</small></div><div style="display:flex;gap:6px;margin-top:8px"><button onclick="abrirModalInv('+realIdx+')" style="flex:1;background:var(--primary);color:#fff;padding:10px;border:none;border-radius:12px">✏️</button><button onclick="borrarProducto('+realIdx+')" style="background:var(--danger);color:#fff;padding:10px;border:none;border-radius:12px">X</button></div></div>';
   }).join('')||'<div class="card">📦 Sin productos</div>';
 }
 function borrarProducto(i){if(confirm('Borrar '+productos[i].nombre+'?')){productos.splice(i,1);saveAll();renderInv();}}function buscarProducto(txt,esCod){
@@ -352,65 +387,49 @@ function borrarProducto(i){if(confirm('Borrar '+productos[i].nombre+'?')){produc
     let contiene = res.find(p=>p.codigo.toUpperCase().includes(limpio) || (p.barras||'').toUpperCase().includes(limpio));
     if(contiene){ addCarrito(contiene); $('search').value=''; $('sugerencias').innerHTML=''; try{ navigator.vibrate(100); }catch(e){} return; }
     $('search').value=limpio; res = res.filter(p=>p.codigo.toUpperCase().includes(limpio) || p.nombre.toLowerCase().includes(limpio.toLowerCase()));
-  }else{ res = res.filter(p=>p.nombre.toLowerCase().includes(txt.toLowerCase()) || p.codigo.toLowerCase().includes(txt.toLowerCase()) || (p.categoria||'').toLowerCase().includes(txt.toLowerCase())); }
-  $('sugerencias').innerHTML=res.slice(0,6).map(r=>'<div class="card" onclick="addCarrito(productos.find(p=>p.codigo===\''+r.codigo+'\'))"><b>'+r.nombre+'</b><br><small>'+(r.presentacion||'')+' '+r.contenidoBase+(r.tipoUniversal==='kg'?'Kg':r.tipoUniversal==='litro'?'L':'Und')+' • Stock real: '+(r.stockReal||0).toFixed(1)+(r.tipoUniversal==='kg'?'Kg':r.tipoUniversal==='litro'?'L':'Und')+' • '+(r.stock||0)+' '+(r.presentacion||'')+'</small><br><span style="color:var(--primary)">'+(r.unidades||[]).map(u=>u.unidad+':'+fmt(u.precio)).join(' | ')+'</span></div>').join('');
+  }else{ res = res.filter(p=>p.nombre.toLowerCase().includes(txt.toLowerCase()) || p.codigo.toLowerCase().includes(txt.toLowerCase())); }
+  $('sugerencias').innerHTML=res.slice(0,6).map(r=>'<div class="card" onclick="addCarrito(productos.find(p=>p.codigo===\''+r.codigo+'\'))"><b>'+r.nombre+'</b><br><small>'+(r.presentacion||'')+' '+r.contenidoBase+(r.tipoUniversal==='kg'?'Kg':r.tipoUniversal==='litro'?'L':'Und')+' • Real: '+(r.stockReal||0).toFixed(1)+'</small><br><span style="color:var(--primary)">'+(r.unidades||[]).map(u=>u.unidad+':'+fmt(u.precio)).join(' | ')+'</span></div>').join('');
 }
 function addCarrito(p){
   let unidades=p.unidades||[{unidad:p.presentacion||'und',precio:p.publico,factor:p.contenidoBase||1,esBase:true}];
-  // si ya existe con misma unidad seleccionada, suma
   let ex=carrito.find(x=>x.codigo===p.codigo && x.unidadSel===unidades[0].unidad);
-  if(ex){ ex.cant++; }
-  else{
-    carrito.push({codigo:p.codigo,nombre:p.nombre,unidades:JSON.parse(JSON.stringify(unidades)),unidadSel:unidades[0].unidad,unidadIdx:0,precio_final:unidades[0].precio,cant:1,stockReal:p.stockReal||0,tipoUniversal:p.tipoUniversal||'kg',contenidoBase:p.contenidoBase||1,presentacion:p.presentacion||'bulto',permiteFiar:p.permiteFiar!==false});
-  }
+  if(ex){ ex.cant++; } else{ carrito.push({codigo:p.codigo,nombre:p.nombre,unidades:JSON.parse(JSON.stringify(unidades)),unidadSel:unidades[0].unidad,unidadIdx:0,precio_final:unidades[0].precio,cant:1,stockReal:p.stockReal||0,tipoUniversal:p.tipoUniversal||'kg',contenidoBase:p.contenidoBase||1,presentacion:p.presentacion||'bulto'}); }
   renderCarrito();
 }
-function cambiarUnidadCarrito(i,nuevoIdx){
-  let c=carrito[i]; let u=c.unidades[nuevoIdx]; if(!u) return; c.unidadIdx=nuevoIdx; c.unidadSel=u.unidad; c.precio_final=u.precio; renderCarrito();
-}
+function cambiarUnidadCarrito(i,nuevoIdx){ let c=carrito[i]; let u=c.unidades[nuevoIdx]; if(!u) return; c.unidadIdx=nuevoIdx; c.unidadSel=u.unidad; c.precio_final=u.precio; renderCarrito(); }
 function renderCarrito(){
   let tot=0;
   $('carrito').innerHTML=carrito.map((c,i)=>{
     let sub=c.precio_final*(c.cant||1); tot+=sub;
     let opts=(c.unidades||[]).map((u,idx)=>'<option value="'+idx+'" '+(idx===c.unidadIdx?'selected':'')+'>'+u.unidad+' '+fmt(u.precio)+'</option>').join('');
-    return '<div class="card" style="margin:6px 0;padding:10px"><div style="display:flex;justify-content:space-between"><b>'+c.nombre+'</b><span style="color:var(--primary);font-weight:900">'+fmt(sub)+'</span></div><div style="display:flex;align-items:center;gap:6px;margin-top:6px"><select onchange="cambiarUnidadCarrito('+i+',this.value)" style="flex:1;background:#EEF2FF;border:2px solid var(--primary);font-weight:800;padding:8px;border-radius:10px">⚖️ '+opts+'</select><button onclick="carrito['+i+'].cant=Math.max(1,carrito['+i+'].cant-1);renderCarrito()" style="width:32px;padding:6px;background:#fff;border:1px solid #E2E8F0;border-radius:8px;box-shadow:none">-</button><b>'+c.cant+'</b><button onclick="carrito['+i+'].cant++;renderCarrito()" style="width:32px;padding:6px;background:#fff;border:1px solid #E2E8F0;border-radius:8px;box-shadow:none">+</button><button onclick="carrito.splice('+i+',1);renderCarrito()" style="width:36px;margin-left:auto;background:var(--danger);color:#fff;padding:6px;border-radius:8px;border:none">X</button></div><small>Unidad: <b>'+c.unidadSel+'</b> • '+fmt(c.precio_final)+' c/u • Stock real: '+(c.stockReal||0).toFixed(1)+' '+(c.tipoUniversal||'')+'</small></div>';
+    return '<div class="card" style="margin:6px 0;padding:10px"><div style="display:flex;justify-content:space-between"><b>'+c.nombre+'</b><span style="color:var(--primary);font-weight:900">'+fmt(sub)+'</span></div><div style="display:flex;align-items:center;gap:6px;margin-top:6px"><select onchange="cambiarUnidadCarrito('+i+',this.value)" style="flex:1;background:#EEF2FF;border:2px solid var(--primary);font-weight:800;padding:8px;border-radius:10px">⚖️ '+opts+'</select><button onclick="carrito['+i+'].cant=Math.max(1,carrito['+i+'].cant-1);renderCarrito()" style="width:32px;padding:6px;background:#fff;border:1px solid #E2E8F0;border-radius:8px;box-shadow:none">-</button><b>'+c.cant+'</b><button onclick="carrito['+i+'].cant++;renderCarrito()" style="width:32px;padding:6px;background:#fff;border:1px solid #E2E8F0;border-radius:8px;box-shadow:none">+</button><button onclick="carrito.splice('+i+',1);renderCarrito()" style="width:36px;margin-left:auto;background:var(--danger);color:#fff;padding:6px;border-radius:8px;border:none">X</button></div><small>Unidad: <b>'+c.unidadSel+'</b> • Stock real: '+(c.stockReal||0).toFixed(1)+'</small></div>';
   }).join('');
   $('total').innerText="TOTAL: "+fmt(tot); calcAbonoFiado(); calcVueltas();
 }
 function abrirModalGasto(){ $('modal-gasto').style.display='block'; }function cerrarModalGasto(){$('modal-gasto').style.display='none';}
-function guardarGasto(){ let que=$('gas-que').value.trim(); let precio=toNum($('gas-precio').value); if(!que||!precio){alert('Falta');return;} gastos.push({que,precio,fecha:Date.now(),por:usuarioActual?.nombre||'--'}); saveAll(); cerrarModalGasto(); renderGastos(); actualizarCuadre(); }
+function guardarGasto(){ let que=$('gas-que').value.trim(); let precio=toNum($('gas-precio').value); if(!que||!precio){alert('Falta');return;} gastos.push({que,precio,fecha:Date.now()}); saveAll(); cerrarModalGasto(); renderGastos(); }
 function renderGastos(){if(!$('lista-gastos'))return;$('lista-gastos').innerHTML=gastos.slice().reverse().slice(0,30).map(g=>'<div class="card"><b>'+g.que+'</b> '+fmt(g.precio)+'</div>').join('')||'Sin gastos';}
-function abrirModalCompra(){ $('modal-compra').style.display='block'; }function cerrarModalCompra(){$('modal-compra').style.display='none';}
-function guardarCompra(){ let empresa=$('comp-empresa').value.trim(); let que=$('comp-que').value.trim(); let valor=toNum($('comp-valor').value); if(!empresa||!que||!valor){alert('Falta');return;} compras.push({empresa,que,valor,fecha:Date.now()}); saveAll(); cerrarModalCompra(); renderCompras(); actualizarCuadre(); }
-function renderCompras(){if(!$('lista-compras'))return;$('lista-compras').innerHTML=compras.slice().reverse().slice(0,30).map(c=>'<div class="card"><b>'+c.empresa+'</b> '+fmt(c.valor)+'</div>').join('')||'Sin compras';}
 function abrirCobro(tipo){
   if(!carrito.length){alert('Carro vacío');return;}
-  if(tipo==='credito'){ let noFiar=carrito.filter(p=>p.permiteFiar===false); if(noFiar.length){ alert('🔒 No se puede fiar: '+noFiar.map(p=>p.nombre).join(', ')); return; } }
-  $('metodo').value=tipo||'efectivo'; cambiarModoCobro();
+  $('metodo').value=tipo||'efectivo';
   let cli=fiados.find(f=>f.codigo==="222222")||fiados[0]; $('cliente-cobro').value=cli?cli.codigo+" - "+cli.nombre:"222222";
   $('modal-cobro').style.display='block'; $('bloque-factura').style.display='none'; calcVueltas(); calcAbonoFiado();
 }
 function cerrarCobro(){$('modal-cobro').style.display='none';}function generarCanvasFactura(v){
   let c=$('canvas-factura'); c.width=384; c.height=1100; let ctx=c.getContext('2d'); ctx.fillStyle="#fff"; ctx.fillRect(0,0,384,1100);
-  let nombreTienda=localStorage.getItem('tienda_nombre')||'TIENDA PATIA'; let tel=localStorage.getItem('tienda_tel')||''; let dir=localStorage.getItem('tienda_dir')||''; let atendido = v.atendidoPor||usuarioActual?.nombre||(config.storeCode||'PATIA6');
-  ctx.fillStyle="#000"; ctx.font="bold 15px monospace"; let y=24; ctx.fillText(nombreTienda.toUpperCase().slice(0,28),10,y); y+=18; ctx.font="10px monospace"; if(dir){ctx.fillText(dir.slice(0,38),10,y); y+=12;} if(tel){ctx.fillText('Tel: '+tel,10,y); y+=12;} ctx.fillText('--------------------------',10,y); y+=14; ctx.fillText(v.consec+' | '+new Date(v.fecha).toLocaleString(),10,y); y+=12; ctx.fillText('Tienda: '+(v.tienda||config.storeCode),10,y); y+=12; ctx.fillText('Atendido por: '+atendido,10,y); y+=14; ctx.fillText('Cliente: '+(v.cliente||'').slice(0,32),10,y); y+=10; ctx.fillText('--------------------------',10,y); (v.productos||[]).forEach(p=>{y+=12; ctx.fillText((p.nombre.slice(0,14)+' x'+(p.cant||1)+' '+(p.unidadSel||'')+' '+fmt(p.precio_final*(p.cant||1))).slice(0,36),10,y);}); y+=18; ctx.font="bold 14px monospace"; ctx.fillText('TOTAL: '+fmt(v.total),10,y); return c.toDataURL();
+  let nombreTienda=localStorage.getItem('tienda_nombre')||'TIENDA PATIA'; ctx.fillStyle="#000"; ctx.font="bold 15px monospace"; let y=24; ctx.fillText(nombreTienda.toUpperCase().slice(0,28),10,y); y+=18; ctx.font="10px monospace"; ctx.fillText(v.consec+' | '+new Date(v.fecha).toLocaleString(),10,y); y+=14; (v.productos||[]).forEach(p=>{y+=12; ctx.fillText((p.nombre.slice(0,14)+' x'+(p.cant||1)+' '+(p.unidadSel||'')+' '+fmt(p.precio_final*(p.cant||1))).slice(0,36),10,y);}); y+=18; ctx.font="bold 14px monospace"; ctx.fillText('TOTAL: '+fmt(v.total),10,y); return c.toDataURL();
 }
 async function finalizarCobro(){
   let met=$('metodo').value; let cliTxt=$('cliente-cobro').value.trim(); let total=carrito.reduce((s,p)=>s+p.precio_final*(p.cant||1),0);
-  let venta={total,fecha:Date.now(),productos:JSON.parse(JSON.stringify(carrito)),consec:genConsec(),cliente:cliTxt,metodo:met,tienda:config.storeCode,esFE:false,estadoDIAN:'POS',atendidoPor:usuarioActual?usuarioActual.nombre:config.storeCode};
-  ventas.push(venta); config.consec++; saveAll(); actualizarConsec(); ultimaFactura=venta;
-  if(met==='credito'){
-    let codCliente = cliTxt.split(' - ')[0].trim().toUpperCase(); let cf=fiados.find(f=>f.codigo===codCliente) || fiados.find(f=>cliTxt.toUpperCase().includes(f.codigo));
-    if(cf){ cf.facturas=cf.facturas||[]; cf.abonos=cf.abonos||[]; let abono=toNum($('abono-fiado').value); cf.facturas.push({consec:venta.consec,total:venta.total,fecha:venta.fecha,metodo:met,productos:venta.productos}); if(abono>0) cf.abonos.push({valor:abono,fecha:Date.now(),metodo:'abono inicial',por:usuarioActual?.nombre||'--'}); let totalF=cf.facturas.reduce((s,x)=>s+(x.total||0),0); let totalA=cf.abonos.reduce((s,x)=>s+(x.valor||0),0); cf.deuda=Math.max(0,totalF-totalA); saveAll(); }
-  }
-  // descontar stock REAL universal Kg/L/Und
+  let venta={total,fecha:Date.now(),productos:JSON.parse(JSON.stringify(carrito)),consec:genConsec(),cliente:cliTxt,metodo:met,tienda:config.storeCode};
+  ventas.push(venta); config.consec++; saveAll(); actualizarConsec();
+  if(met==='credito'){ let codCliente = cliTxt.split(' - ')[0].trim().toUpperCase(); let cf=fiados.find(f=>f.codigo===codCliente); if(cf){ cf.facturas=cf.facturas||[]; cf.facturas.push({consec:venta.consec,total:venta.total,fecha:venta.fecha}); let totalF=cf.facturas.reduce((s,x)=>s+(x.total||0),0); let totalA=(cf.abonos||[]).reduce((s,x)=>s+(x.valor||0),0); cf.deuda=Math.max(0,totalF-totalA); saveAll(); } }
   carrito.forEach(item=>{
     let pr=productos.find(p=>p.codigo===item.codigo); if(!pr) return;
     let selUnidad = item.unidades[item.unidadIdx] || item.unidades[0];
-    let factorSel = selUnidad.factor || 1; // factor en universal
+    let factorSel = selUnidad.factor || 1;
     let descuentoUniversal = item.cant * factorSel;
     pr.stockReal = Math.max(0, (pr.stockReal||0) - descuentoUniversal);
-    // recalcular stock en presentaciones
     let contenido = pr.contenidoBase||1;
     pr.stock = contenido? (pr.stockReal/contenido) : pr.stockReal;
   });
@@ -423,76 +442,64 @@ async function toggleCam(t){
   let id=t==='venta'?'reader-venta':t==='inv'?'reader-inv':'reader-modal';
   let ctrl=t==='venta'?'controls-venta':t==='inv'?'controls-inv':'controls-modal';
   let el=document.getElementById(id); let elCtrl=document.getElementById(ctrl);
-  if(camAbierta){
-    try{await html5QrCode.stop();}catch(e){} try{await html5QrCode.clear();}catch(e){}
-    if(el)el.style.display='none'; if(elCtrl)elCtrl.style.display='none'; camAbierta=false; currentTrack=null; torchOn=false; return;
-  }
-  if(!el)return; el.style.display='block'; if(elCtrl)elCtrl.style.display='flex';
-  html5QrCode=new Html5Qrcode(id); camAbierta=true;
-  try{
-    await html5QrCode.start({facingMode:"environment"},{fps:10,qrbox:{width:250,height:100}},d=>{
-      let code=d.trim(); if(!code) return;
-      if(t==='venta'){ buscarProducto(code,true); } else if(t==='inv'){ $('search-inv').value=code; buscarInv(code); } else{ $('inv-codigo').value=code.toUpperCase(); }
-      if(t==='venta'){ setTimeout(()=>{ if(carrito.length>0){ toggleCam(t); } },300); }else{ toggleCam(t); }
-    });
-    setTimeout(()=>{try{let v=el.querySelector('video'); if(v&&v.srcObject){let tracks=v.srcObject.getVideoTracks(); if(tracks&&tracks[0]) currentTrack=tracks[0];}}catch(e){}},800);
-  }catch(e){camAbierta=false; if(elCtrl)elCtrl.style.display='none'; alert('Cam: '+e);}
+  if(camAbierta){ try{await html5QrCode.stop();}catch(e){} try{await html5QrCode.clear();}catch(e){} if(el)el.style.display='none'; if(elCtrl)elCtrl.style.display='none'; camAbierta=false; currentTrack=null; torchOn=false; return; }
+  if(!el)return; el.style.display='block'; if(elCtrl)elCtrl.style.display='flex'; html5QrCode=new Html5Qrcode(id); camAbierta=true;
+  try{ await html5QrCode.start({facingMode:"environment"},{fps:10,qrbox:{width:250,height:100}},d=>{ let code=d.trim(); if(!code) return; if(t==='venta'){ buscarProducto(code,true); } else if(t==='inv'){ $('search-inv').value=code; buscarInv(code); } else{ $('inv-codigo').value=code.toUpperCase(); } if(t==='venta'){ setTimeout(()=>{ if(carrito.length>0){ toggleCam(t); } },300); }else{ toggleCam(t); } }); setTimeout(()=>{try{let v=el.querySelector('video'); if(v&&v.srcObject){let tracks=v.srcObject.getVideoTracks(); if(tracks&&tracks[0]) currentTrack=tracks[0];}}catch(e){}},800); }catch(e){camAbierta=false; if(elCtrl)elCtrl.style.display='none'; alert('Cam: '+e);}
 }
-async function toggleLinterna(){
-  if(!currentTrack){alert('Enciende cámara primero');return;}
-  try{
-    let caps=currentTrack.getCapabilities(); if(!caps.torch){alert('Tu celular no tiene linterna 🔦');return;}
-    torchOn=!torchOn; await currentTrack.applyConstraints({advanced:[{torch:torchOn}]});
-  }catch(e){alert('Error linterna: '+e.message);}
-}
-function abrirCaja(){let hoy=new Date().toISOString().slice(0,10);if(cajas.find(c=>c.fecha===hoy&&!c.cerrada)){alert('Ya abierta');return;}cajas.push({fecha:hoy,base:toNum($('caja-base').value),abierta:Date.now(),cerrada:false,por:usuarioActual?.nombre});saveAll();renderCaja();}
-function cerrarCaja(){let hoy=new Date().toISOString().slice(0,10);let c=cajas.find(x=>x.fecha===hoy&&!x.cerrada);if(!c){alert('No hay caja');return;}c.cerrada=Date.now();c.contado=toNum($('caja-contado').value);c.cerradaPor=usuarioActual?.nombre;saveAll();renderCaja();}
-function abrirPerfilJefe(){ let esEmpleado=rol==='empleado'; let avatar = esEmpleado? (usuarioActual?.nombre||'E').substring(0,1).toUpperCase() : (config.storeCode||'P').substring(0,1); $('perfil-avatar-jefe').innerText = avatar; if($('perfil-avatar-grande')) $('perfil-avatar-grande').innerText = avatar; $('perfil-nombre-tienda').innerText = localStorage.getItem('tienda_nombre')||('TIENDA '+(config.storeCode||'PATIA')); $('perfil-codigo-tienda').innerText = config.storeCode||''; if($('perfil-rol')) $('perfil-rol').innerText = rol? rol.toUpperCase() : 'JEFE'; if($('perfil-empleado-nombre')) $('perfil-empleado-nombre').innerText = usuarioActual? usuarioActual.nombre : config.storeCode; $('modal-perfil-jefe').style.display='flex'; }
+async function toggleLinterna(){ if(!currentTrack){alert('Enciende cámara primero');return;} try{ let caps=currentTrack.getCapabilities(); if(!caps.torch){alert('Sin linterna');return;} torchOn=!torchOn; await currentTrack.applyConstraints({advanced:[{torch:torchOn}]}); }catch(e){alert('Error: '+e.message);} }
+function abrirCaja(){let hoy=new Date().toISOString().slice(0,10);if(cajas.find(c=>c.fecha===hoy&&!c.cerrada)){alert('Ya abierta');return;}cajas.push({fecha:hoy,base:toNum($('caja-base').value),abierta:Date.now(),cerrada:false});saveAll();renderCaja();}
+function cerrarCaja(){let hoy=new Date().toISOString().slice(0,10);let c=cajas.find(x=>x.fecha===hoy&&!x.cerrada);if(!c){alert('No hay caja');return;}c.cerrada=Date.now();c.contado=toNum($('caja-contado').value);saveAll();renderCaja();}
+function abrirPerfilJefe(){ $('modal-perfil-jefe').style.display='flex'; }
 function abrirConfigJefe(){ renderEmpleadosJefe(); $('modal-config-jefe').style.display='flex'; }
 function guardarCfgTiendaJefe(){ localStorage.setItem('tienda_nombre',$('cfg-nombre-jefe').value||''); localStorage.setItem('tienda_tel',$('cfg-tel-jefe').value||''); localStorage.setItem('tienda_dir',$('cfg-dir-jefe').value||''); saveAll(); actualizarTextoLic(); alert('Guardado'); }
-function cambiarPassAdminJefe(){ let actual=$('cfg-pass-actual').value.trim(); let nueva=$('cfg-pass-nueva').value.trim(); if(actual!==config.pass_jefe && actual!=='1234'){ alert('Mala'); return; } config.pass_jefe=nueva; localStorage.setItem('pos_config_'+config.storeCode,JSON.stringify(config)); alert('Nueva: '+nueva); }
 function guardarEmpleadoJefe(){ let nombre=$('emp-nombre-jefe').value.trim(); let usuario=$('emp-usuario-jefe').value.trim()||nombre.split(' ')[0].toLowerCase(); let pass=$('emp-pass-jefe').value.trim(); empleados.push({nombre,usuario,pass,rol:$('emp-rol-jefe').value}); saveAll(); renderEmpleadosJefe(); }
 function renderEmpleadosJefe(){ let el=$('lista-empleados-jefe'); if(!el) return; el.innerHTML=empleados.map((e,i)=>'<div style="display:flex;justify-content:space-between;padding:10px;background:#fff;border-radius:12px;margin:6px 0;border:1px solid #E2E8F0"><div><b>'+e.nombre+'</b><br><small>'+e.usuario+' • '+e.rol+'</small></div><button onclick="borrarEmpleadoJefe('+i+')" style="width:36px;background:#FEE2E2;color:#DC2626;border:none">🗑️</button></div>').join('')||'Sin empleados'; }
-function borrarEmpleadoJefe(i){ if(confirm('Borrar '+empleados[i].nombre+'?')){ empleados.splice(i,1); saveAll(); renderEmpleadosJefe(); } }
-function abrirSoporteChat(){ $('modal-perfil-jefe').style.display='none'; $('modal-soporte-chat').style.display='flex'; }
-function enviarSoporte(){ let msg=$('soporte-mensaje').value.trim(); if(!msg) return; let soporte={id:Date.now(),tienda:config.storeCode,mensaje:msg,fecha:Date.now()}; let admin=[]; try{admin=JSON.parse(localStorage.getItem('pos_soporte_admin')||'[]');}catch(e){} admin.push(soporte); localStorage.setItem('pos_soporte_admin',JSON.stringify(admin)); $('soporte-mensaje').value=''; alert('Enviado'); }let filtroAdminActual='todas'; let tiendaEditando=null;
+function borrarEmpleadoJefe(i){ if(confirm('Borrar '+empleados[i].nombre+'?')){ empleados.splice(i,1); saveAll(); renderEmpleadosJefe(); } }let filtroAdminActual='todas'; let tiendaEditando=null;
 function verAdminSub(sub){ document.querySelectorAll('.admin-sub').forEach(s=>s.style.display='none'); let el=document.getElementById('admin-sub-'+sub); if(el) el.style.display='block'; if(sub==='tiendas')cargarAdminLista(); if(sub==='reportes')cargarReportesAdmin(); if(sub==='alertas')cargarAlertasAdmin(); }
 function abrirPerfilAdmin(){ $('modal-perfil-admin').style.display='block'; let u=localStorage.getItem('admin_user')||'ADMIN'; $('perfil-user').value=u; }
 function guardarPerfilAdmin(){ let u=$('perfil-user').value.trim(); let p=$('perfil-pass').value.trim(); if(!u){alert('Vacío');return;} localStorage.setItem('admin_user',u); if(p) localStorage.setItem('admin_pass',p); alert('Guardado: '+u); $('modal-perfil-admin').style.display='none'; }
-function logoutAdmin(){ if(confirm('Salir ADMIN?')){ logout(); } }
-function abrirAjustesAdmin(){ $('modal-ajustes-admin').style.display='block'; }
 function abrirFormTienda(codigo=null){
   $('admin-form-tienda').style.display='block'; $('admin-form-tienda').scrollIntoView({behavior:'smooth'});
-  if(codigo){ tiendaEditando=codigo; $('admin-form-titulo').innerText='Editar '+codigo; try{ let cfg=JSON.parse(localStorage.getItem('pos_config_'+codigo)); $('gen-store').value=cfg.storeCode; $('gen-store').disabled=true; $('gen-nombre-cliente').value=cfg.nombre||cfg.storeCode; $('gen-pass-jefe').value=cfg.pass_jefe; }catch(e){} }
-  else{ tiendaEditando=null; $('admin-form-titulo').innerText='Nueva Tienda + FE ✨'; $('gen-store').value=''; $('gen-store').disabled=false; $('gen-nombre-cliente').value=''; $('gen-pass-jefe').value='1234'; $('lic-generada').innerHTML=''; $('gen-fe-nit').value=''; $('gen-fe-razon').value=''; $('gen-fe-cid').value=''; $('gen-fe-csec').value=''; }
+  verTabFormTienda('normal');
+  if(codigo){
+    tiendaEditando=codigo; $('admin-form-titulo').innerText='Editar '+codigo;
+    try{
+      let cfg=JSON.parse(localStorage.getItem('pos_config_'+codigo));
+      $('gen-store').value=cfg.storeCode; $('gen-store').disabled=true; $('gen-nombre-cliente').value=cfg.nombre||''; $('gen-ciudad').value=cfg.ciudad||''; $('gen-dir').value=cfg.direccion||''; $('gen-tel').value=cfg.telefono||''; $('gen-dueno').value=cfg.dueno||''; $('gen-cedula').value=cfg.cedula||''; $('gen-pass-jefe').value=cfg.pass_jefe||'1234';
+      if(cfg.facturacion?.activa){
+        verTabFormTienda('fe');
+        $('gen-fe-store-select').value=codigo; $('gen-fe-nit').value=cfg.facturacion.nit||''; $('gen-fe-dv').value=cfg.facturacion.dv||''; $('gen-fe-razon').value=cfg.facturacion.razon||''; $('gen-fe-comercial').value=cfg.facturacion.comercial||''; $('gen-fe-email').value=cfg.facturacion.email||''; $('gen-fe-cid').value=cfg.facturacion.clientId||''; $('gen-fe-csec').value=cfg.facturacion.clientSecret||''; $('gen-fe-range').value=cfg.facturacion.rangeId||'8';
+      }
+    }catch(e){}
+  } else {
+    tiendaEditando=null; $('admin-form-titulo').innerText='Nueva Tienda ✨'; $('gen-store').value=''; $('gen-store').disabled=false; $('gen-nombre-cliente').value=''; $('gen-ciudad').value=''; $('gen-dir').value=''; $('gen-tel').value=''; $('gen-dueno').value=''; $('gen-cedula').value=''; $('gen-pass-jefe').value='1234'; $('lic-generada').innerHTML='';
+  }
+  cargarSelectTiendasFE();
 }
-function setFiltroAdminTienda(f){ filtroAdminActual=f; cargarAdminLista(); }
+function setFiltroAdminTienda(f){ filtroAdminActual=f; document.querySelectorAll('.admin-filter-bar.tab-form').forEach(b=>b.classList.remove('activo')); let btn=$('f-'+f); if(btn) btn.classList.add('activo'); cargarAdminLista(); }
 function diasRestantes(expire){ if(!expire) return 999; return Math.ceil((expire-Date.now())/86400000); }
 function cargarAdminLista(){
   let todas=Object.keys(localStorage).filter(k=>k.startsWith('pos_config_PATIA')).map(k=>{try{return JSON.parse(localStorage.getItem(k));}catch(e){return null}}).filter(Boolean);
-  let offlineCount=0, porVencerCount=0, vencidasCount=0;
-  todas.forEach(t=>{ let d=diasRestantes(t.expire); if(d<0) vencidasCount++; else if(d<=7) porVencerCount++; try{ let cola=JSON.parse(localStorage.getItem('pos_cola_dian_'+t.storeCode)||'[]'); if(cola.length>0) offlineCount++; }catch(e){} });
+  let offlineCount=0;
+  todas.forEach(t=>{ try{ let cola=JSON.parse(localStorage.getItem('pos_cola_dian_'+t.storeCode)||'[]'); if(cola.length>0) offlineCount++; }catch(e){} });
   if($('adm-total')) $('adm-total').innerText=todas.length; if($('adm-offline')) $('adm-offline').innerText=offlineCount; if($('admin-fecha')) $('admin-fecha').innerText=new Date().toLocaleDateString('es-CO');
-  let filtradas=todas; if(filtroAdminActual==='offline'){ filtradas=todas.filter(t=>{ try{return JSON.parse(localStorage.getItem('pos_cola_dian_'+t.storeCode)||'[]').length>0;}catch(e){return false;} }); } if(filtroAdminActual==='porvencer'){ filtradas=todas.filter(t=>{ let d=diasRestantes(t.expire); return d>=0 && d<=7; }); } if(filtroAdminActual==='vencidas'){ filtradas=todas.filter(t=>diasRestantes(t.expire)<0); }
-  if($('admin-lista-tiendas')) $('admin-lista-tiendas').innerHTML=filtradas.map(t=>{ let d=diasRestantes(t.expire); let estadoTxt=d<0?'🔴 VENCIDA hace '+Math.abs(d)+'d':(d<=7?'🟡 Vence en '+d+'d':'🟢 Activa '+d+'d'); return '<div class="card" style="border-left:5px solid '+(d<0?'#64748B':(d<=7?'#F59E0B':'#22C55E'))+'"><b>🏪 '+t.storeCode+'</b><br><small>'+(t.nombre||'')+' • '+estadoTxt+'</small><br><small>Clave: '+t.pass_jefe+'</small><div style="display:flex;gap:6px;margin-top:8px"><button onclick="abrirFormTienda(\''+t.storeCode+'\')" style="flex:1;background:var(--primary);color:#fff;padding:8px;border:none;border-radius:10px">✏️ Editar</button><button onclick="verDetalleTienda(\''+t.storeCode+'\')" style="flex:1;background:#fff;border:1px solid #E2E8F0;padding:8px;border-radius:10px">👁️</button></div></div>'; }).join('')||'Sin tiendas';
+  let filtradas=todas;
+  if(filtroAdminActual==='offline'){ filtradas=todas.filter(t=>{ try{return JSON.parse(localStorage.getItem('pos_cola_dian_'+t.storeCode)||'[]').length>0;}catch(e){return false;} }); }
+  if(filtroAdminActual==='fe'){ filtradas=todas.filter(t=>t.facturacion?.activa); }
+  if(filtroAdminActual==='normal'){ filtradas=todas.filter(t=>!t.facturacion?.activa); }
+  if($('admin-lista-tiendas')) $('admin-lista-tiendas').innerHTML=filtradas.map(t=>{
+    let d=diasRestantes(t.expire); let estadoTxt=d<0?'🔴 VENCIDA hace '+Math.abs(d)+'d':(d<=7?'🟡 Vence en '+d+'d':'🟢 Activa '+d+'d');
+    let tipoBadge=t.facturacion?.activa?'<span style="background:#22c55e;color:#fff;padding:2px 6px;border-radius:8px;font-size:9px;font-weight:900">⚡ FE '+t.facturacion.nit+'</span>':'<span style="background:#E2E8F0;padding:2px 6px;border-radius:8px;font-size:9px">NORMAL</span>';
+    return '<div class="card" style="border-left:5px solid '+(t.facturacion?.activa?'#22c55e':(d<0?'#64748B':(d<=7?'#F59E0B':'#2563EB')))+'"><div style="display:flex;justify-content:space-between"><div><b>🏪 '+t.storeCode+'</b> '+tipoBadge+'<br><small>'+(t.nombre||'')+' • '+(t.ciudad||'')+' • '+estadoTxt+'</small><br><small>Dueño: '+(t.dueno||'-')+' • Tel: '+(t.telefono||'-')+'</small><br><small>Clave: '+t.pass_jefe+' | '+(t.cedula||'')+'</small></div><div style="text-align:right"><small>'+(t.plan||30)+'d</small></div></div><div style="display:flex;gap:6px;margin-top:8px"><button onclick="abrirFormTienda(\''+t.storeCode+'\')" style="flex:1;background:var(--primary);color:#fff;padding:8px;border:none;border-radius:10px">✏️ Editar</button><button onclick="verDetalleTienda(\''+t.storeCode+'\')" style="flex:1;background:#fff;border:1px solid #E2E8F0;padding:8px;border-radius:10px">👁️ Detalle</button><button onclick="if(confirm(\'Borrar '+t.storeCode+'?\')){localStorage.removeItem(\'pos_config_'+t.storeCode+'\');cargarAdminLista();}" style="background:#FEE2E2;color:#DC2626;padding:8px;border:none;border-radius:10px">🗑️</button></div></div>';
+  }).join('')||'<div class="card">Sin tiendas con filtro '+filtroAdminActual+'</div>';
 }
-function verDetalleTienda(code){ try{ let cfg=JSON.parse(localStorage.getItem('pos_config_'+code)); let ventasT=JSON.parse(localStorage.getItem('pos_ventas_'+code)||'[]'); let total=ventasT.reduce((s,v)=>s+v.total,0); alert('🏪 '+code+'\nNombre: '+(cfg.nombre||'')+'\nVence: '+new Date(cfg.expire).toLocaleDateString()+'\nVentas: '+ventasT.length+' - '+fmt(total)); }catch(e){ alert('Sin datos'); } }
+function verDetalleTienda(code){ try{ let cfg=JSON.parse(localStorage.getItem('pos_config_'+code)); let ventasT=JSON.parse(localStorage.getItem('pos_ventas_'+code)||'[]'); let total=ventasT.reduce((s,v)=>s+v.total,0); let fe=cfg.facturacion?.activa?'\nFE ON\nNIT: '+cfg.facturacion.nit+'-'+cfg.facturacion.dv+'\nRazón: '+cfg.facturacion.razon+'\nEmail FE: '+cfg.facturacion.email+'\nAmb: '+cfg.facturacion.ambiente:'\nNORMAL sin FE'; alert('🏪 '+code+'\nNombre: '+(cfg.nombre||'')+'\nCiudad: '+(cfg.ciudad||'')+'\nDueño: '+(cfg.dueno||'')+' - '+(cfg.cedula||'')+'\nTel: '+(cfg.telefono||'')+'\nDir: '+(cfg.direccion||'')+'\nVence: '+new Date(cfg.expire).toLocaleDateString()+fe+'\nVentas: '+ventasT.length+' - '+fmt(total)); }catch(e){ alert('Sin datos'); } }
 function cargarAlertasAdmin(){ let alertas=[]; try{ alertas=JSON.parse(localStorage.getItem('pos_soporte_admin')||'[]'); }catch(e){} if($('admin-alertas-lista')) $('admin-alertas-lista').innerHTML=alertas.length? alertas.slice().reverse().map(a=>'<div class="card"><b>🏪 '+(a.tienda||'')+'</b><br><small>'+new Date(a.fecha).toLocaleString()+'</small><div style="background:#F8FAFC;padding:8px;border-radius:12px;margin:6px 0">'+(a.mensaje||'')+'</div></div>').join('') : '<div class="card" style="text-align:center">✅ Sin alertas</div>'; }
-function cargarReportesAdmin(){ let tiendas=Object.keys(localStorage).filter(k=>k.startsWith('pos_config_PATIA')).map(k=>{ try{return JSON.parse(localStorage.getItem(k));}catch(e){return null} }).filter(Boolean); let html='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'; let totalGlobal=0; tiendas.forEach(t=>{ try{ let ventasT=JSON.parse(localStorage.getItem('pos_ventas_'+t.storeCode)||'[]'); let total=ventasT.reduce((s,v)=>s+v.total,0); totalGlobal+=total; html+='<div class="card" style="margin:0"><b>'+t.storeCode+'</b><br><b style="color:var(--primary)">'+fmt(total)+'</b></div>'; }catch(e){} }); html+='</div>'; html='<div class="card" style="background:#EEF2FF;border:2px solid var(--primary)"><b>💰 Balance Global</b><h2 style="color:var(--primary)">'+fmt(totalGlobal)+'</h2><small>'+tiendas.length+' tiendas</small></div>'+html; if($('admin-reportes-content')) $('admin-reportes-content').innerHTML=html; }
+function cargarReportesAdmin(){ let tiendas=Object.keys(localStorage).filter(k=>k.startsWith('pos_config_PATIA')).map(k=>{ try{return JSON.parse(localStorage.getItem(k));}catch(e){return null} }).filter(Boolean); let html='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'; let totalGlobal=0; tiendas.forEach(t=>{ try{ let ventasT=JSON.parse(localStorage.getItem('pos_ventas_'+t.storeCode)||'[]'); let total=ventasT.reduce((s,v)=>s+v.total,0); totalGlobal+=total; html+='<div class="card" style="margin:0"><b>'+t.storeCode+'</b> '+(t.facturacion?.activa?'⚡':'')+'<br><b style="color:var(--primary)">'+fmt(total)+'</b><br><small>'+(t.nombre||'')+'</small></div>'; }catch(e){} }); html+='</div>'; html='<div class="card" style="background:#EEF2FF;border:2px solid var(--primary)"><b>💰 Balance Global</b><h2 style="color:var(--primary)">'+fmt(totalGlobal)+'</h2><small>'+tiendas.length+' tiendas ('+tiendas.filter(t=>t.facturacion?.activa).length+' con FE)</small></div>'+html; if($('admin-reportes-content')) $('admin-reportes-content').innerHTML=html; }
 function abrirOlvido(){ try{ let u=$('login-user').value; if(u&&$('olv-usuario')) $('olv-usuario').value=u; }catch(e){} $('modal-olvido').style.display='flex'; }
 function cerrarOlvido(){ $('modal-olvido').style.display='none'; }
 function enviarRecuperacion(){ let ced=$('olv-cedula').value.trim(), tienda=$('olv-tienda').value.trim(), tel=$('olv-telefono').value.trim(), usu=$('olv-usuario').value.trim().toUpperCase(); if(!ced||!tienda||!tel||!usu){ alert('Completa todos'); return; } let rec={id:Date.now(), cedula:ced, tiendaNombre:tienda, telefono:tel, usuarioRecuperar:usu, tienda:usu, fecha:Date.now(), tipo:'RECUPERACION', mensaje:'🔑 RECUPERACION<br>Cedula: '+ced+'<br>Tienda: '+tienda+'<br>Tel: '+tel+'<br>Usuario: '+usu}; let admin=[]; try{admin=JSON.parse(localStorage.getItem('pos_soporte_admin')||'[]');}catch(e){} admin.push(rec); localStorage.setItem('pos_soporte_admin', JSON.stringify(admin)); alert('✅ Enviado'); cerrarOlvido(); }
-function generarLicencia(){
-  let store=($('gen-store').value||'').trim().toUpperCase(); if(!store){alert('Pon código');return;}
-  let passJefe=($('gen-pass-jefe').value||'1234').trim(); let nombreCli=$('gen-nombre-cliente').value.trim()||store;
-  let nit=$('gen-fe-nit').value.trim(); let razon=$('gen-fe-razon').value.trim(); let cid=$('gen-fe-cid').value.trim(); let csec=$('gen-fe-csec').value.trim();
-  let tieneFE = nit && cid && csec? true : false;
-  let fe={activa:tieneFE,nit:nit,razon:razon,clientId:cid,clientSecret:csec,rangeId:8,ambiente:'sandbox',apiUrl:'https://api-sandbox.factus.com.co'};
-  let existente=null; try{ existente=JSON.parse(localStorage.getItem('pos_config_'+store)||'null'); }catch(e){}
-  let cfgTienda={storeCode:store,consec:existente?existente.consec:1,pass_jefe:passJefe,facturacion:fe,nombre:nombreCli,expire:existente?existente.expire:(Date.now()+30*24*60*60*1000)};
-  localStorage.setItem('pos_config_'+store,JSON.stringify(cfgTienda)); $('lic-generada').innerHTML='✅ Creada '+store+' FE:'+(tieneFE?'ON':'OFF'); setTimeout(()=>{ $('admin-form-tienda').style.display='none'; $('gen-store').disabled=false; cargarAdminLista(); },500);
-}
-function actualizarSemaforoOnline(){let online=navigator.onLine;let color=online?'#22c55e':'#EF4444';let txt=online?'ONLINE':'OFFLINE';['semaforo-dot-top','semaforo-dot-venta','perfil-semaforo-dot','fe-semaforo-dot-jefe','admin-dot'].forEach(id=>{let el=$(id);if(el)el.style.background=color;});['semaforo-txt-top','semaforo-txt-venta','perfil-semaforo-txt','fe-semaforo-txt-jefe','admin-txt'].forEach(id=>{let el=$(id);if(el)el.innerText=txt;});}
+function actualizarSemaforoOnline(){let online=navigator.onLine;let color=online?'#22c55e':'#EF4444';let txt=online?'ONLINE':'OFFLINE';['semaforo-dot-top','semaforo-dot-venta','admin-dot'].forEach(id=>{let el=$(id);if(el)el.style.background=color;});['semaforo-txt-top','semaforo-txt-venta','admin-txt'].forEach(id=>{let el=$(id);if(el)el.innerText=txt;});}
 function iniciarSemaforo(){setInterval(actualizarSemaforoOnline,3000); window.addEventListener('online',actualizarSemaforoOnline); window.addEventListener('offline',actualizarSemaforoOnline); actualizarSemaforoOnline();}function login(){
   try{
     let user=( $('login-user').value||'').trim().toUpperCase(); let pass=( $('login-pass').value||'').trim();
@@ -507,15 +514,14 @@ function iniciarSemaforo(){setInterval(actualizarSemaforoOnline,3000); window.ad
       try{ let emps=JSON.parse(localStorage.getItem('pos_empleados_'+user)||'[]'); let emp=emps.find(e=>String(e.pass)===String(pass)); if(emp){ config=cfgLocal; config.storeCode=user; rol=emp.rol; usuarioActual={nombre:emp.nombre,usuario:emp.usuario,rol:rol}; cargarDatosTienda(); $('login-screen').style.display='none'; aplicarRol(); $('login-msg').innerText=''; return; } }catch(e){}
       $('login-msg').innerText='Clave incorrecta'; return;
     }
-    if(user.startsWith('PATIA') && pass==='1234'){ let nuevo={storeCode:user,consec:1,pass_jefe:"1234",facturacion:{activa:false},nombre:user,expire:Date.now()+30*24*60*60*1000}; localStorage.setItem('pos_config_'+user,JSON.stringify(nuevo)); config=nuevo; rol='jefe'; usuarioActual={nombre:user,usuario:user,rol:'jefe'}; cargarDatosTienda(); $('login-screen').style.display='none'; aplicarRol(); $('login-msg').innerText=''; return; }
+    if(user.startsWith('PATIA') && pass==='1234'){ let nuevo={storeCode:user,consec:1,pass_jefe:"1234",facturacion:{activa:false},nombre:user,ciudad:"Patía",expire:Date.now()+30*24*60*60*1000,tipo:"normal"}; localStorage.setItem('pos_config_'+user,JSON.stringify(nuevo)); config=nuevo; rol='jefe'; usuarioActual={nombre:user,usuario:user,rol:'jefe'}; cargarDatosTienda(); $('login-screen').style.display='none'; aplicarRol(); $('login-msg').innerText=''; return; }
     $('login-msg').innerText='Usuario no existe';
   }catch(e){ alert('Login error: '+e.message); }
 }
 function cargarRecordarUsuario(){ try{ let rec=localStorage.getItem('recordar_user'); let ult=localStorage.getItem('ultimo_user'); if(rec && ult && $('login-user')){ $('login-user').value=ult; if($('check-recordar')) $('check-recordar').checked=true; } }catch(e){} }
-function abrirTerminos(){ $('modal-terminos').style.display='flex'; }
 function logout(){ carrito=[]; rol=null; usuarioActual=null; $('login-screen').style.display='flex'; document.querySelectorAll('.modulo').forEach(d=>d.classList.remove('activo')); }
 function aplicarRol(){ let esAdmin=rol==='admin'; if(esAdmin){ document.getElementById('topbar').style.display='none'; document.getElementById('nav').style.display='none'; document.querySelectorAll('.modulo').forEach(d=>d.classList.remove('activo')); document.getElementById('mod-admin').classList.add('activo'); verAdminSub('inicio'); cargarAdminLista(); actualizarTextoLic(); actualizarAvatarJefe(); return; } document.getElementById('topbar').style.display='flex'; document.getElementById('nav').style.display='flex'; document.querySelectorAll('.modulo').forEach(d=>d.classList.remove('activo')); setTimeout(()=>{ verMod('vender'); },100); actualizarTextoLic(); actualizarAvatarJefe(); }
-function verMod(m){ document.querySelectorAll('.modulo').forEach(d=>d.classList.remove('activo')); let mod=$('mod-'+m); if(mod){ mod.classList.add('activo'); mod.style.display='block'; } document.querySelectorAll('#nav button').forEach(b=>b.classList.remove('activo-nav')); let nb=$('nav-'+m); if(nb) nb.classList.add('activo-nav'); if(m==='inventario')renderInv(); if(m==='fiado')renderFiado(); if(m==='caja')renderCaja(); if(m==='gastos'){renderGastos();renderCompras();} if(m==='facturas')renderFacturas(); if(m==='dian')renderDIAN(); if(m==='solicitudes')renderSolicitudes(); }
+function verMod(m){ document.querySelectorAll('.modulo').forEach(d=>d.classList.remove('activo')); let mod=$('mod-'+m); if(mod){ mod.classList.add('activo'); mod.style.display='block'; } document.querySelectorAll('#nav button').forEach(b=>b.classList.remove('activo-nav')); let nb=$('nav-'+m); if(nb) nb.classList.add('activo-nav'); if(m==='inventario')renderInv(); if(m==='fiado')renderFiado(); if(m==='caja')renderCaja(); if(m==='gastos'){renderGastos();} if(m==='facturas')renderFacturas(); if(m==='dian')renderDIAN(); if(m==='solicitudes')renderSolicitudes(); }
 document.getElementById('login-user')?.addEventListener('keypress', e=>{ if(e.key==='Enter') login(); });
 document.getElementById('login-pass')?.addEventListener('keypress', e=>{ if(e.key==='Enter') login(); });
 function renderAll(){ document.querySelectorAll('.modulo').forEach(d=>d.classList.remove('activo')); let mv=$('mod-vender'); if(mv) mv.classList.add('activo'); renderFiado();renderCaja();renderFacturas();actualizarTextoLic();renderInv(); }
