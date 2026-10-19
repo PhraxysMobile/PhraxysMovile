@@ -2,12 +2,12 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>TIENDA PATIA v5.6 FIXED</title>
+<title>TIENDA PATIA v6.0 REABASTECIMIENTO</title>
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
 :root{ --bg:#EEF2FF; --card:rgba(255,255,255,.88); --text:#0F172A; --text-sec:#64748B; --primary:#2563EB; --accent:#16A34A; --danger:#EF4444; --warning:#F59E0B; --nav-bg:rgba(255,255,255,.92); }
-*{box-sizing:border-box; font-family:'Inter',sans-serif; transition: all.2s ease;}
+*{box-sizing:border-box; font-family:'Inter',sans-serif; transition: all .2s ease;}
 body{background: radial-gradient(1200px 600px at 20% -10%, #BFDBFE 0%, transparent 60%), radial-gradient(1000px 500px at 90% 0%, #A7F3D0 0%, transparent 60%), var(--bg);color:var(--text);margin:0;padding-bottom:110px;}
 .modulo{display:none!important;padding:12px}.modulo.activo{display:block!important}
 .card{background: var(--card); backdrop-filter: blur(14px); padding:16px; margin:12px 0; border-radius:20px; border:1px solid rgba(255,255,255,.8); box-shadow: 0 10px 25px -10px rgba(0,0,0,.15);}
@@ -35,6 +35,11 @@ button{font-weight:700; cursor:pointer; box-shadow: 0 4px 12px -2px rgba(0,0,0,.
 .stock-real-box{background:linear-gradient(135deg,#EEF2FF,#DBEAFE);border:2px solid var(--primary);padding:12px;border-radius:14px;margin:8px 0;text-align:center}
 .tab-form{flex:1;padding:10px;border-radius:12px;font-size:11px;font-weight:800;border:1px solid #E2E8F0;background:#fff;box-shadow:none}
 .tab-form.activo{background:var(--primary)!important;color:#fff!important}
+/* v6.0 NUEVO */
+.modal-existe{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(8px);z-index:99999;display:none;justify-content:center;align-items:center;padding:14px}
+.modal-existe-box{background:#fff;width:100%;max-width:440px;border-radius:20px;padding:16px;max-height:92vh;overflow:auto;border:2px solid #F59E0B}
+.badge-existe{background:#FEF3C7;color:#92400E;padding:8px 12px;border-radius:12px;font-weight:800;border:2px dashed #F59E0B;text-align:center;font-size:12px}
+.card-existe{background:#FFFBEB;padding:12px;border-radius:14px;margin:10px 0;border:1px solid #FDE68A}
 </style>
 </head>
 <body>
@@ -58,7 +63,7 @@ button{font-weight:700; cursor:pointer; box-shadow: 0 4px 12px -2px rgba(0,0,0,.
 <div id="login-screen" style="position:fixed;inset:0;background: var(--bg);z-index:9999;display:flex;flex-direction:column;justify-content:center;padding:28px">
 <div style="text-align:center;margin-bottom:18px">
 <h1 style="color:var(--primary);margin:0;font-size:28px;font-weight:900">Sistema<br>Control Inventario</h1>
-<p style="margin:8px 0 0;font-size:11px;color:var(--primary);font-weight:800;background:#DBEAFE;display:inline-block;padding:3px 10px;border-radius:20px">v5.6 FIXED ADMIN ✨</p>
+<p style="margin:8px 0 0;font-size:11px;color:var(--primary);font-weight:800;background:#DBEAFE;display:inline-block;padding:3px 10px;border-radius:20px">v6.0 REABASTECIMIENTO ✨</p>
 </div>
 <input id="login-user" placeholder="Usuario" style="text-transform:uppercase;text-align:center;border:2px solid var(--primary);font-size:18px;background:#fff">
 <input id="login-pass" type="password" placeholder="Contraseña" style="text-align:center;border:2px solid #E2E8F0;font-size:18px;background:#fff">
@@ -171,7 +176,43 @@ button{font-weight:700; cursor:pointer; box-shadow: 0 4px 12px -2px rgba(0,0,0,.
 <div class="card"><b>✏️ Cambiar credenciales</b><input id="perfil-user" placeholder="Usuario ADMIN"><input id="perfil-pass" type="password" placeholder="Nueva clave"><button class="btn-verde" onclick="guardarPerfilAdmin()">💾 Guardar</button><button onclick="logout()" style="background:#FEE2E2;color:#DC2626;border:none;margin-top:8px">🚪 Cerrar sesión ADMIN</button></div>
 </div>
 
-<div id="modal-ajustes-admin" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:200;padding:16px"><div style="display:flex;justify-content:space-between"><h3 style="margin:0">⚙️ Ajustes Admin</h3><button onclick="$('modal-ajustes-admin').style.display='none'" style="width:36px;background:#fff;border:1px solid #E2E8F0;box-shadow:none">✕</button></div><div class="card"><b>ℹ️ Versión</b><br><small>v5.6 FIXED ADMIN - Stock real Kg/L/Und + Formularios separados Normal/FE + Linterna</small></div></div>
+<div id="modal-ajustes-admin" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:200;padding:16px"><div style="display:flex;justify-content:space-between"><h3 style="margin:0">⚙️ Ajustes Admin</h3><button onclick="$('modal-ajustes-admin').style.display='none'" style="width:36px;background:#fff;border:1px solid #E2E8F0;box-shadow:none">✕</button></div><div class="card"><b>ℹ️ Versión</b><br><small>v6.0 REABASTECIMIENTO - Stock real Kg/L/Und + Formularios separados Normal/FE + Linterna + FIFO</small></div></div>
+
+<!-- MODAL v6.0 PRODUCTO YA EXISTE -->
+<div id="modal-existe" class="modal-existe">
+<div class="modal-existe-box">
+<h3 style="margin:0;color:#D97706">⚠️ PRODUCTO YA EXISTE</h3>
+<div id="existe-info" class="card-existe"></div>
+<div class="badge-existe">📦 Este código / nombre ya está registrado. No lo dupliques.</div>
+<h4 style="margin-top:12px">¿Qué quieres hacer?</h4>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+<button onclick="cerrarModalExiste()" style="background:#fff;border:1px solid #E2E8F0;box-shadow:none">❌ Cancelar</button>
+<button onclick="abrirModalAgregarExistencias()" style="background:var(--warning);color:#fff;border:none">📦 Agregar existencias</button>
+</div>
+<button onclick="editarDesdeExiste()" style="background:#EEF2FF;border:1px solid var(--primary);margin-top:8px">✏️ Editar producto existente</button>
+
+<div id="box-agregar-stock" style="display:none;margin-top:14px;border-top:2px dashed #F59E0B;padding-top:12px">
+<h4>📦 ENTRADA DE MERCANCÍA</h4>
+<div id="existe-stock-actual" style="background:#EEF2FF;padding:8px;border-radius:10px;font-size:12px;font-weight:700"></div>
+<label class="label-prod">¿Cuánto llegó? * (en bultos / paca / unidad de compra)</label>
+<input id="ex-cant" type="number" step="0.01" value="1">
+<label class="label-prod">Costo nuevo por bulto/unidad *</label>
+<input id="ex-costo" type="number" placeholder="88000">
+<div id="ex-alerta-margen" style="font-size:12px;font-weight:800;color:#EF4444"></div>
+<label class="label-prod">Lote / Factura compra</label>
+<input id="ex-lote" placeholder="FC-123">
+<label class="label-prod">Proveedor</label>
+<input id="ex-prov" placeholder="Distribuidora Patía">
+<label class="label-prod">Fecha vencimiento nuevo lote * (obligatorio FIFO)</label>
+<input id="ex-vence" type="date">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
+<button onclick="cerrarBoxAgregar()" style="background:#fff;border:1px solid #E2E8F0;box-shadow:none">Atrás</button>
+<button onclick="confirmarAgregarExistencias()" style="background:var(--accent);color:#fff;border:none">💾 Guardar entrada</button>
+</div>
+</div>
+
+</div>
+</div>
 
 <div id="modal-inv" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:100;padding:0;overflow:auto">
   <div style="position:sticky;top:0;background:rgba(255,255,255,.97);padding:12px 14px;border-bottom:1px solid rgba(0,0,0,.06);display:flex;justify-content:space-between;align-items:center;z-index:10">
@@ -225,16 +266,19 @@ function getStoreKey(b){let c="";try{c=(config&&config.storeCode?config.storeCod
 function safeGet(k,d){try{let v=localStorage.getItem(getStoreKey(k));if(v)return JSON.parse(v);let v2=localStorage.getItem(k);if(v2)return JSON.parse(v2);return d;}catch(e){return d;}}
 function safeSet(k,val){try{localStorage.setItem(getStoreKey(k),JSON.stringify(val));}catch(e){}}
 let usuarioActual=null,productos=[],fiados=[],ventas=[],gastos=[],compras=[],empleados=[],cajas=[],solicitudes=[],carrito=[],editIndex=-1,filtroInv='todos',colaDIAN=[],ultimaFactura=null;
+// v6.0 NUEVO
+let movimientos=safeGet('pos_movimientos',[]); let productoExistenteTemp=null;
 function cargarDatosTienda(){
   productos=safeGet('pos_prod',[]).map(p=>{
     if(!p.tipoUniversal) p.tipoUniversal='kg';
     if(!p.contenidoBase) p.contenidoBase=50;
     if(!p.stockReal) p.stockReal=(p.stock||0)*(p.contenidoBase||50);
     if(!p.unidades) p.unidades=[{unidad:p.unidad||'bulto',precio:p.publico||0,factor:p.contenidoBase||1,esBase:true}];
+    if(!p.lotes) p.lotes=[{cantidad:p.stockReal,costo:p.costo||0,vencimiento:p.vence||'',lote:'INIT',proveedor:p.proveedor||''}];
     return p;
   });
   fiados=safeGet('pos_fiados',[{nombre:"Consumidor Final",codigo:"222222",deuda:0,telefono:"",identificacion:"",facturas:[],abonos:[],creado:Date.now()}]);
-  ventas=safeGet('pos_ventas',[]);gastos=safeGet('pos_gastos',[]);compras=safeGet('pos_compras',[]);empleados=safeGet('pos_empleados',[]);cajas=safeGet('pos_cajas',[]);solicitudes=safeGet('pos_solicitudes',[]);colaDIAN=safeGet('pos_cola_dian',[]);
+  ventas=safeGet('pos_ventas',[]);gastos=safeGet('pos_gastos',[]);compras=safeGet('pos_compras',[]);empleados=safeGet('pos_empleados',[]);cajas=safeGet('pos_cajas',[]);solicitudes=safeGet('pos_solicitudes',[]);colaDIAN=safeGet('pos_cola_dian',[]);movimientos=safeGet('pos_movimientos',[]);
 }
 cargarDatosTienda();
 const $=id=>document.getElementById(id);
@@ -272,7 +316,22 @@ function cargarSelectTiendasFE(){
   let sel=$('gen-fe-store-select'); if(!sel) return;
   let todas=Object.keys(localStorage).filter(k=>k.startsWith('pos_config_PATIA')).map(k=>{try{return JSON.parse(localStorage.getItem(k));}catch(e){return null}}).filter(Boolean);
   sel.innerHTML='<option value="">-- Selecciona tienda existente --</option>' + todas.map(t=>'<option value="'+t.storeCode+'">'+t.storeCode+' - '+(t.nombre||'')+' '+(t.facturacion?.activa?'⚡FE ON':'')+'</option>').join('') + '<option value="__nueva">+ Crear nueva con FE</option>';
-}function abrirModalFiado(i){ $('fia-nombre').value=''; $('fia-ident').value=''; $('fia-codigo').value=''; $('fia-tel').value=''; if(i>=0){ let f=fiados[i]; editIndex=i; $('fia-nombre').value=f.nombre; $('fia-ident').value=f.identificacion||''; $('fia-codigo').value=f.codigo; $('fia-tel').value=f.telefono||''; }else{ editIndex=-1; } $('modal-fiado').style.display='block'; }
+}
+// v6.0 FUNCION CLAVE - BUSCAR DUPLICADO
+function buscarDuplicado(codigo, nombre){
+  let cod = (codigo||'').trim().toUpperCase();
+  let nom = (nombre||'').trim().toLowerCase();
+  if(!cod && !nom) return null;
+  let porCodigo = productos.find(p=> (p.codigo||'').toUpperCase()===cod || (p.barras||'').toUpperCase()===cod );
+  if(porCodigo) return porCodigo;
+  if(nom){
+    let porNombre = productos.find(p=> (p.nombre||'').toLowerCase()===nom );
+    if(porNombre) return porNombre;
+  }
+  return null;
+}
+</script><script>
+function abrirModalFiado(i){ $('fia-nombre').value=''; $('fia-ident').value=''; $('fia-codigo').value=''; $('fia-tel').value=''; if(i>=0){ let f=fiados[i]; editIndex=i; $('fia-nombre').value=f.nombre; $('fia-ident').value=f.identificacion||''; $('fia-codigo').value=f.codigo; $('fia-tel').value=f.telefono||''; }else{ editIndex=-1; } $('modal-fiado').style.display='block'; }
 function cerrarModalFiado(){ $('modal-fiado').style.display='none'; }
 function guardarFiado(){ let nombre=$('fia-nombre').value.trim(); if(!nombre){alert('Falta nombre');return;} let ident=$('fia-ident').value.trim()||'222222'; let codigo=($('fia-codigo').value.trim()||nombre.slice(0,4).toUpperCase()).toUpperCase(); let tel=$('fia-tel').value.trim()||''; let obj={nombre,identificacion:ident,codigo,telefono:tel,activo:true}; if(editIndex>=0){ fiados[editIndex]={...fiados[editIndex],...obj}; }else{ fiados.push({...obj,deuda:0,facturas:[],abonos:[],creado:Date.now()}); } saveAll(); cerrarModalFiado(); renderFiado(); }
 function abrirCartera(idx){ let f=fiados[idx]; $('cartera-nombre').innerText='👤 '+f.nombre+' ('+f.codigo+')'; $('cartera-total').innerText=fmt(f.deuda||0); $('cartera-lista-facturas').innerHTML=(f.facturas||[]).map(fact=>'<div class="card"><b>'+fact.consec+'</b> '+fmt(fact.total)+'</div>').join('')||'Sin fact'; $('modal-cartera').style.display='block'; }
@@ -280,7 +339,7 @@ function registrarAbono(){ let valor=toNum($('cartera-abono-valor').value); if(!
 function renderSolicitudes(){ let el=$('lista-solicitudes'); if(!el) return; el.innerHTML='<div class="card">Sin solicitudes</div>'; }
 function renderFacturas(){ if(!$('lista-facturas'))return; $('lista-facturas').innerHTML=ventas.slice().reverse().slice(0,30).map(v=>'<div class="card"><b>'+v.consec+'</b> '+fmt(v.total)+'<br><small>'+(v.cliente||'').slice(0,35)+'</small></div>').join('')||'Sin facturas'; }
 function renderDIAN(){let el=$('dian-pend-lista');if(!el)return;el.innerHTML=colaDIAN.map((v,i)=>'<div class="card"><b>'+v.consec+'</b> '+fmt(v.total)+'</div>').join('')||'No hay pendientes ✨';}
-function saveAll(){safeSet('pos_prod',productos);safeSet('pos_fiados',fiados);safeSet('pos_ventas',ventas);safeSet('pos_gastos',gastos);safeSet('pos_empleados',empleados);safeSet('pos_cajas',cajas);safeSet('pos_config',config);localStorage.setItem('pos_config_'+config.storeCode,JSON.stringify(config));}
+function saveAll(){safeSet('pos_prod',productos);safeSet('pos_fiados',fiados);safeSet('pos_ventas',ventas);safeSet('pos_gastos',gastos);safeSet('pos_empleados',empleados);safeSet('pos_cajas',cajas);safeSet('pos_config',config);safeSet('pos_movimientos',movimientos);localStorage.setItem('pos_config_'+config.storeCode,JSON.stringify(config));}
 function filtrarInv(t){filtroInv=t;renderInv($('search-inv')?.value||"");}
 function buscarInv(txt){renderInv(txt);}
 function calcAbonoFiado(){let total=carrito.reduce((s,p)=>s+p.precio_final*(p.cant||1),0);let abono=toNum($('abono-fiado').value);if($('saldo-fiado'))$('saldo-fiado').innerText=abono?'Total: '+fmt(total)+' | Abono: '+fmt(abono)+' | Saldo: '+fmt(total-abono):'Total: '+fmt(total);}
@@ -322,7 +381,108 @@ async function probarConexionFEAdmin(){
     let res=await fetch(api+'/oauth/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:body.toString()});
     let data=await res.json(); if(data.access_token){ $('lic-generada').innerHTML='✅ Conexión OK - Token válido '+amb+' - '+data.access_token.substring(0,20)+'...'; } else { $('lic-generada').innerHTML='❌ Error: '+JSON.stringify(data).substring(0,400); }
   }catch(e){ $('lic-generada').innerHTML='❌ Error: '+e.message; }
-}function abrirModalInv(i){
+}
+
+// === v6.0 MODAL EXISTE LOGICA ===
+function abrirModalExiste(p){
+  productoExistenteTemp = p;
+  let stockReal = p.stockReal||0;
+  let contenido = p.contenidoBase||1;
+  let bultos = contenido? (stockReal/contenido).toFixed(2) : p.stock;
+  let costo = p.costo||0;
+  let vence = p.vence||'Sin fecha';
+  let ultEntrada = movimientos.filter(m=>m.codigo===p.codigo && m.tipo==='ENTRADA').slice(-1)[0];
+  let ultTxt = ultEntrada ? `Última: ${ultEntrada.fecha.slice(0,10)} - +${ultEntrada.cantidadPresentacion||ultEntrada.cantidad} ${p.presentacion||''} - Lote ${ultEntrada.lote||'-'}` : 'Sin historial Kardex';
+  $('existe-info').innerHTML = `<b>${p.nombre}</b><br><small>${p.codigo} • ${p.presentacion||''} ${contenido}${p.tipoUniversal||''}</small><br><div style="margin:6px 0;background:#fff;padding:8px;border-radius:8px;border:1px solid #FDE68A">Stock real actual: <b>${stockReal.toFixed(2)} ${(p.tipoUniversal||'').toUpperCase()}</b> = ${bultos} ${p.presentacion||'und'}<br>Costo anterior: <b>${fmt(costo)}</b><br>Vence: <b>${vence}</b> • Prov: ${p.proveedor||'-'}<br><small style="color:#666">${ultTxt}</small></div>`;
+  $('existe-stock-actual').innerHTML = `Actual: ${stockReal.toFixed(2)} = ${bultos} bultos<br>Al agregar se sumará`;
+  $('box-agregar-stock').style.display='none';
+  $('modal-existe').style.display='flex';
+  $('ex-costo').value = costo ? String(costo).replace(/[^0-9]/g,'') : '';
+  $('ex-prov').value = p.proveedor||'';
+  $('ex-cant').value = 1;
+  $('ex-lote').value = '';
+  $('ex-vence').value = '';
+  $('ex-costo').oninput = calcularMargenExiste;
+  $('ex-alerta-margen').innerText='';
+}
+function cerrarModalExiste(){ $('modal-existe').style.display='none'; productoExistenteTemp=null; }
+function abrirModalAgregarExistencias(){ $('box-agregar-stock').style.display='block'; $('ex-cant').focus(); }
+function cerrarBoxAgregar(){ $('box-agregar-stock').style.display='none'; }
+function editarDesdeExiste(){ let p = productoExistenteTemp; cerrarModalExiste(); let idx = productos.indexOf(p); if(idx>=0) abrirModalInv(idx); }
+function calcularMargenExiste(){
+  if(!productoExistenteTemp) return;
+  let nuevo = toNum($('ex-costo').value);
+  let viejo = productoExistenteTemp.costo||0;
+  if(!viejo || !nuevo) { $('ex-alerta-margen').innerText=''; return; }
+  let diff = ((nuevo-viejo)/viejo)*100;
+  if(diff>10) $('ex-alerta-margen').innerText = `⚠️ Te subieron ${diff.toFixed(1)}% - de ${fmt(viejo)} a ${fmt(nuevo)}. ¿Subir precio público?`;
+  else if(diff<-5) $('ex-alerta-margen').innerText = `✅ Bajó ${Math.abs(diff).toFixed(1)}% - Ganas más margen`;
+  else $('ex-alerta-margen').innerText = `Margen estable: ${diff.toFixed(1)}%`;
+}
+function confirmarAgregarExistencias(){
+  let p = productoExistenteTemp; if(!p) return;
+  let cantPresentacion = parseFloat($('ex-cant').value)||0;
+  if(cantPresentacion<=0) return alert('Pon cuánto llegó');
+  let costoNuevo = toNum($('ex-costo').value);
+  if(!costoNuevo) return alert('Pon costo nuevo');
+  let venceNuevo = $('ex-vence').value;
+  if(!venceNuevo) return alert('⚠️ Fecha vencimiento obligatoria para FIFO');
+  let lote = $('ex-lote').value.trim()||'L-'+Date.now().toString().slice(-6);
+  let proveedor = $('ex-prov').value.trim()||p.proveedor||'';
+  let contenido = p.contenidoBase||1;
+  let cantReal = cantPresentacion * contenido;
+  let stockRealAnterior = p.stockReal||0;
+  let costoAnterior = p.costo||0;
+  let stockTotalReal = stockRealAnterior + cantReal;
+  let costoPromReal = stockTotalReal>0 ? ((stockRealAnterior*(costoAnterior/contenido)) + (cantReal*(costoNuevo/contenido))) / stockTotalReal : (costoNuevo/contenido);
+  let costoPromPorPresentacion = costoPromReal * contenido;
+  p.stockReal = stockTotalReal;
+  p.stock = contenido ? stockTotalReal/contenido : stockTotalReal;
+  p.costo = Math.round(costoPromPorPresentacion);
+  if(!p.lotes) p.lotes=[];
+  p.lotes.push({cantidad:cantReal,costo:costoNuevo,vencimiento:venceNuevo,lote,proveedor,fecha:new Date().toISOString()});
+  p.lotes.sort((a,b)=> new Date(a.vencimiento) - new Date(b.vencimiento));
+  if(p.lotes[0]) p.vence = p.lotes[0].vencimiento;
+  p.proveedor = proveedor;
+  movimientos.push({codigo:p.codigo,tipo:'ENTRADA',cantidad:cantReal,cantidadPresentacion:cantPresentacion,costo:costoNuevo,costoPromedioNuevo:p.costo,lote,proveedor,vencimiento:venceNuevo,fecha:new Date().toISOString(),ticket:'COMPRA-'+lote,stockAnterior:stockRealAnterior,stockNuevo:stockTotalReal});
+  saveAll(); cerrarModalExiste(); renderInv();
+  if(costoNuevo > costoAnterior*1.1){
+    setTimeout(()=>{
+      if(confirm(`💡 Costo subió de ${fmt(costoAnterior)} a ${fmt(costoNuevo)}.\n¿Actualizar precio público de ${fmt(p.publico)} a ${fmt(Math.round(costoNuevo*1.15))} para mantener 15% margen?`)){
+        p.publico = Math.round(costoNuevo*1.15);
+        if(p.unidades && p.unidades[0]) p.unidades[0].precio = p.publico;
+        saveAll(); renderInv();
+      }
+    },400);
+  }
+  alert(`✅ ENTRADA OK\n${p.nombre}\n+${cantPresentacion} ${p.presentacion||''} = +${cantReal} ${p.tipoUniversal||''}\nTotal: ${p.stockReal.toFixed(2)} = ${p.stock.toFixed(2)} bultos\nCosto promedio: ${fmt(p.costo)}\nLote ${lote} vence ${venceNuevo}\nFIFO activado`);
+}
+function descontarFIFOV6(producto, cantidadReal){
+  if(!producto.lotes || producto.lotes.length===0){ producto.stockReal = Math.max(0,(producto.stockReal||0)-cantidadReal); return; }
+  let porDescontar = cantidadReal;
+  producto.lotes.sort((a,b)=> new Date(a.vencimiento) - new Date(b.vencimiento));
+  for(let lote of producto.lotes){
+    if(porDescontar<=0) break;
+    if(lote.cantidad<=0) continue;
+    if(lote.cantidad >= porDescontar){ lote.cantidad -= porDescontar; porDescontar=0; }
+    else{ porDescontar -= lote.cantidad; lote.cantidad=0; }
+  }
+  producto.lotes = producto.lotes.filter(l=> l.cantidad>0.001);
+  producto.stockReal = producto.lotes.reduce((s,l)=> s+l.cantidad, 0);
+  let contenido = producto.contenidoBase||1;
+  producto.stock = contenido ? producto.stockReal/contenido : producto.stockReal;
+  if(producto.lotes[0]) producto.vence = producto.lotes[0].vencimiento;
+}
+function verKardexProducto(codigo){
+  let lista = movimientos.filter(m=>m.codigo===codigo).slice(-20).reverse();
+  if(lista.length===0) return alert('Sin movimientos para '+codigo);
+  let txt = `KARDEX ${codigo} - ${productos.find(p=>p.codigo===codigo)?.nombre||''}\n\n`;
+  lista.forEach(m=>{ txt+=`${m.fecha.slice(0,10)} | ${m.tipo.padEnd(7)} | ${m.cantidad>0?'+':''}${m.cantidad.toFixed(1)} | Costo ${fmt(m.costo)} | Lote ${m.lote||'-'} | Vence ${m.vencimiento||'-'} | Stock:${m.stockNuevo?.toFixed(1)||'-'}\n`; });
+  alert(txt);
+}
+function abrirModalReabastecimientoPorIndex(i){ let p=productos[i]; if(p) abrirModalExiste(p); }
+</script><script>
+function abrirModalInv(i){
   $('titulo-inv').innerText=i>=0?'Editar Producto ✏️':'Nuevo Producto Universal ✨'; editIndex=i;
   $('inv-activo').checked=true; $('inv-codigo').value=''; $('inv-nombre').value=''; $('inv-tipo-universal').value='kg'; cambiarTipoUniversal();
   $('inv-presentacion').value='bulto'; $('inv-contenido').value=''; $('inv-stock').value=''; $('inv-proveedor').value='';
@@ -341,6 +501,10 @@ function cerrarModalInv(){ $('modal-inv').style.display='none'; }
 function guardarProducto(){
   let codigo=$('inv-codigo').value.trim().toUpperCase(); let nombre=$('inv-nombre').value.trim();
   if(!codigo||!nombre){alert('Falta código y nombre');return;}
+  if(editIndex<0){
+    let dup = buscarDuplicado(codigo, nombre);
+    if(dup){ abrirModalExiste(dup); return; }
+  }
   let tipoUniversal=$('inv-tipo-universal').value; let presentacion=$('inv-presentacion').value;
   let contenidoBase=Number($('inv-contenido').value||0); if(!contenidoBase){alert('Pon cuántos Kg/L/Und trae 1 '+presentacion);return;}
   let stockPresentacion=Number($('inv-stock').value||0); let stockReal=stockPresentacion*contenidoBase;
@@ -351,8 +515,8 @@ function guardarProducto(){
   if($('chk-libra').checked){ let pr=toNum($('precio-libra').value); if(pr) unidades.push({unidad:'libra',precio:pr,factor:0.5,esBase:false,tipo:'kg'}); }
   if($('chk-litro').checked){ let pr=toNum($('precio-litro').value); if(pr) unidades.push({unidad:'litro',precio:pr,factor:1,esBase:false,tipo:'litro'}); }
   if($('chk-und').checked){ let pr=toNum($('precio-und').value); if(pr) unidades.push({unidad:'und',precio:pr,factor:1,esBase:false,tipo:'und'}); }
-  let o={codigo,barras:codigo,nombre,categoria:'general',tipoUniversal,presentacion,contenidoBase,stock:stockPresentacion,stockReal,stockMinReal:Number($('inv-stock-min').value||0),unidad:presentacion,proveedor:$('inv-proveedor').value.trim(),activo:$('inv-activo').checked,costo,publico,stockMin:Number($('inv-stock-min').value||5),vence:$('inv-vence').value||'',unidades};
-  if(editIndex>=0){ productos[editIndex]={...productos[editIndex],...o}; }else{ if(productos.find(p=>p.codigo===o.codigo)){alert('Código existe');return;} productos.push(o); }
+  let o={codigo,barras:codigo,nombre,categoria:'general',tipoUniversal,presentacion,contenidoBase,stock:stockPresentacion,stockReal,stockMinReal:Number($('inv-stock-min').value||0),unidad:presentacion,proveedor:$('inv-proveedor').value.trim(),activo:$('inv-activo').checked,costo,publico,stockMin:Number($('inv-stock-min').value||5),vence:$('inv-vence').value||'',unidades,lotes:[{cantidad:stockReal,costo,vencimiento:$('inv-vence').value||'',lote:'INIT',proveedor:$('inv-proveedor').value.trim(),fecha:new Date().toISOString()}]};
+  if(editIndex>=0){ productos[editIndex]={...productos[editIndex],...o, lotes:productos[editIndex].lotes||o.lotes}; }else{ productos.push(o); movimientos.push({codigo,tipo:'ENTRADA',cantidad:stockReal,cantidadPresentacion:stockPresentacion,costo,lote:'INIT',proveedor:o.proveedor,vencimiento:o.vence,fecha:new Date().toISOString(),ticket:'INIT',stockAnterior:0,stockNuevo:stockReal}); }
   saveAll(); cerrarModalInv(); renderInv();
 }
 function renderInv(filtroTxt){
@@ -368,10 +532,13 @@ function renderInv(filtroTxt){
     let stockColor=stockReal<= (p.stockMinReal||5)?'var(--danger)':'var(--accent)';
     let unidadesTxt=(p.unidades||[]).map(u=>u.unidad+':'+fmt(u.precio)).join(' • ');
     let bultosRestantes = contenido? (stockReal/contenido).toFixed(2) : p.stock;
-    return '<div class="card" style="border-left:5px solid '+stockColor+'"><b>'+p.nombre+'</b><br><small>'+p.codigo+' • '+(p.presentacion||'')+' '+contenido+unidadTxt+'</small><br><div style="background:#EEF2FF;padding:6px;border-radius:10px;margin:4px 0"><b>Stock real: '+stockReal.toFixed(2)+' '+unidadTxt+'</b> = '+bultosRestantes+' '+(p.presentacion||'')+'<br><small>'+unidadesTxt+'</small></div><div style="display:flex;gap:6px;margin-top:8px"><button onclick="abrirModalInv('+realIdx+')" style="flex:1;background:var(--primary);color:#fff;padding:10px;border:none;border-radius:12px">✏️ Editar universal</button><button onclick="borrarProducto('+realIdx+')" style="background:var(--danger);color:#fff;padding:10px;border:none;border-radius:12px">X</button></div></div>';
+    let lotesTxt = p.lotes ? p.lotes.length+' lotes' : '';
+    return '<div class="card" style="border-left:5px solid '+stockColor+'"><b>'+p.nombre+'</b><br><small>'+p.codigo+' • '+(p.presentacion||'')+' '+contenido+unidadTxt+' • '+lotesTxt+'</small><br><div style="background:#EEF2FF;padding:6px;border-radius:10px;margin:4px 0"><b>Stock real: '+stockReal.toFixed(2)+' '+unidadTxt+'</b> = '+bultosRestantes+' '+(p.presentacion||'')+'<br><small>'+unidadesTxt+'</small><br><small>Vence: '+(p.vence||'-')+'</small></div><div style="display:flex;gap:6px;margin-top:8px"><button onclick="abrirModalInv('+realIdx+')" style="flex:1;background:var(--primary);color:#fff;padding:10px;border:none;border-radius:12px">✏️ Editar</button><button onclick="abrirModalReabastecimientoPorIndex('+realIdx+')" style="flex:1;background:#F59E0B;color:#fff;padding:10px;border:none;border-radius:12px">📦 +Stock</button><button onclick="verKardexProducto(\''+p.codigo+'\')" style="background:#fff;border:1px solid #E2E8F0;padding:10px;border-radius:12px">📜</button><button onclick="borrarProducto('+realIdx+')" style="background:var(--danger);color:#fff;padding:10px;border:none;border-radius:12px">X</button></div></div>';
   }).join('')||'<div class="card">📦 Sin productos</div>';
 }
-function borrarProducto(i){if(confirm('Borrar '+productos[i].nombre+'?')){productos.splice(i,1);saveAll();renderInv();}}function buscarProducto(txt,esCod){
+function borrarProducto(i){if(confirm('Borrar '+productos[i].nombre+'?')){productos.splice(i,1);saveAll();renderInv();}}
+</script><script>
+function buscarProducto(txt,esCod){
   if(!txt){$('sugerencias').innerHTML='';return;}
   let limpio = txt.trim().toUpperCase(); if(!limpio){$('sugerencias').innerHTML='';return;}
   let res = productos.filter(p=>p.activo!==false);
@@ -409,7 +576,9 @@ function abrirCobro(tipo){
   let cli=fiados.find(f=>f.codigo==="222222")||fiados[0]; $('cliente-cobro').value=cli?cli.codigo+" - "+cli.nombre:"222222";
   $('modal-cobro').style.display='block'; $('bloque-factura').style.display='none'; calcVueltas(); calcAbonoFiado();
 }
-function cerrarCobro(){$('modal-cobro').style.display='none';}function generarCanvasFactura(v){
+function cerrarCobro(){$('modal-cobro').style.display='none';}
+</script><script>
+function generarCanvasFactura(v){
   let c=$('canvas-factura'); c.width=384; c.height=1100; let ctx=c.getContext('2d'); ctx.fillStyle="#fff"; ctx.fillRect(0,0,384,1100);
   let nombreTienda=localStorage.getItem('tienda_nombre')||'TIENDA PATIA'; ctx.fillStyle="#000"; ctx.font="bold 15px monospace"; let y=24; ctx.fillText(nombreTienda.toUpperCase().slice(0,28),10,y); y+=18; ctx.font="10px monospace"; ctx.fillText(v.consec+' | '+new Date(v.fecha).toLocaleString(),10,y); y+=14; (v.productos||[]).forEach(p=>{y+=12; ctx.fillText((p.nombre.slice(0,14)+' x'+(p.cant||1)+' '+(p.unidadSel||'')+' '+fmt(p.precio_final*(p.cant||1))).slice(0,36),10,y);}); y+=18; ctx.font="bold 14px monospace"; ctx.fillText('TOTAL: '+fmt(v.total),10,y); return c.toDataURL();
 }
@@ -422,15 +591,16 @@ async function finalizarCobro(){
     let selUnidad = item.unidades[item.unidadIdx] || item.unidades[0];
     let factorSel = selUnidad.factor || 1;
     let descuentoUniversal = item.cant * factorSel;
-    pr.stockReal = Math.max(0, (pr.stockReal||0) - descuentoUniversal);
-    let contenido = pr.contenidoBase||1;
-    pr.stock = contenido? (pr.stockReal/contenido) : pr.stockReal;
+    descontarFIFOV6(pr, descuentoUniversal);
+    movimientos.push({codigo:pr.codigo,tipo:'VENTA',cantidad:-descuentoUniversal,cantidadPresentacion:-item.cant,costo:pr.costo,fecha:new Date().toISOString(),ticket:venta.consec,stockAnterior:(pr.stockReal||0)+descuentoUniversal,stockNuevo:pr.stockReal});
   });
   $('img-factura').src=generarCanvasFactura(venta); $('bloque-factura').style.display='block';
   saveAll(); carrito=[]; renderCarrito(); renderFacturas(); renderCaja(); renderFiado(); renderInv(); actualizarCuadre();
 }
 function actualizarCuadre(){ if(!$('caja-cuadre-auto'))return; let hoy=new Date().toISOString().slice(0,10); let ventasHoy=ventas.filter(v=>new Date(v.fecha).toISOString().slice(0,10)===hoy); let totalEfectivo=ventasHoy.filter(v=>v.metodo==='efectivo').reduce((s,v)=>s+v.total,0); let base=toNum($('caja-base')?.value||0); let contado=toNum($('caja-contado')?.value||0); let gastosHoy=gastos.filter(g=>new Date(g.fecha).toISOString().slice(0,10)===hoy).reduce((s,g)=>s+g.precio,0); let debeHaber=base+totalEfectivo-gastosHoy; $('caja-cuadre-auto').innerHTML='<b>Cuadre:</b> Base '+fmt(base)+' + Efectivo '+fmt(totalEfectivo)+' - Gastos '+fmt(gastosHoy)+' = Debe haber '+fmt(debeHaber)+(contado?' | Contado '+fmt(contado):''); }
-function renderCaja(){ if(!$('caja-estado'))return; let hoy=new Date().toISOString().slice(0,10); let cajaHoy=cajas.find(c=>c.fecha===hoy); if(!cajaHoy){$('caja-estado').innerHTML='CERRADA 🔒';} else{$('caja-estado').innerHTML=cajaHoy.cerrada?'CERRADA '+fmt(cajaHoy.contado||0):'ABIERTA Base: '+fmt(cajaHoy.base||0);} actualizarCuadre(); if($('caja-resumen')){ let ventasHoy=ventas.filter(v=>new Date(v.fecha).toISOString().slice(0,10)===hoy); let totalHoy=ventasHoy.reduce((s,v)=>s+v.total,0); $('caja-resumen').innerHTML='Ventas hoy: <b>'+fmt(totalHoy)+'</b> ('+ventasHoy.length+')'; } }let html5QrCode=null, camAbierta=false, currentTrack=null, torchOn=false;
+function renderCaja(){ if(!$('caja-estado'))return; let hoy=new Date().toISOString().slice(0,10); let cajaHoy=cajas.find(c=>c.fecha===hoy); if(!cajaHoy){$('caja-estado').innerHTML='CERRADA 🔒';} else{$('caja-estado').innerHTML=cajaHoy.cerrada?'CERRADA '+fmt(cajaHoy.contado||0):'ABIERTA Base: '+fmt(cajaHoy.base||0);} actualizarCuadre(); if($('caja-resumen')){ let ventasHoy=ventas.filter(v=>new Date(v.fecha).toISOString().slice(0,10)===hoy); let totalHoy=ventasHoy.reduce((s,v)=>s+v.total,0); $('caja-resumen').innerHTML='Ventas hoy: <b>'+fmt(totalHoy)+'</b> ('+ventasHoy.length+')'; } }
+</script><script>
+let html5QrCode=null, camAbierta=false, currentTrack=null, torchOn=false;
 async function toggleCam(t){
   let id=t==='venta'?'reader-venta':t==='inv'?'reader-inv':'reader-modal';
   let ctrl=t==='venta'?'controls-venta':t==='inv'?'controls-inv':'controls-modal';
@@ -447,7 +617,9 @@ function abrirConfigJefe(){ renderEmpleadosJefe(); $('modal-config-jefe').style.
 function guardarCfgTiendaJefe(){ localStorage.setItem('tienda_nombre',$('cfg-nombre-jefe').value||''); localStorage.setItem('tienda_tel',$('cfg-tel-jefe').value||''); localStorage.setItem('tienda_dir',$('cfg-dir-jefe').value||''); saveAll(); actualizarTextoLic(); alert('Guardado'); }
 function guardarEmpleadoJefe(){ let nombre=$('emp-nombre-jefe').value.trim(); let usuario=$('emp-usuario-jefe').value.trim()||nombre.split(' ')[0].toLowerCase(); let pass=$('emp-pass-jefe').value.trim(); empleados.push({nombre,usuario,pass,rol:$('emp-rol-jefe').value}); saveAll(); renderEmpleadosJefe(); }
 function renderEmpleadosJefe(){ let el=$('lista-empleados-jefe'); if(!el) return; el.innerHTML=empleados.map((e,i)=>'<div style="display:flex;justify-content:space-between;padding:10px;background:#fff;border-radius:12px;margin:6px 0;border:1px solid #E2E8F0"><div><b>'+e.nombre+'</b><br><small>'+e.usuario+' • '+e.rol+'</small></div><button onclick="borrarEmpleadoJefe('+i+')" style="width:36px;background:#FEE2E2;color:#DC2626;border:none">🗑️</button></div>').join('')||'Sin empleados'; }
-function borrarEmpleadoJefe(i){ if(confirm('Borrar '+empleados[i].nombre+'?')){ empleados.splice(i,1); saveAll(); renderEmpleadosJefe(); } }let filtroAdminActual='todas';
+function borrarEmpleadoJefe(i){ if(confirm('Borrar '+empleados[i].nombre+'?')){ empleados.splice(i,1); saveAll(); renderEmpleadosJefe(); } }
+</script><script>
+let filtroAdminActual='todas';
 function verAdminSub(sub){ document.querySelectorAll('.admin-sub').forEach(s=>s.style.display='none'); let el=document.getElementById('admin-sub-'+sub); if(el) el.style.display='block'; if(sub==='tiendas')cargarAdminLista(); if(sub==='reportes')cargarReportesAdmin(); if(sub==='alertas')cargarAlertasAdmin(); }
 function abrirPerfilAdmin(){
   $('modal-perfil-admin').style.display='block';
@@ -494,7 +666,9 @@ function abrirOlvido(){ $('modal-olvido').style.display='flex'; }
 function cerrarOlvido(){ $('modal-olvido').style.display='none'; }
 function enviarRecuperacion(){ let ced=$('olv-cedula').value.trim(), tienda=$('olv-tienda').value.trim(), tel=$('olv-telefono').value.trim(), usu=$('olv-usuario').value.trim().toUpperCase(); if(!ced||!tienda||!tel||!usu){ alert('Completa todos'); return; } let rec={id:Date.now(), cedula:ced, tiendaNombre:tienda, telefono:tel, usuarioRecuperar:usu, tienda:usu, fecha:Date.now(), tipo:'RECUPERACION', mensaje:'🔑 RECUPERACION Cedula: '+ced+' Tienda: '+tienda+' Tel: '+tel+' Usuario: '+usu}; let admin=[]; try{admin=JSON.parse(localStorage.getItem('pos_soporte_admin')||'[]');}catch(e){} admin.push(rec); localStorage.setItem('pos_soporte_admin', JSON.stringify(admin)); alert('✅ Enviado'); cerrarOlvido(); }
 function actualizarSemaforoOnline(){let online=navigator.onLine;let color=online?'#22c55e':'#EF4444';let txt=online?'ONLINE':'OFFLINE';['admin-dot','perfil-admin-dot'].forEach(id=>{let el=$(id);if(el)el.style.background=color;});['admin-txt','perfil-admin-txt'].forEach(id=>{let el=$(id);if(el)el.innerText=txt;});}
-function iniciarSemaforo(){setInterval(actualizarSemaforoOnline,3000); window.addEventListener('online',actualizarSemaforoOnline); window.addEventListener('offline',actualizarSemaforoOnline); actualizarSemaforoOnline();}function login(){
+function iniciarSemaforo(){setInterval(actualizarSemaforoOnline,3000); window.addEventListener('online',actualizarSemaforoOnline); window.addEventListener('offline',actualizarSemaforoOnline); actualizarSemaforoOnline();}
+</script><script>
+function login(){
   try{
     let user=( $('login-user').value||'').trim().toUpperCase(); let pass=( $('login-pass').value||'').trim();
     if(!user||!pass){ $('login-msg').innerText='Pon usuario y clave'; return; }
@@ -521,6 +695,7 @@ document.getElementById('login-pass')?.addEventListener('keypress', e=>{ if(e.ke
 function renderAll(){ document.querySelectorAll('.modulo').forEach(d=>d.classList.remove('activo')); let mv=$('mod-vender'); if(mv) mv.classList.add('activo'); renderFiado();renderCaja();renderFacturas();actualizarTextoLic();renderInv(); }
 renderAll();
 setTimeout(()=>{ document.querySelectorAll('.modulo').forEach(d=>{ if(d.id!=='mod-vender' && d.id!=='mod-admin') d.classList.remove('activo'); }); let mv=$('mod-vender'); if(mv &&!document.getElementById('mod-admin').classList.contains('activo')) mv.classList.add('activo'); actualizarAvatarJefe(); cargarRecordarUsuario(); let navV=$('nav-vender'); if(navV) navV.classList.add('activo-nav'); try{ iniciarSemaforo(); }catch(e){} },600);
+console.log('PHRAXYS v6.0 REABASTECIMIENTO 14/14 LISTO - Duplicado detectado por codigo/barras/nombre + modal existe + agregar existencias + FIFO + Kardex');
 </script>
 </body>
 </html>
