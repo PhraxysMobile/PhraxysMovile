@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>TIENDA PATIA v6.0 REABASTECIMIENTO</title>
+<title>TIENDA PATIA v6.1 APROBACION</title>
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
@@ -35,7 +35,6 @@ button{font-weight:700; cursor:pointer; box-shadow: 0 4px 12px -2px rgba(0,0,0,.
 .stock-real-box{background:linear-gradient(135deg,#EEF2FF,#DBEAFE);border:2px solid var(--primary);padding:12px;border-radius:14px;margin:8px 0;text-align:center}
 .tab-form{flex:1;padding:10px;border-radius:12px;font-size:11px;font-weight:800;border:1px solid #E2E8F0;background:#fff;box-shadow:none}
 .tab-form.activo{background:var(--primary)!important;color:#fff!important}
-/* v6.0 NUEVO */
 .modal-existe{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(8px);z-index:99999;display:none;justify-content:center;align-items:center;padding:14px}
 .modal-existe-box{background:#fff;width:100%;max-width:440px;border-radius:20px;padding:16px;max-height:92vh;overflow:auto;border:2px solid #F59E0B}
 .badge-existe{background:#FEF3C7;color:#92400E;padding:8px 12px;border-radius:12px;font-weight:800;border:2px dashed #F59E0B;text-align:center;font-size:12px}
@@ -63,7 +62,7 @@ button{font-weight:700; cursor:pointer; box-shadow: 0 4px 12px -2px rgba(0,0,0,.
 <div id="login-screen" style="position:fixed;inset:0;background: var(--bg);z-index:9999;display:flex;flex-direction:column;justify-content:center;padding:28px">
 <div style="text-align:center;margin-bottom:18px">
 <h1 style="color:var(--primary);margin:0;font-size:28px;font-weight:900">Sistema<br>Control Inventario</h1>
-<p style="margin:8px 0 0;font-size:11px;color:var(--primary);font-weight:800;background:#DBEAFE;display:inline-block;padding:3px 10px;border-radius:20px">v6.0 REABASTECIMIENTO ✨</p>
+<p style="margin:8px 0 0;font-size:11px;color:var(--primary);font-weight:800;background:#DBEAFE;display:inline-block;padding:3px 10px;border-radius:20px">v6.1 APROBACION ✨</p>
 </div>
 <input id="login-user" placeholder="Usuario" style="text-transform:uppercase;text-align:center;border:2px solid var(--primary);font-size:18px;background:#fff">
 <input id="login-pass" type="password" placeholder="Contraseña" style="text-align:center;border:2px solid #E2E8F0;font-size:18px;background:#fff">
@@ -91,10 +90,10 @@ button{font-weight:700; cursor:pointer; box-shadow: 0 4px 12px -2px rgba(0,0,0,.
 <div id="carrito"></div>
 <div class="venta-footer"><div style="display:flex;gap:10px"><button class="btn-amarillo" style="flex:1" onclick="abrirCobro('credito')">FIAR</button><button class="btn-verde" style="flex:2" onclick="abrirCobro('efectivo')">COBRAR ✨</button></div></div>
 </div>
-<div id="mod-inventario" class="modulo"><h3>📦 Inventario - <span id="inv-tienda"></span></h3><div style="display:flex;gap:8px"><button onclick="filtrarInv('todos')" style="flex:1">Todos</button><button onclick="filtrarInv('bajo')" style="flex:1">Bajo</button></div><div class="search-wrap"><input id="search-inv" placeholder="🔍 Buscar..." oninput="buscarInv(this.value)" style="flex:2;border:2px solid var(--accent);background:#fff"><button style="width:50px;background:var(--accent);color:#fff" onclick="toggleCam('inv')">📷</button></div><div style="display:flex;gap:8px;margin:8px 0"><div class="card" style="flex:1;margin:0;padding:8px;text-align:center"><small>Total</small><br><b id="count-inv">0</b></div><div class="card" style="flex:1;margin:0;padding:8px;text-align:center"><small>Valor</small><br><b id="valor-inv">$0</b></div></div><div id="reader-inv" class="cam-box"></div><div id="controls-inv" style="display:none;gap:8px;justify-content:center"><button onclick="toggleCam('inv')" style="width:auto;background:var(--danger);color:#fff;padding:8px 14px;border-radius:20px">❌ Cerrar</button><button onclick="toggleLinterna()" style="width:auto;background:#fff;padding:8px 14px;border-radius:20px">🔦</button></div><div id="lista-inv"></div><button class="btn-flotante" onclick="abrirModalInv(-1)">+ Producto</button></div>
+<div id="mod-inventario" class="modulo"><h3>📦 Inventario - <span id="inv-tienda"></span></h3><div style="display:flex;gap:8px"><button onclick="filtrarInv('todos')" style="flex:1">Todos</button><button onclick="filtrarInv('bajo')" style="flex:1">Bajo</button></div><div class="search-wrap"><input id="search-inv" placeholder="🔍 Buscar..." oninput="buscarInv(this.value)" style="flex:2;border:2px solid var(--accent);background:#fff"><button style="width:50px;background:var(--accent);color:#fff" onclick="toggleCam('inv')">📷</button></div><div style="display:flex;gap:8px;margin:8px 0"><div class="card" style="flex:1;margin:0;padding:8px;text-align:center"><small>Total</small><br><b id="count-inv">0</b></div><div class="card" style="flex:1;margin:0;padding:8px;text-align:center"><small>Valor</small><br><b id="valor-inv">$0</b></div></div><div id="reader-inv" class="cam-box"></div><div id="controls-inv" style="display:none;gap:8px;justify-content:center"><button onclick="toggleCam('inv')" style="width:auto;background:var(--danger);color:#fff;padding:8px 14px;border-radius:20px">❌ Cerrar</button><button onclick="toggleLinterna()" style="width:auto;background:#fff;padding:8px 14px;border-radius:20px">🔦</button></div><div id="lista-inv"></div><button class="btn-flotante" onclick="abrirModalInvSimple()" style="bottom:140px;background:var(--accent)">+ Rápido Empleado</button><button class="btn-flotante" onclick="abrirModalInv(-1)">+ Producto Universal</button></div>
 <div id="mod-fiado" class="modulo"><h3>👥 Fiados</h3><div id="lista-fiado"></div><button class="btn-flotante" onclick="abrirModalFiado()">+ Cliente</button></div><div id="mod-facturas" class="modulo"><h3>🧾 Facturas</h3><div id="lista-facturas"></div></div>
 <div id="mod-caja" class="modulo"><h3>💰 Caja</h3><div id="caja-estado" class="card" style="text-align:center;border:2px solid var(--primary)"></div><div class="card"><input id="caja-base" placeholder="Base hoy" oninput="this.value=formatearInput(this.value);actualizarCuadre()"><input id="caja-contado" placeholder="Caja contada" oninput="this.value=formatearInput(this.value);actualizarCuadre()"><div id="caja-cuadre-auto" style="background:#EEF2FF;padding:12px;border-radius:12px;margin:8px 0;border:1px dashed var(--primary);font-size:13px"></div><div style="display:flex;gap:8px"><button class="btn-verde" onclick="abrirCaja()">Abrir</button><button class="btn-amarillo" onclick="cerrarCaja()">Cerrar</button></div></div><div id="caja-resumen" class="card"></div></div>
-<div id="mod-solicitudes" class="modulo"><h3>📩 Solicitudes</h3><div id="lista-solicitudes"></div></div>
+<div id="mod-solicitudes" class="modulo"><h3>📩 Solicitudes - Aprobación Jefe</h3><small style="color:var(--text-sec)">Productos que empleados quieren agregar</small><div id="lista-solicitudes" style="margin-top:10px"></div></div>
 <div id="mod-dian" class="modulo"><h3>📋 DIAN</h3><div id="dian-pend-lista"></div></div>
 <div id="mod-gastos" class="modulo"><h3>💸 Gastos</h3><div id="lista-gastos"></div><button class="btn-flotante" onclick="abrirModalGasto()">+ Gasto</button></div>
 
@@ -176,47 +175,73 @@ button{font-weight:700; cursor:pointer; box-shadow: 0 4px 12px -2px rgba(0,0,0,.
 <div class="card"><b>✏️ Cambiar credenciales</b><input id="perfil-user" placeholder="Usuario ADMIN"><input id="perfil-pass" type="password" placeholder="Nueva clave"><button class="btn-verde" onclick="guardarPerfilAdmin()">💾 Guardar</button><button onclick="logout()" style="background:#FEE2E2;color:#DC2626;border:none;margin-top:8px">🚪 Cerrar sesión ADMIN</button></div>
 </div>
 
-<div id="modal-ajustes-admin" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:200;padding:16px"><div style="display:flex;justify-content:space-between"><h3 style="margin:0">⚙️ Ajustes Admin</h3><button onclick="$('modal-ajustes-admin').style.display='none'" style="width:36px;background:#fff;border:1px solid #E2E8F0;box-shadow:none">✕</button></div><div class="card"><b>ℹ️ Versión</b><br><small>v6.0 REABASTECIMIENTO - Stock real Kg/L/Und + Formularios separados Normal/FE + Linterna + FIFO</small></div></div>
+<div id="modal-ajustes-admin" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:200;padding:16px"><div style="display:flex;justify-content:space-between"><h3 style="margin:0">⚙️ Ajustes Admin</h3><button onclick="$('modal-ajustes-admin').style.display='none'" style="width:36px;background:#fff;border:1px solid #E2E8F0;box-shadow:none">✕</button></div><div class="card"><b>ℹ️ Versión</b><br><small>v6.1 APROBACION - Empleado rápido + Jefe aprueba + FIFO + Kardex</small></div></div>
 
-<!-- MODAL v6.0 PRODUCTO YA EXISTE -->
+<!-- MODAL v6.0 EXISTE -->
 <div id="modal-existe" class="modal-existe">
 <div class="modal-existe-box">
 <h3 style="margin:0;color:#D97706">⚠️ PRODUCTO YA EXISTE</h3>
 <div id="existe-info" class="card-existe"></div>
-<div class="badge-existe">📦 Este código / nombre ya está registrado. No lo dupliques.</div>
-<h4 style="margin-top:12px">¿Qué quieres hacer?</h4>
+<div class="badge-existe">📦 Este código / nombre ya está registrado.</div>
+<h4 style="margin-top:12px">¿Qué hacer?</h4>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
 <button onclick="cerrarModalExiste()" style="background:#fff;border:1px solid #E2E8F0;box-shadow:none">❌ Cancelar</button>
 <button onclick="abrirModalAgregarExistencias()" style="background:var(--warning);color:#fff;border:none">📦 Agregar existencias</button>
 </div>
-<button onclick="editarDesdeExiste()" style="background:#EEF2FF;border:1px solid var(--primary);margin-top:8px">✏️ Editar producto existente</button>
-
+<button onclick="editarDesdeExiste()" style="background:#EEF2FF;border:1px solid var(--primary);margin-top:8px">✏️ Editar</button>
 <div id="box-agregar-stock" style="display:none;margin-top:14px;border-top:2px dashed #F59E0B;padding-top:12px">
 <h4>📦 ENTRADA DE MERCANCÍA</h4>
 <div id="existe-stock-actual" style="background:#EEF2FF;padding:8px;border-radius:10px;font-size:12px;font-weight:700"></div>
-<label class="label-prod">¿Cuánto llegó? * (en bultos / paca / unidad de compra)</label>
-<input id="ex-cant" type="number" step="0.01" value="1">
-<label class="label-prod">Costo nuevo por bulto/unidad *</label>
-<input id="ex-costo" type="number" placeholder="88000">
+<label class="label-prod">¿Cuánto llegó? *</label><input id="ex-cant" type="number" step="0.01" value="1">
+<label class="label-prod">Costo nuevo *</label><input id="ex-costo" type="number" placeholder="88000">
 <div id="ex-alerta-margen" style="font-size:12px;font-weight:800;color:#EF4444"></div>
-<label class="label-prod">Lote / Factura compra</label>
-<input id="ex-lote" placeholder="FC-123">
-<label class="label-prod">Proveedor</label>
-<input id="ex-prov" placeholder="Distribuidora Patía">
-<label class="label-prod">Fecha vencimiento nuevo lote * (obligatorio FIFO)</label>
-<input id="ex-vence" type="date">
+<label class="label-prod">Lote / Factura</label><input id="ex-lote" placeholder="FC-123">
+<label class="label-prod">Proveedor</label><input id="ex-prov" placeholder="Distribuidora">
+<label class="label-prod">Fecha vencimiento *</label><input id="ex-vence" type="date">
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
 <button onclick="cerrarBoxAgregar()" style="background:#fff;border:1px solid #E2E8F0;box-shadow:none">Atrás</button>
-<button onclick="confirmarAgregarExistencias()" style="background:var(--accent);color:#fff;border:none">💾 Guardar entrada</button>
+<button onclick="confirmarAgregarExistencias()" style="background:var(--accent);color:#fff;border:none">💾 Guardar</button>
+</div>
+</div>
 </div>
 </div>
 
+<!-- MODAL SIMPLE EMPLEADO v6.1 -->
+<div id="modal-inv-simple" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:101;padding:16px;overflow:auto">
+  <div style="display:flex;justify-content:space-between;align-items:center"><h3 style="margin:0">➕ Agregar Producto Rápido (Empleado)</h3><button onclick="$('modal-inv-simple').style.display='none'" style="width:36px;background:#fff;border:1px solid #E2E8F0;box-shadow:none">✕</button></div>
+  <div class="card" style="border:2px solid var(--accent)">
+    <label class="label-prod">Código barras 📷</label>
+    <div style="display:flex;gap:6px"><input id="simple-codigo" placeholder="770..." style="text-transform:uppercase;flex:1"><button onclick="toggleCam('simple')" style="width:50px;background:var(--primary);color:#fff">📷</button></div>
+    <div id="reader-simple" class="cam-box"></div>
+    <div id="controls-simple" style="display:none;gap:8px;justify-content:center;margin:6px 0"><button onclick="toggleCam('simple')" style="width:auto;background:var(--danger);color:#fff;padding:8px 14px;border-radius:20px">❌ Cerrar</button><button onclick="toggleLinterna()" style="width:auto;background:#F59E0B;color:#fff;padding:8px 14px;border-radius:20px">🔦</button></div>
+    <label class="label-prod">Nombre *</label><input id="simple-nombre" placeholder="Arroz Diana 1kg">
+    <label class="label-prod">Presentación</label><select id="simple-presentacion"><option value="und">Unidad</option><option value="bulto">Bulto</option><option value="paca">Paca</option><option value="caja">Caja</option><option value="kilo">Kilo</option><option value="litro">Litro</option></select>
+    <label class="label-prod">Stock que llegó *</label><input id="simple-stock" type="number" step="0.01" placeholder="10">
+    <label class="label-prod">Fecha vencimiento *</label><input id="simple-vence" type="date">
+  </div>
+  <button class="btn-verde" onclick="guardarProductoSimple()">📩 Enviar a jefe para aprobación</button>
+  <button onclick="$('modal-inv-simple').style.display='none'" style="background:#fff;box-shadow:none;border:1px solid #E2E8F0">Cancelar</button>
+</div>
+
+<!-- MODAL APROBACION JEFE v6.1 -->
+<div id="modal-aprobacion-jefe" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);z-index:300;padding:14px;overflow:auto;justify-content:center;align-items:flex-start">
+<div class="card" style="width:100%;max-width:480px;margin:20px auto;border:2px solid var(--primary)">
+  <div style="display:flex;justify-content:space-between"><h3 style="margin:0">✅ Aprobar Producto - Jefe</h3><button onclick="$('modal-aprobacion-jefe').style.display='none'" style="width:36px;background:#fff;border:1px solid #E2E8F0;box-shadow:none">✕</button></div>
+  <div id="aprob-info-empleado" style="background:#FFFBEB;border:2px dashed #F59E0B;padding:12px;border-radius:14px;margin:10px 0"></div>
+  <b style="color:var(--primary)">💰 Campos solo JEFE *</b>
+  <label class="label-prod">Costo por presentación *</label><input id="aprob-costo" placeholder="88000" oninput="this.value=formatearInput(this.value)">
+  <label class="label-prod">Precio público *</label><input id="aprob-publico" placeholder="95000" oninput="this.value=formatearInput(this.value)">
+  <label class="label-prod">Proveedor</label><input id="aprob-proveedor" placeholder="Distribuidora">
+  <label class="label-prod">Contenido real (Kg/L/Und por bulto) *</label><input id="aprob-contenido" type="number" step="0.01" value="1">
+  <label class="label-prod">Precios unidad suelta</label>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px"><input id="aprob-precio-kg" placeholder="Precio Kg" oninput="this.value=formatearInput(this.value)"><input id="aprob-precio-und" placeholder="Precio Und" oninput="this.value=formatearInput(this.value)"></div>
+  <div style="display:flex;gap:8px;margin-top:12px"><button onclick="confirmarAprobacionJefe()" class="btn-verde" style="flex:2">💾 Agregar a Inventario</button><button onclick="$('modal-aprobacion-jefe').style.display='none'" style="flex:1;background:#fff;border:1px solid #E2E8F0;box-shadow:none">Cancelar</button></div>
 </div>
 </div>
 
 <div id="modal-inv" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:100;padding:0;overflow:auto">
   <div style="position:sticky;top:0;background:rgba(255,255,255,.97);padding:12px 14px;border-bottom:1px solid rgba(0,0,0,.06);display:flex;justify-content:space-between;align-items:center;z-index:10">
-    <div><b id="titulo-inv" style="font-size:16px">Producto Universal</b><br><small style="color:var(--text-sec);font-size:11px">Kg / Litro / Und real</small></div>
+    <div><b id="titulo-inv" style="font-size:16px">Producto Universal Jefe</b><br><small style="color:var(--text-sec);font-size:11px">Kg / Litro / Und real</small></div>
     <button onclick="cerrarModalInv()" style="width:36px;background:#fff;border:1px solid #E2E8F0;box-shadow:none">✕</button>
   </div>
   <div style="padding:12px 12px 90px">
@@ -266,8 +291,7 @@ function getStoreKey(b){let c="";try{c=(config&&config.storeCode?config.storeCod
 function safeGet(k,d){try{let v=localStorage.getItem(getStoreKey(k));if(v)return JSON.parse(v);let v2=localStorage.getItem(k);if(v2)return JSON.parse(v2);return d;}catch(e){return d;}}
 function safeSet(k,val){try{localStorage.setItem(getStoreKey(k),JSON.stringify(val));}catch(e){}}
 let usuarioActual=null,productos=[],fiados=[],ventas=[],gastos=[],compras=[],empleados=[],cajas=[],solicitudes=[],carrito=[],editIndex=-1,filtroInv='todos',colaDIAN=[],ultimaFactura=null;
-// v6.0 NUEVO
-let movimientos=safeGet('pos_movimientos',[]); let productoExistenteTemp=null;
+let movimientos=safeGet('pos_movimientos',[]); let productoExistenteTemp=null; let solicitudAprobandoIdx=-1;
 function cargarDatosTienda(){
   productos=safeGet('pos_prod',[]).map(p=>{
     if(!p.tipoUniversal) p.tipoUniversal='kg';
@@ -317,7 +341,6 @@ function cargarSelectTiendasFE(){
   let todas=Object.keys(localStorage).filter(k=>k.startsWith('pos_config_PATIA')).map(k=>{try{return JSON.parse(localStorage.getItem(k));}catch(e){return null}}).filter(Boolean);
   sel.innerHTML='<option value="">-- Selecciona tienda existente --</option>' + todas.map(t=>'<option value="'+t.storeCode+'">'+t.storeCode+' - '+(t.nombre||'')+' '+(t.facturacion?.activa?'⚡FE ON':'')+'</option>').join('') + '<option value="__nueva">+ Crear nueva con FE</option>';
 }
-// v6.0 FUNCION CLAVE - BUSCAR DUPLICADO
 function buscarDuplicado(codigo, nombre){
   let cod = (codigo||'').trim().toUpperCase();
   let nom = (nombre||'').trim().toLowerCase();
@@ -336,10 +359,9 @@ function cerrarModalFiado(){ $('modal-fiado').style.display='none'; }
 function guardarFiado(){ let nombre=$('fia-nombre').value.trim(); if(!nombre){alert('Falta nombre');return;} let ident=$('fia-ident').value.trim()||'222222'; let codigo=($('fia-codigo').value.trim()||nombre.slice(0,4).toUpperCase()).toUpperCase(); let tel=$('fia-tel').value.trim()||''; let obj={nombre,identificacion:ident,codigo,telefono:tel,activo:true}; if(editIndex>=0){ fiados[editIndex]={...fiados[editIndex],...obj}; }else{ fiados.push({...obj,deuda:0,facturas:[],abonos:[],creado:Date.now()}); } saveAll(); cerrarModalFiado(); renderFiado(); }
 function abrirCartera(idx){ let f=fiados[idx]; $('cartera-nombre').innerText='👤 '+f.nombre+' ('+f.codigo+')'; $('cartera-total').innerText=fmt(f.deuda||0); $('cartera-lista-facturas').innerHTML=(f.facturas||[]).map(fact=>'<div class="card"><b>'+fact.consec+'</b> '+fmt(fact.total)+'</div>').join('')||'Sin fact'; $('modal-cartera').style.display='block'; }
 function registrarAbono(){ let valor=toNum($('cartera-abono-valor').value); if(!valor){ alert('Pon valor'); return; } fiados[0].abonos=fiados[0].abonos||[]; fiados[0].abonos.push({valor,fecha:Date.now()}); saveAll(); $('cartera-abono-valor').value=''; renderFiado(); alert('Abono registrado'); }
-function renderSolicitudes(){ let el=$('lista-solicitudes'); if(!el) return; el.innerHTML='<div class="card">Sin solicitudes</div>'; }
 function renderFacturas(){ if(!$('lista-facturas'))return; $('lista-facturas').innerHTML=ventas.slice().reverse().slice(0,30).map(v=>'<div class="card"><b>'+v.consec+'</b> '+fmt(v.total)+'<br><small>'+(v.cliente||'').slice(0,35)+'</small></div>').join('')||'Sin facturas'; }
 function renderDIAN(){let el=$('dian-pend-lista');if(!el)return;el.innerHTML=colaDIAN.map((v,i)=>'<div class="card"><b>'+v.consec+'</b> '+fmt(v.total)+'</div>').join('')||'No hay pendientes ✨';}
-function saveAll(){safeSet('pos_prod',productos);safeSet('pos_fiados',fiados);safeSet('pos_ventas',ventas);safeSet('pos_gastos',gastos);safeSet('pos_empleados',empleados);safeSet('pos_cajas',cajas);safeSet('pos_config',config);safeSet('pos_movimientos',movimientos);localStorage.setItem('pos_config_'+config.storeCode,JSON.stringify(config));}
+function saveAll(){safeSet('pos_prod',productos);safeSet('pos_fiados',fiados);safeSet('pos_ventas',ventas);safeSet('pos_gastos',gastos);safeSet('pos_empleados',empleados);safeSet('pos_cajas',cajas);safeSet('pos_config',config);safeSet('pos_movimientos',movimientos);safeSet('pos_solicitudes',solicitudes);localStorage.setItem('pos_config_'+config.storeCode,JSON.stringify(config));}
 function filtrarInv(t){filtroInv=t;renderInv($('search-inv')?.value||"");}
 function buscarInv(txt){renderInv(txt);}
 function calcAbonoFiado(){let total=carrito.reduce((s,p)=>s+p.precio_final*(p.cant||1),0);let abono=toNum($('abono-fiado').value);if($('saldo-fiado'))$('saldo-fiado').innerText=abono?'Total: '+fmt(total)+' | Abono: '+fmt(abono)+' | Saldo: '+fmt(total-abono):'Total: '+fmt(total);}
@@ -383,7 +405,7 @@ async function probarConexionFEAdmin(){
   }catch(e){ $('lic-generada').innerHTML='❌ Error: '+e.message; }
 }
 
-// === v6.0 MODAL EXISTE LOGICA ===
+// v6.0 + v6.1 EXISTE + APROBACION
 function abrirModalExiste(p){
   productoExistenteTemp = p;
   let stockReal = p.stockReal||0;
@@ -481,9 +503,89 @@ function verKardexProducto(codigo){
   alert(txt);
 }
 function abrirModalReabastecimientoPorIndex(i){ let p=productos[i]; if(p) abrirModalExiste(p); }
+
+// v6.1 SOLICITUDES EMPLEADO -> JEFE
+function renderSolicitudes(){
+  let el=$('lista-solicitudes'); if(!el) return;
+  let pend = solicitudes.filter(s=>s.tipo==='NUEVO_PRODUCTO');
+  if(pend.length===0){ el.innerHTML='<div class="card" style="text-align:center">✅ Sin solicitudes pendientes<br><small>Cuando un empleado agregue con + Rápido aparecerá aquí</small></div>'; return; }
+  el.innerHTML = pend.map((s,i)=>{
+    let idxReal = solicitudes.indexOf(s);
+    let color = s.estado==='PENDIENTE' ? '#F59E0B' : '#22c55e';
+    return `<div class="card" style="border-left:5px solid ${color}">
+      <b>📦 ${s.nombre}</b><br>
+      <small>${s.codigo} • ${s.stock} ${s.presentacion} • Vence: ${s.vence}</small><br>
+      <small>👷 ${s.empleado} • ${new Date(s.fecha).toLocaleString()}</small><br>
+      <span style="background:${color};color:#fff;padding:2px 8px;border-radius:8px;font-size:10px;font-weight:900">${s.estado}</span>
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <button onclick="abrirAprobacionJefe(${idxReal})" style="flex:1;background:var(--primary);color:#fff;border:none;padding:10px;border-radius:12px">👁️ Mirar / Aprobar (Jefe)</button>
+        <button onclick="rechazarSolicitud(${idxReal})" style="background:#FEE2E2;color:#DC2626;border:none;padding:10px;border-radius:12px">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function rechazarSolicitud(idx){ if(confirm('¿Rechazar esta solicitud?')){ solicitudes.splice(idx,1); saveAll(); renderSolicitudes(); } }
+function abrirModalInvSimple(){
+  $('simple-codigo').value=''; $('simple-nombre').value=''; $('simple-stock').value=''; $('simple-vence').value=''; $('simple-presentacion').value='und';
+  $('modal-inv-simple').style.display='block';
+}
+function guardarProductoSimple(){
+  let codigo=$('simple-codigo').value.trim().toUpperCase();
+  let nombre=$('simple-nombre').value.trim();
+  let stock=parseFloat($('simple-stock').value)||0;
+  let presentacion=$('simple-presentacion').value;
+  let vence=$('simple-vence').value;
+  if(!codigo||!nombre||!stock||!vence){ alert('Falta código, nombre, stock y vencimiento'); return; }
+  let dup = buscarDuplicado(codigo, nombre);
+  if(dup){ $('modal-inv-simple').style.display='none'; abrirModalExiste(dup); return; }
+  let solicitud = {
+    id: Date.now(),
+    tipo: 'NUEVO_PRODUCTO',
+    estado: 'PENDIENTE',
+    codigo, nombre, stock, presentacion, vence,
+    empleado: usuarioActual?.nombre||'Empleado',
+    tienda: config.storeCode,
+    fecha: new Date().toISOString()
+  };
+  solicitudes.push(solicitud);
+  saveAll();
+  $('modal-inv-simple').style.display='none';
+  renderSolicitudes();
+  alert('📩 Solicitud enviada al jefe: '+nombre+'\nEl jefe la verá en 📩 Solicitudes > Mirar');
+}
+function abrirAprobacionJefe(idx){
+  let s = solicitudes[idx]; if(!s) return;
+  solicitudAprobandoIdx = idx;
+  $('aprob-info-empleado').innerHTML = `<small style="color:#92400E;font-weight:800">Datos del empleado (no editable)</small><br><b>${s.nombre}</b><br>Código: ${s.codigo}<br>Stock: <b>${s.stock} ${s.presentacion}</b><br>Vence: ${s.vence}<br>Empleado: ${s.empleado}<br>Fecha: ${new Date(s.fecha).toLocaleString()}`;
+  $('aprob-costo').value=''; $('aprob-publico').value=''; $('aprob-proveedor').value=''; $('aprob-contenido').value='1'; $('aprob-precio-kg').value=''; $('aprob-precio-und').value='';
+  $('modal-aprobacion-jefe').style.display='flex';
+}
+function confirmarAprobacionJefe(){
+  let s = solicitudes[solicitudAprobandoIdx]; if(!s) return;
+  let costo = toNum($('aprob-costo').value); let publico = toNum($('aprob-publico').value);
+  let contenido = parseFloat($('aprob-contenido').value)||1;
+  if(!costo||!publico){ alert('Jefe: falta costo y precio público'); return; }
+  let proveedor = $('aprob-proveedor').value.trim();
+  let unidades = [{unidad:s.presentacion,precio:publico,factor:contenido,esBase:true,tipo:'und'}];
+  let pk = toNum($('aprob-precio-kg').value); if(pk) unidades.push({unidad:'kg',precio:pk,factor:1,esBase:false});
+  let pu = toNum($('aprob-precio-und').value); if(pu) unidades.push({unidad:'und',precio:pu,factor:1,esBase:false});
+  let nuevo = {
+    codigo:s.codigo, barras:s.codigo, nombre:s.nombre, categoria:'general',
+    tipoUniversal:'und', presentacion:s.presentacion, contenidoBase:contenido,
+    stock:s.stock, stockReal:s.stock*contenido, stockMinReal:2,
+    unidad:s.presentacion, proveedor, activo:true,
+    costo, publico, stockMin:2, vence:s.vence,
+    unidades, lotes:[{cantidad:s.stock*contenido,costo,vencimiento:s.vence,lote:'APROB-'+Date.now().toString().slice(-5),proveedor,fecha:new Date().toISOString()}]
+  };
+  productos.push(nuevo);
+  movimientos.push({codigo:s.codigo,tipo:'ENTRADA',cantidad:s.stock*contenido,cantidadPresentacion:s.stock,costo,lote:'APROB',proveedor,vencimiento:s.vence,fecha:new Date().toISOString(),ticket:'APROB-JEFE',stockAnterior:0,stockNuevo:s.stock*contenido});
+  solicitudes.splice(solicitudAprobandoIdx,1);
+  saveAll(); $('modal-aprobacion-jefe').style.display='none'; renderInv(); renderSolicitudes();
+  alert('✅ Aprobado y agregado al inventario: '+nuevo.nombre+'\nCosto: '+fmt(costo)+' Publico: '+fmt(publico));
+}
 </script><script>
 function abrirModalInv(i){
-  $('titulo-inv').innerText=i>=0?'Editar Producto ✏️':'Nuevo Producto Universal ✨'; editIndex=i;
+  $('titulo-inv').innerText=i>=0?'Editar Producto ✏️':'Nuevo Producto Universal (Jefe) ✨'; editIndex=i;
   $('inv-activo').checked=true; $('inv-codigo').value=''; $('inv-nombre').value=''; $('inv-tipo-universal').value='kg'; cambiarTipoUniversal();
   $('inv-presentacion').value='bulto'; $('inv-contenido').value=''; $('inv-stock').value=''; $('inv-proveedor').value='';
   $('inv-costo').value=''; $('inv-publico').value=''; $('inv-stock-min').value=''; $('inv-vence').value='';
@@ -602,12 +704,13 @@ function renderCaja(){ if(!$('caja-estado'))return; let hoy=new Date().toISOStri
 </script><script>
 let html5QrCode=null, camAbierta=false, currentTrack=null, torchOn=false;
 async function toggleCam(t){
-  let id=t==='venta'?'reader-venta':t==='inv'?'reader-inv':'reader-modal';
-  let ctrl=t==='venta'?'controls-venta':t==='inv'?'controls-inv':'controls-modal';
+  let idMap={venta:'reader-venta',inv:'reader-inv',modal:'reader-modal',simple:'reader-simple'};
+  let ctrlMap={venta:'controls-venta',inv:'controls-inv',modal:'controls-modal',simple:'controls-simple'};
+  let id=idMap[t]||'reader-venta'; let ctrl=ctrlMap[t]||'controls-venta';
   let el=document.getElementById(id); let elCtrl=document.getElementById(ctrl);
   if(camAbierta){ try{await html5QrCode.stop();}catch(e){} try{await html5QrCode.clear();}catch(e){} if(el)el.style.display='none'; if(elCtrl)elCtrl.style.display='none'; camAbierta=false; currentTrack=null; torchOn=false; return; }
   if(!el)return; el.style.display='block'; if(elCtrl)elCtrl.style.display='flex'; html5QrCode=new Html5Qrcode(id); camAbierta=true;
-  try{ await html5QrCode.start({facingMode:"environment"},{fps:10,qrbox:{width:250,height:100}},d=>{ let code=d.trim(); if(!code) return; if(t==='venta'){ buscarProducto(code,true); } else if(t==='inv'){ $('search-inv').value=code; buscarInv(code); } else{ $('inv-codigo').value=code.toUpperCase(); } if(t==='venta'){ setTimeout(()=>{ if(carrito.length>0){ toggleCam(t); } },300); }else{ toggleCam(t); } }); setTimeout(()=>{try{let v=el.querySelector('video'); if(v&&v.srcObject){let tracks=v.srcObject.getVideoTracks(); if(tracks&&tracks[0]) currentTrack=tracks[0];}}catch(e){}},800); }catch(e){camAbierta=false; if(elCtrl)elCtrl.style.display='none'; alert('Cam: '+e);}
+  try{ await html5QrCode.start({facingMode:"environment"},{fps:10,qrbox:{width:250,height:100}},d=>{ let code=d.trim(); if(!code) return; if(t==='venta'){ buscarProducto(code,true); } else if(t==='inv'){ $('search-inv').value=code; buscarInv(code); } else if(t==='simple'){ $('simple-codigo').value=code.toUpperCase(); } else{ $('inv-codigo').value=code.toUpperCase(); } if(t==='venta'){ setTimeout(()=>{ if(carrito.length>0){ toggleCam(t); } },300); }else{ toggleCam(t); } }); setTimeout(()=>{try{let v=el.querySelector('video'); if(v&&v.srcObject){let tracks=v.srcObject.getVideoTracks(); if(tracks&&tracks[0]) currentTrack=tracks[0];}}catch(e){}},800); }catch(e){camAbierta=false; if(elCtrl)elCtrl.style.display='none'; alert('Cam: '+e);}
 }
 async function toggleLinterna(){ if(!currentTrack){alert('Enciende cámara primero');return;} try{ let caps=currentTrack.getCapabilities(); if(!caps.torch){alert('Sin linterna en este cel');return;} torchOn=!torchOn; await currentTrack.applyConstraints({advanced:[{torch:torchOn}]}); }catch(e){alert('Error linterna: '+e.message);} }
 function abrirCaja(){let hoy=new Date().toISOString().slice(0,10);if(cajas.find(c=>c.fecha===hoy&&!c.cerrada)){alert('Ya abierta');return;}cajas.push({fecha:hoy,base:toNum($('caja-base').value),abierta:Date.now(),cerrada:false});saveAll();renderCaja();}
@@ -692,10 +795,10 @@ function aplicarRol(){ let esAdmin=rol==='admin'; if(esAdmin){ document.getEleme
 function verMod(m){ document.querySelectorAll('.modulo').forEach(d=>d.classList.remove('activo')); let mod=$('mod-'+m); if(mod){ mod.classList.add('activo'); mod.style.display='block'; } document.querySelectorAll('#nav button').forEach(b=>b.classList.remove('activo-nav')); let nb=$('nav-'+m); if(nb) nb.classList.add('activo-nav'); if(m==='inventario')renderInv(); if(m==='fiado')renderFiado(); if(m==='caja')renderCaja(); if(m==='gastos'){renderGastos();} if(m==='facturas')renderFacturas(); if(m==='dian')renderDIAN(); if(m==='solicitudes')renderSolicitudes(); }
 document.getElementById('login-user')?.addEventListener('keypress', e=>{ if(e.key==='Enter') login(); });
 document.getElementById('login-pass')?.addEventListener('keypress', e=>{ if(e.key==='Enter') login(); });
-function renderAll(){ document.querySelectorAll('.modulo').forEach(d=>d.classList.remove('activo')); let mv=$('mod-vender'); if(mv) mv.classList.add('activo'); renderFiado();renderCaja();renderFacturas();actualizarTextoLic();renderInv(); }
+function renderAll(){ document.querySelectorAll('.modulo').forEach(d=>d.classList.remove('activo')); let mv=$('mod-vender'); if(mv) mv.classList.add('activo'); renderFiado();renderCaja();renderFacturas();actualizarTextoLic();renderInv();renderSolicitudes(); }
 renderAll();
 setTimeout(()=>{ document.querySelectorAll('.modulo').forEach(d=>{ if(d.id!=='mod-vender' && d.id!=='mod-admin') d.classList.remove('activo'); }); let mv=$('mod-vender'); if(mv &&!document.getElementById('mod-admin').classList.contains('activo')) mv.classList.add('activo'); actualizarAvatarJefe(); cargarRecordarUsuario(); let navV=$('nav-vender'); if(navV) navV.classList.add('activo-nav'); try{ iniciarSemaforo(); }catch(e){} },600);
-console.log('PHRAXYS v6.0 REABASTECIMIENTO 14/14 LISTO - Duplicado detectado por codigo/barras/nombre + modal existe + agregar existencias + FIFO + Kardex');
+console.log('PHRAXYS v6.1 APROBACION 14/14 LISTO - Empleado simple -> Solicitud -> Jefe aprueba con costo/precio + FIFO');
 </script>
 </body>
 </html>
